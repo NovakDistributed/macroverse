@@ -8,23 +8,62 @@ library RNG {
     using RealMath for *;
 
     /**
-     * Returns the base RNG hash for the given key.
+     * We are going to define a RandNode struct to allow for hash chaining.
+     * You can extend a RandNode with a bunch of different stuff and get a new RandNode.
+     * You can then use a RandNode to get a single, repeatable random value.
+     * This eliminates the need for concatenating string keys, which is a huge pain in Solidity.
      */
-    function getHash(string key) constant returns (bytes32) {
-        return sha256(key);
+    struct RandNode {
+        // We hash this together with whatever we're mixing in to get the child hash.
+        bytes32 _hash;
+    }
+    
+    // All the functions that touch RandNodes need to be internal.
+    // If you want to pass them in and out of contracts just use the bytes32.
+    
+    // You can get all these functions as methods on RandNodes by "using RNG for *" in your library/contract.
+    
+    /**
+     * Mix string data into a RandNode. Returns a new RandNode.
+     */
+    function derive(RandNode node, string entropy) internal constant returns (RandNode) {
+        // Hash what's there now with the new stuff.
+        return RandNode(sha256(node._hash, entropy));
+    }
+    
+    /**
+     * Mix signed int data into a RandNode. Returns a new RandNode.
+     */
+    function derive(RandNode node, int256 entropy) internal constant returns (RandNode) {
+        return RandNode(sha256(node._hash, entropy));
+    }
+    
+     /**
+     * Mix unsigned int data into a RandNode. Returns a new RandNode.
+     */
+    function derive(RandNode node, uint256 entropy) internal constant returns (RandNode) {
+        return RandNode(sha256(node._hash, entropy));
+    }
+
+    /**
+     * Returns the base RNG hash for the given RandNode.
+     * Does another round of hashing in case you made a RandNode("Stuff").
+     */
+    function getHash(RandNode key) internal constant returns (bytes32) {
+        return sha256(key._hash);
     }
     
     /**
      * Return true or false with 50% probability.
      */
-    function getBool(string key) constant returns (bool) {
+    function getBool(RandNode key) internal constant returns (bool) {
         return getHash(key) & 0x1 > 0;
     }
     
     /**
      * Get an int128 full of random bits.
      */
-    function getInt128(string key) constant returns (int128) {
+    function getInt128(RandNode key) internal constant returns (int128) {
         // Just cast to int and truncate
         return int128(int256(getHash(key)));
     }
@@ -32,15 +71,22 @@ library RNG {
     /**
      * Get a real88x40 between 0 (inclusive) and 1 (exclusive).
      */
-    function getReal(string key) constant returns (int128) {
+    function getReal(RandNode key) internal constant returns (int128) {
         return getInt128(key).fpart();
     }
     
     /**
      * Get an integer between low, inclusive, and high, exclusive. Represented as a normal int, not a real.
      */
-    function getIntBetween(string key, int88 low, int88 high) constant returns (int88) {
+    function getIntBetween(RandNode key, int88 low, int88 high) internal constant returns (int88) {
         return RealMath.fromReal((getReal(key).mul(RealMath.toReal(high) - RealMath.toReal(low))) + RealMath.toReal(low));
+    }
+    
+    /**
+     * Roll a d20, with results 1-20, inclusive.
+     */
+    function d20(RandNode key) internal constant returns (uint8) {
+        return uint8(getIntBetween(key, 1, 21));
     }
 }
 
