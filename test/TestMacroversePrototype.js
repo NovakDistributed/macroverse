@@ -19,4 +19,33 @@ contract('MacroversePrototype', function(accounts) {
     assert.equal(translated[2], 2, "Seed generates a subtype 2 star")
    
   })
+  
+  it("should generate a system with 10 planets", async function() {
+    
+    let instance = await MacroversePrototype.deployed()
+    
+    // Pass in system facts to avoid needing to re-generate them.
+    let planetCount = await instance.getPlanetCount.call(2, 4)
+    
+    assert.equal(planetCount.toNumber(), 10, "Seed generates a star with 10 planets")
+    
+  })
+  
+  it("should generate a system with planets laid out appropriately", async function() {
+    let instance = await MacroversePrototype.deployed()
+    
+    // Get planet count
+    let planetCount = (await instance.getPlanetCount.call(2, 4)).toNumber()
+    
+    // Get planets in hot, habitable, and cold zones
+    let inA = (await instance.getPlanetsInZone.call(planetCount, 0)).toNumber()
+    let inB = (await instance.getPlanetsInZone.call(planetCount, 1)).toNumber()
+    let inC = (await instance.getPlanetsInZone.call(planetCount, 2)).toNumber()
+    
+    assert.equal(inA, 2, "2 planets in hot zone")
+    assert.equal(inB, 2, "2 planets in habitable zone")
+    assert.equal(inC, 6, "6 planets in cold zone")
+    
+  })
+  
 })

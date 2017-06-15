@@ -127,9 +127,93 @@ contract MacroversePrototype {
     }
     
     /**
-     * How many planets does this system have?
+     * How many planets does this system have? Caller passes in star info from getStarType(),
+     * to save repeated calls to the generator.
      */
-    function getPlanetCount() constant returns (uint) {
+    function getPlanetCount(ObjectClass class, SpectralType spectral_type) constant returns (uint8 planets) {     
+                
+        // Roll for having planets
+        var have = root.derive("havePlanets").d(1, 100, 0);
+        
+        // Start with 0 planets
+        planets = 0;
+        
+        // Derive a node for rolling number of planets.
+        var node = root.derive("planets");
+        
+        if (class == ObjectClass.Supergiant && have <= 10) {
+            // 10% of supergiants have 1d6 planets
+            planets = uint8(node.d(1, 6, 0));
+        } else if (class == ObjectClass.Giant && have <= 20) {
+            // 20% of giants have 1d6 planets
+            planets = uint8(node.d(1, 6, 0));
+        } else if (class == ObjectClass.MainSequence) {
+            if ((spectral_type == SpectralType.TypeO || spectral_type == SpectralType.TypeB) && have <= 10) {
+                // 10% of O and B stars have 1d10 planets
+                planets = uint8(node.d(1, 10, 0));
+            } else if (spectral_type == SpectralType.TypeA && have <= 50) {
+                // 50% of A stars have 1d10 planets
+                planets = uint8(node.d(1, 10, 0));
+            } else if ((spectral_type == SpectralType.TypeF || spectral_type == SpectralType.TypeG) && have <= 99) {
+                // 99% of F and G stars have 2d6+3 planets.
+                planets = uint8(node.d(2, 6, 3));
+            } else if (spectral_type == SpectralType.TypeK && have <= 99) {
+                // 99% of K stars have 2d6 planets
+                planets = uint8(node.d(2, 6, 0));
+            } else if (spectral_type == SpectralType.TypeM && have <= 50) {
+                // 50% of M stars have 1d6 planets
+                planets = uint8(node.d(1, 6, 0));
+            }
+        } else if ((class == ObjectClass.WhiteDwarf || class == ObjectClass.NeutronStar || class == ObjectClass.BlackHole) && have <= 10) {
+            // 10% of fancy special objects have 1d6/2 planets
+            planets = uint8(node.d(1, 6, 0) / 2);
+        }
+    
+    }
+    
+    // We have 3 zones for orbits: hot, habitable, and cold.
+    //               0      1      2
+    enum OrbitZone { ZoneA, ZoneB, ZoneC }
+    
+    /**
+     * How many planets are in each zone? A = hot, B = habitable, C = cold.
+     */
+    function getPlanetsInZone(uint8 planets, OrbitZone zone) constant returns (uint8 in_zone) {
+        if (planets == 0) {
+            return 0;
+        } else if (planets <= 3) {
+            if (zone == OrbitZone.ZoneA) {
+                return 0;
+            } else if (zone == OrbitZone.ZoneB) {
+                return 1;
+            } else if (zone == OrbitZone.ZoneC) {
+                return planets - 1;
+            }
+        } else if (planets <= 5) {
+            if (zone == OrbitZone.ZoneA) {
+                return 1;
+            } else if (zone == OrbitZone.ZoneB) {
+                return 1;
+            } else if (zone == OrbitZone.ZoneC) {
+                return planets - 2;
+            }
+        } else if (planets <= 7) {
+            if (zone == OrbitZone.ZoneA) {
+                return 1;
+            } else if (zone == OrbitZone.ZoneB) {
+                return 2;
+            } else if (zone == OrbitZone.ZoneC) {
+                return planets - 3;
+            }
+        } else {
+            if (zone == OrbitZone.ZoneA) {
+                return 2;
+            } else if (zone == OrbitZone.ZoneB) {
+                return 2;
+            } else if (zone == OrbitZone.ZoneC) {
+                return planets - 4;
+            }
+        }
     }
     
 
