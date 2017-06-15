@@ -350,6 +350,9 @@ contract MacroversePrototype {
         }
     }
     
+    // TODO: Orbital mechanics, orbital periods, density, temperature, and other things that source material only defined for planets at marginal or better.
+    // We will need them for all planets.
+    
 
 }
  
