@@ -84,4 +84,23 @@ contract('MacroversePrototype', function(accounts) {
   
   })
   
+  it("should flesh out important planets", async function() {
+    let instance = await MacroversePrototype.deployed()
+     
+    // Planet 4 is hostile (type 5)
+    let planet4diam = (await instance.getPlanetDiameter.call(4, 5)).toNumber()
+    let planet4moons = (await instance.getPlanetMoonCount.call(4, 5)).toNumber()
+    
+    // Planet 5 is a giant (type 1)
+    let planet5diam = (await instance.getPlanetDiameter.call(5, 1)).toNumber()
+    let planet5moons = (await instance.getPlanetMoonCount.call(5, 1)).toNumber()
+    
+    assert.equal(planet4diam, 14000, "planet 4 has a diameter of 14000 km")
+    assert.equal(planet4moons, 1, "planet 4 has 1 moon")
+    
+    assert.equal(planet5diam, 90000, "planet 5 has a diameter of 90000 km")
+    assert.equal(planet5moons, 15, "planet 5 has 15 moons")
+    
+  })
+  
 })

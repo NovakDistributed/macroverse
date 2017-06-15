@@ -302,6 +302,54 @@ contract MacroversePrototype {
         }
     }
     
+    /**
+     * Get the diameter of the given planet, in km. Approximated to the nearest 1000, or 10,000 for giants.
+     * Asteroid belts do not have a diameter.
+     */
+    function getPlanetDiameter(uint8 planet, PlanetType planet_type) constant returns (uint) {
+        // Make a node to roll with.
+        var node = root.derive("planet").derive(uint256(planet)).derive("diameter");
+        
+        if (planet_type == PlanetType.AsteroidBelt) {
+            return 0;
+        } else if (planet_type == PlanetType.Giant) {
+            return uint(node.d(3, 6, 0)) * 10000;
+        } else if (planet_type == PlanetType.VaccuumRock || planet_type == PlanetType.VaccuumIce) {
+            return uint(node.d(1, 10, 0)) * 1000;
+        } else if (planet_type == PlanetType.Desert) {
+            return uint(node.d(2, 6, 2)) * 1000;
+        } else if (planet_type == PlanetType.Hostile) {
+            return uint(node.d(3, 6, 1)) * 1000;
+        } else if (planet_type == PlanetType.Marginal || planet_type == PlanetType.Earthlike) {
+            return uint(node.d(2, 6, 5)) * 1000;
+        }
+    }
+    
+    /**
+     * Get the number of moons that a planet has, given its number and type.
+     */
+    function getPlanetMoonCount(uint8 planet, PlanetType planet_type) constant returns (uint8) {
+        // Make a node to roll with.
+        var node = root.derive("planet").derive(uint256(planet)).derive("moons");
+        
+        if (planet_type == PlanetType.AsteroidBelt) {
+            return 0;
+        } else if (planet_type == PlanetType.Giant) {
+            return uint8(node.d(2, 10, 0));
+        } else {
+            var roll = node.d(1, 10, 0);
+            if (roll <= 4) {
+                return 0;
+            } else if (roll <= 7) {
+                return 1;
+            } else if (roll <= 9) {
+                return 2;
+            } else {
+                return 3;
+            }
+        }
+    }
+    
 
 }
  
