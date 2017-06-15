@@ -1,7 +1,5 @@
 pragma solidity ^0.4.11;
 
-import "zeppelin/SafeMath.sol";
-
 /**
  * RealMath: fixed-point math library, based on fractional and integer parts.
  * Using int128 as real88x40, which isn't in Solidity yet.
