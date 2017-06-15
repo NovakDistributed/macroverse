@@ -26,4 +26,14 @@ contract TestRNG {
             Assert.isAtLeast(generated, 1, "Generated ints are at least low");
         }
     }
+    
+    function testD() {
+        var root = RNG.RandNode("root");
+        for (uint i = 0; i < 100; i++) {
+            var key = root.derive(i);
+            var generated = key.d(2, 8, 3);
+            Assert.isAtMost(generated, 19, "2d8+3 maxes out at 19");
+            Assert.isAtLeast(generated, 5, "2d8+3 is no less than 5");
+        }
+    }
 }

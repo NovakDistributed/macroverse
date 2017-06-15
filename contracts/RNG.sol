@@ -83,10 +83,22 @@ library RNG {
     }
     
     /**
-     * Roll a d20, with results 1-20, inclusive.
+     * Roll a number of die of the given size, add/subtract a bonus, and return the result.
+     * Max size is 100.
      */
-    function d20(RandNode key) internal constant returns (uint8) {
-        return uint8(getIntBetween(key, 1, 21));
+    function d(RandNode key, int8 count, int8 size, int8 bonus) internal constant returns (int16) {
+        if (count == 1) {
+            // Base case
+            return int16(getIntBetween(key, 1, size)) + bonus;
+        } else {
+            // Loop and sum
+            int16 sum = bonus;
+            for(int8 i = 0; i < count; i++) {
+                // Roll each die with no bonus
+                sum += d(derive(key, i), 1, size, 0);
+            }
+            return sum;
+        }
     }
 }
 
