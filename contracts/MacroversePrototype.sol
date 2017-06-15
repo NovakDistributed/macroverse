@@ -216,6 +216,92 @@ contract MacroversePrototype {
         }
     }
     
+    // Planets come in types
+    //                0             1      2            3           4       5        6         7
+    enum PlanetType { AsteroidBelt, Giant, VaccuumRock, VaccuumIce, Desert, Hostile, Marginal, Earthlike }
+    
+    /**
+     * What is the type of the planet with the given number, in the given zone, around
+     * the star with the given class and spectral type? Caller is responsible for 
+     * checking that such a planet actually exists. Planet number counts from 0 to
+     * getPlanetCount() - 1.
+     */
+    function getPlanetType(uint8 planet, OrbitZone zone, ObjectClass class, SpectralType spectral_type) constant returns (PlanetType planet_type) {
+    
+        // Roll for a type.
+        var roll = root.derive("planet").derive(uint256(planet)).d(1, 100, 0);
+        
+        if (zone == OrbitZone.ZoneA) {
+            // In the hot zone
+            if (roll <= 5) {
+                return PlanetType.AsteroidBelt;
+            } else if (roll <= 60) {
+                return PlanetType.VaccuumRock;
+            } else if (roll <= 70) {
+                return PlanetType.Desert;
+            } else {
+                if (class == ObjectClass.BlackHole || class == ObjectClass.NeutronStar) {
+                    // Can't have nice planets
+                    return PlanetType.VaccuumIce;
+                }
+                return PlanetType.Hostile;
+            }
+        } else if (class == ObjectClass.MainSequence &&
+            (spectral_type == SpectralType.TypeF || spectral_type == SpectralType.TypeG || spectral_type == SpectralType.TypeK) &&
+            zone == OrbitZone.ZoneB) {
+            // Habitable zone around a nice, normal star
+            if (roll <= 5) {
+                return PlanetType.AsteroidBelt;
+            } else if (roll <= 8) {
+                return PlanetType.Giant;
+            } else if (roll <= 40) {
+                return PlanetType.VaccuumRock;
+            } else if (roll <= 60) {
+                return PlanetType.Desert;
+            } else if (roll <= 80) {
+                return PlanetType.Hostile;
+            } else if (roll <= 90) {
+                return PlanetType.Marginal;
+            } else {
+                return PlanetType.Earthlike;
+            }
+        } else if (zone == OrbitZone.ZoneB) {
+            // Habitable zone around something else
+            if (roll <= 5) {
+                return PlanetType.AsteroidBelt;
+            } else if (roll <= 8) {
+                return PlanetType.Giant;
+            } else if (roll <= 40) {
+                return PlanetType.VaccuumRock;
+            } else if (roll <= 70) {
+                return PlanetType.Desert;
+            } else {
+                if (class == ObjectClass.BlackHole || class == ObjectClass.NeutronStar) {
+                    // Can't have nice planets
+                    return PlanetType.VaccuumIce;
+                }
+                return PlanetType.Hostile;
+            }
+        } else if (zone == OrbitZone.ZoneC) {
+            // Cold zone
+            if (roll <= 5) {
+                return PlanetType.AsteroidBelt;
+            } else if (roll <= 75) {
+                return PlanetType.Giant;
+            } else if (roll <= 80) {
+                return PlanetType.VaccuumRock;
+            } else if (roll <= 95) {
+                return PlanetType.VaccuumIce;
+            } else {
+                if (class == ObjectClass.BlackHole || class == ObjectClass.NeutronStar) {
+                    // Can't have nice planets
+                    return PlanetType.VaccuumIce;
+                }
+                return PlanetType.Hostile;
+            }
+        }
+    }
+    
 
 }
  

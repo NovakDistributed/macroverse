@@ -48,4 +48,40 @@ contract('MacroversePrototype', function(accounts) {
     
   })
   
+  it("should generate the appropriate planet types", async function() {
+    let instance = await MacroversePrototype.deployed()
+    
+    // Set star parameters
+    let starClass = 2; // MainSequence
+    let starType = 4; // TypeG
+    
+    // First 2 planets are in the hot zone
+    let planet0 = (await instance.getPlanetType.call(0, 0, starClass, starType)).toNumber()
+    let planet1 = (await instance.getPlanetType.call(1, 0, starClass, starType)).toNumber()
+    // Next 2 are in the habitable zone
+    let planet2 = (await instance.getPlanetType.call(2, 1, starClass, starType)).toNumber()
+    let planet3 = (await instance.getPlanetType.call(3, 1, starClass, starType)).toNumber()
+    // Last 6 are in the cold zone
+    let planet4 = (await instance.getPlanetType.call(4, 2, starClass, starType)).toNumber()
+    let planet5 = (await instance.getPlanetType.call(5, 2, starClass, starType)).toNumber()
+    let planet6 = (await instance.getPlanetType.call(6, 2, starClass, starType)).toNumber()
+    let planet7 = (await instance.getPlanetType.call(7, 2, starClass, starType)).toNumber()
+    let planet8 = (await instance.getPlanetType.call(8, 2, starClass, starType)).toNumber()
+    let planet9 = (await instance.getPlanetType.call(9, 2, starClass, starType)).toNumber()
+    
+    //console.log(planet0, planet1, planet2, planet3, planet4, planet5, planet6, planet7, planet8, planet9)
+    
+    assert.equal(planet0, 2, "planet 0 is VaccuumRock")
+    assert.equal(planet1, 2, "planet 1 is VaccuumRock")
+    assert.equal(planet2, 4, "planet 2 is Desert")
+    assert.equal(planet3, 4, "planet 3 is Desert")
+    assert.equal(planet4, 5, "planet 4 is Hostile")
+    assert.equal(planet5, 1, "planet 5 is Giant")
+    assert.equal(planet6, 1, "planet 6 is Giant")
+    assert.equal(planet7, 3, "planet 7 is VaccuumIce")
+    assert.equal(planet8, 1, "planet 8 is Giant")
+    assert.equal(planet9, 1, "planet 9 is Giant")
+  
+  })
+  
 })
