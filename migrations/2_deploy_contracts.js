@@ -3,7 +3,7 @@ var RNG = artifacts.require("./RNG.sol");
 var MacroversePrototype = artifacts.require("./MacroversePrototype.sol")
 
 var MRVToken = artifacts.require("./MRVToken.sol")
-var MacroverseCouncil = artifacts.require("./MacroverseCouncil.sol")
+var MinimumBalanceAccessControl = artifacts.require("./MinimumBalanceAccessControl.sol")
 
 module.exports = function(deployer, network, accounts) {
   deployer.deploy(RealMath)
@@ -18,8 +18,10 @@ module.exports = function(deployer, network, accounts) {
   // Deploy the token
   deployer.deploy(MRVToken, accounts[0]).then(function() {
   
-    // Deploy the DAO, with the MRV token as shares, 5000 needed for quorum, and 14 days for debate on proposals.
-    deployer.deploy(MacroverseCouncil, MRVToken.address, 5000, 14 * 24 * 60)
+    // Deploy a minimum balance access control strategy
+    deployer.deploy(MinimumBalanceAccessControl, MRVToken.address, 5000).then(function() {
+      // Deploy the actual MG prototype and point it initially at that access control contract.
+    })
   })
   
 };
