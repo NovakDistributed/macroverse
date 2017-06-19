@@ -1,6 +1,7 @@
 var RealMath = artifacts.require("./RealMath.sol");
 var RNG = artifacts.require("./RNG.sol");
 var MacroversePrototype = artifacts.require("./MacroversePrototype.sol")
+var SingleStarPrototype = artifacts.require("./SingleStarPrototype.sol")
 
 var MRVToken = artifacts.require("./MRVToken.sol")
 var MinimumBalanceAccessControl = artifacts.require("./MinimumBalanceAccessControl.sol")
@@ -12,6 +13,8 @@ module.exports = async function(deployer, network, accounts) {
   deployer.deploy(RNG)
   deployer.link(RNG, MacroversePrototype)
   deployer.link(RealMath, MacroversePrototype)
+  deployer.link(RNG, SingleStarPrototype)
+  deployer.link(RealMath, SingleStarPrototype)
 
   deployer.deploy(UnrestrictedAccessControl)
   
@@ -19,9 +22,10 @@ module.exports = async function(deployer, network, accounts) {
   await deployer.deploy(MRVToken, accounts[0]).then(function() {
   
     // Deploy a minimum balance access control strategy
-    return deployer.deploy(MinimumBalanceAccessControl, MRVToken.address, web3.toWei(5000, "ether")).then(function() {
-      // Deploy the actual MG prototype and point it initially at that access control contract.
-      return deployer.deploy(MacroversePrototype, "prototypeseed12", MinimumBalanceAccessControl.address)
+    return deployer.deploy(MinimumBalanceAccessControl, MRVToken.address, web3.toWei(5000, "ether")).then(async function() {
+      // Deploy the actual MG prototypes and point them initially at that access control contract.
+      await deployer.deploy(MacroversePrototype, "prototypeseed12", MinimumBalanceAccessControl.address)
+      await deployer.deploy(SingleStarPrototype, "prototypeseed12", MinimumBalanceAccessControl.address)
       
     })
   })
