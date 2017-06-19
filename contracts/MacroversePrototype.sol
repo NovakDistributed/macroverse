@@ -4,13 +4,13 @@ import "./RNG.sol";
 
 import "./AccessControl.sol";
 
-import "./zeppelin/ownership/Ownable.sol";
+import "./ControlledAccess.sol";
 
 /**
  * Represents a prorotype Macroverse Generator, for a single star system according to an
  * adaptation of <http://www.mit.edu/afs.new/sipb/user/sekullbe/furble/planet.txt>.
  */
-contract MacroversePrototype is Ownable {
+contract MacroversePrototype is ControlledAccess {
     using RNG for *;
 
     // There are kinds of stars
@@ -31,30 +31,14 @@ contract MacroversePrototype is Ownable {
      * Deploy a new copy of the Macroverse prototype contract. Use the given seed to generate the star system.
      * Use the contract at the given address to regulate access.
      */
-    function MacroversePrototype(bytes32 baseSeed, address accessControlAddress) {
+    function MacroversePrototype(bytes32 baseSeed, address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) {
         root = RNG.RandNode(baseSeed);
-        accessControl = AccessControl(accessControlAddress);
-    }
-    
-    /**
-     * Change the access control strategy of the prototype.
-     */
-    function changeAccessControl(address newAccessControl) onlyOwner {
-        accessControl = AccessControl(newAccessControl);
-    }
-    
-    /**
-     * Only allow queries approved by the access control contract.
-     */
-    modifier onlyAuthorized {
-        if (!accessControl.allowQuery(msg.sender, tx.origin)) throw;
-        _;
     }
     
     /**
      * What star type is the star?
      */
-    function getStarType() constant onlyAuthorized returns (ObjectClass class, SpectralType spectralType, uint8 subtype) {
+    function getStarType() constant onlyControlledAccess returns (ObjectClass class, SpectralType spectralType, uint8 subtype) {
         // Roll 3 distinct d100s
         var roll1 = root.derive("star1").d(1, 100, 0);
         var roll2 = root.derive("star2").d(1, 100, 0);
@@ -154,7 +138,7 @@ contract MacroversePrototype is Ownable {
      * How many planets does this system have? Caller passes in star info from getStarType(),
      * to save repeated calls to the generator.
      */
-    function getPlanetCount(ObjectClass class, SpectralType spectralType) constant onlyAuthorized returns (uint8 planets) {     
+    function getPlanetCount(ObjectClass class, SpectralType spectralType) constant onlyControlledAccess returns (uint8 planets) {     
                 
         // Roll for having planets
         var have = root.derive("havePlanets").d(1, 100, 0);
@@ -202,7 +186,7 @@ contract MacroversePrototype is Ownable {
     /**
      * How many planets are in each zone? A = hot, B = habitable, C = cold.
      */
-    function getPlanetsInZone(uint8 planets, OrbitZone zone) constant onlyAuthorized returns (uint8) {
+    function getPlanetsInZone(uint8 planets, OrbitZone zone) constant onlyControlledAccess returns (uint8) {
         if (planets == 0) {
             return 0;
         } else if (planets <= 3) {
@@ -250,7 +234,7 @@ contract MacroversePrototype is Ownable {
      * checking that such a planet actually exists. Planet number counts from 0 to
      * getPlanetCount() - 1.
      */
-    function getPlanetType(uint8 planet, OrbitZone zone, ObjectClass class, SpectralType spectralType) constant onlyAuthorized returns (PlanetType planetType) {
+    function getPlanetType(uint8 planet, OrbitZone zone, ObjectClass class, SpectralType spectralType) constant onlyControlledAccess returns (PlanetType planetType) {
     
         // Roll for a type.
         var roll = root.derive("planet").derive(uint256(planet)).d(1, 100, 0);
@@ -330,7 +314,7 @@ contract MacroversePrototype is Ownable {
      * Get the diameter of the given planet, in km. Approximated to the nearest 1000, or 10,000 for giants.
      * Asteroid belts do not have a diameter.
      */
-    function getPlanetDiameter(uint8 planet, PlanetType planetType) constant onlyAuthorized returns (uint) {
+    function getPlanetDiameter(uint8 planet, PlanetType planetType) constant onlyControlledAccess returns (uint) {
         // Make a node to roll with.
         var node = root.derive("planet").derive(uint256(planet)).derive("diameter");
         
@@ -352,7 +336,7 @@ contract MacroversePrototype is Ownable {
     /**
      * Get the number of moons that a planet has, given its number and type.
      */
-    function getPlanetMoonCount(uint8 planet, PlanetType planetType) constant onlyAuthorized returns (uint8) {
+    function getPlanetMoonCount(uint8 planet, PlanetType planetType) constant onlyControlledAccess returns (uint8) {
         // Make a node to roll with.
         var node = root.derive("planet").derive(uint256(planet)).derive("moons");
         
