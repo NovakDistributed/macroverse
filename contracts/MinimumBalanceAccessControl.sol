@@ -12,11 +12,19 @@ contract MinimumBalanceAccessControl {
     ERC20 tokenAddress;
     uint minBalanceInAtomicUnits;
     
-    function MinimumBalanceAccessControl(address _tokenAddress, uint _minBalanceInAtomicUnits) {
-        tokenAddress = ERC20(_tokenAddress);
-        minBalanceInAtomicUnits = _minBalanceInAtomicUnits;
+    /**
+     * Make a new MinimumBalanceAccessControl that requires the specified minimum balance of the specified token.
+     */
+    function MinimumBalanceAccessControl(address tokenAddress_, uint minBalanceInAtomicUnits_) {
+        tokenAddress = ERC20(tokenAddress_);
+        minBalanceInAtomicUnits = minBalanceInAtomicUnits_;
     }
     
+    /**
+     * Allow all queries resulting from a transaction initiated from an origin address with at least the required minimum balance.
+     * This means that any contract you use can make queries on your behalf, but that no contract with the minimum balance can proxy
+     * queries for others.
+     */
     function allowQuery(address sender, address origin) constant returns (bool) {
         if (tokenAddress.balanceOf(origin) >= minBalanceInAtomicUnits) {
             return true;

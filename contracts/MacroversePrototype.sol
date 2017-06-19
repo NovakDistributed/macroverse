@@ -2,11 +2,15 @@ pragma solidity ^0.4.11;
 
 import "./RNG.sol";
 
+import "./AccessControl.sol";
+
+import "./zeppelin/ownership/Ownable.sol";
+
 /**
  * Represents a prorotype Macroverse Generator, for a single star system according to an
  * adaptation of <http://www.mit.edu/afs.new/sipb/user/sekullbe/furble/planet.txt>.
  */
-contract MacroversePrototype {
+contract MacroversePrototype is Ownable {
     using RNG for *;
 
     // There are kinds of stars
@@ -17,20 +21,40 @@ contract MacroversePrototype {
     enum SpectralType { TypeO, TypeB, TypeA, TypeF, TypeG, TypeK, TypeM }
     // Each type has subtypes 0-9, except O which only has 5-9
     
-
+    // This root RandNode provides the seed for the universe.
     RNG.RandNode root;
+    
+    // This AccessControl contract determines who has paid to use the generator contract.
+    AccessControl accessControl;
     
     /**
      * Deploy a new copy of the Macroverse prototype contract. Use the given seed to generate the star system.
+     * Use the contract at the given address to regulate access.
      */
-    function MacroversePrototype(bytes32 base_seed) {
-        root = RNG.RandNode(base_seed);
+    function MacroversePrototype(bytes32 baseSeed, address accessControlAddress) {
+        root = RNG.RandNode(baseSeed);
+        accessControl = AccessControl(accessControlAddress);
+    }
+    
+    /**
+     * Change the access control strategy of the prototype.
+     */
+    function changeAccessControl(address newAccessControl) onlyOwner {
+        accessControl = AccessControl(newAccessControl);
+    }
+    
+    /**
+     * Only allow queries approved by the access control contract.
+     */
+    modifier onlyAuthorized {
+        if (!accessControl.allowQuery(msg.sender, tx.origin)) throw;
+        _;
     }
     
     /**
      * What star type is the star?
      */
-    function getStarType() constant returns (ObjectClass class, SpectralType spectral_type, uint8 subtype) {
+    function getStarType() constant onlyAuthorized returns (ObjectClass class, SpectralType spectralType, uint8 subtype) {
         // Roll 3 distinct d100s
         var roll1 = root.derive("star1").d(1, 100, 0);
         var roll2 = root.derive("star2").d(1, 100, 0);
@@ -42,29 +66,29 @@ contract MacroversePrototype {
                 // Supergiant
                 class = ObjectClass.Supergiant;
                 if (roll3 <= 10) {
-                    spectral_type = SpectralType.TypeB;
+                    spectralType = SpectralType.TypeB;
                 } else if (roll3 <= 20) {
-                    spectral_type = SpectralType.TypeA;
+                    spectralType = SpectralType.TypeA;
                 } else if (roll3 <= 40) {
-                    spectral_type = SpectralType.TypeF;
+                    spectralType = SpectralType.TypeF;
                 } else if (roll3 <= 60) {
-                    spectral_type = SpectralType.TypeG;
+                    spectralType = SpectralType.TypeG;
                 } else if (roll3 <= 80) {
-                    spectral_type = SpectralType.TypeK;
+                    spectralType = SpectralType.TypeK;
                 } else {
-                    spectral_type = SpectralType.TypeM;
+                    spectralType = SpectralType.TypeM;
                 }
             } else {
                 // Normal giant
                 class = ObjectClass.Giant;
                 if (roll2 <= 5) {
-                    spectral_type = SpectralType.TypeF;
+                    spectralType = SpectralType.TypeF;
                 } else if (roll2 <= 10) {
-                    spectral_type = SpectralType.TypeG;
+                    spectralType = SpectralType.TypeG;
                 } else if (roll2 <= 55) {
-                    spectral_type = SpectralType.TypeK;
+                    spectralType = SpectralType.TypeK;
                 } else {
-                    spectral_type = SpectralType.TypeM;
+                    spectralType = SpectralType.TypeM;
                 }
             }
             // Assign a subtype; no O is possible here so all are 1-10.
@@ -76,26 +100,26 @@ contract MacroversePrototype {
                 // O or B
                 if (roll3 == 1) {
                     // O, very rare
-                    spectral_type = SpectralType.TypeO;
+                    spectralType = SpectralType.TypeO;
                     // Subtypes are 5-9
                     subtype = uint8(root.derive("subtype").d(1, 5, 4));
                 } else {
                     // B, less rare
-                    spectral_type = SpectralType.TypeB;
+                    spectralType = SpectralType.TypeB;
                     subtype = uint8(root.derive("subtype").d(1, 10, -1));
                 }
             } else {
                 if (roll2 <= 3) {
                     // A
-                    spectral_type = SpectralType.TypeA;
+                    spectralType = SpectralType.TypeA;
                 } else if (roll2 <= 7) {
-                    spectral_type = SpectralType.TypeF;
+                    spectralType = SpectralType.TypeF;
                 } else if (roll2 <= 15) {
-                    spectral_type = SpectralType.TypeG;
+                    spectralType = SpectralType.TypeG;
                 } else if (roll2 <= 31) {
-                    spectral_type = SpectralType.TypeK;
+                    spectralType = SpectralType.TypeK;
                 } else {
-                    spectral_type = SpectralType.TypeM;
+                    spectralType = SpectralType.TypeM;
                 }
                 subtype = uint8(root.derive("subtype").d(1, 10, -1));
             }
@@ -104,15 +128,15 @@ contract MacroversePrototype {
                 // White dwarf, no subtype
                 class = ObjectClass.WhiteDwarf;
                 if (roll2 <= 20) {
-                    spectral_type = SpectralType.TypeB;
+                    spectralType = SpectralType.TypeB;
                 } else if (roll2 <= 40) {
-                    spectral_type = SpectralType.TypeA;
+                    spectralType = SpectralType.TypeA;
                 } else if (roll2 <= 60) {
-                    spectral_type = SpectralType.TypeF;
+                    spectralType = SpectralType.TypeF;
                 } else if (roll2 <= 80) {
-                    spectral_type = SpectralType.TypeG;
+                    spectralType = SpectralType.TypeG;
                 } else {
-                    spectral_type = SpectralType.TypeK;
+                    spectralType = SpectralType.TypeK;
                 }
             } else {
                 // Neutron star or black hole, no type or subtype
@@ -130,7 +154,7 @@ contract MacroversePrototype {
      * How many planets does this system have? Caller passes in star info from getStarType(),
      * to save repeated calls to the generator.
      */
-    function getPlanetCount(ObjectClass class, SpectralType spectral_type) constant returns (uint8 planets) {     
+    function getPlanetCount(ObjectClass class, SpectralType spectralType) constant onlyAuthorized returns (uint8 planets) {     
                 
         // Roll for having planets
         var have = root.derive("havePlanets").d(1, 100, 0);
@@ -148,19 +172,19 @@ contract MacroversePrototype {
             // 20% of giants have 1d6 planets
             planets = uint8(node.d(1, 6, 0));
         } else if (class == ObjectClass.MainSequence) {
-            if ((spectral_type == SpectralType.TypeO || spectral_type == SpectralType.TypeB) && have <= 10) {
+            if ((spectralType == SpectralType.TypeO || spectralType == SpectralType.TypeB) && have <= 10) {
                 // 10% of O and B stars have 1d10 planets
                 planets = uint8(node.d(1, 10, 0));
-            } else if (spectral_type == SpectralType.TypeA && have <= 50) {
+            } else if (spectralType == SpectralType.TypeA && have <= 50) {
                 // 50% of A stars have 1d10 planets
                 planets = uint8(node.d(1, 10, 0));
-            } else if ((spectral_type == SpectralType.TypeF || spectral_type == SpectralType.TypeG) && have <= 99) {
+            } else if ((spectralType == SpectralType.TypeF || spectralType == SpectralType.TypeG) && have <= 99) {
                 // 99% of F and G stars have 2d6+3 planets.
                 planets = uint8(node.d(2, 6, 3));
-            } else if (spectral_type == SpectralType.TypeK && have <= 99) {
+            } else if (spectralType == SpectralType.TypeK && have <= 99) {
                 // 99% of K stars have 2d6 planets
                 planets = uint8(node.d(2, 6, 0));
-            } else if (spectral_type == SpectralType.TypeM && have <= 50) {
+            } else if (spectralType == SpectralType.TypeM && have <= 50) {
                 // 50% of M stars have 1d6 planets
                 planets = uint8(node.d(1, 6, 0));
             }
@@ -178,7 +202,7 @@ contract MacroversePrototype {
     /**
      * How many planets are in each zone? A = hot, B = habitable, C = cold.
      */
-    function getPlanetsInZone(uint8 planets, OrbitZone zone) constant returns (uint8 in_zone) {
+    function getPlanetsInZone(uint8 planets, OrbitZone zone) constant onlyAuthorized returns (uint8) {
         if (planets == 0) {
             return 0;
         } else if (planets <= 3) {
@@ -226,7 +250,7 @@ contract MacroversePrototype {
      * checking that such a planet actually exists. Planet number counts from 0 to
      * getPlanetCount() - 1.
      */
-    function getPlanetType(uint8 planet, OrbitZone zone, ObjectClass class, SpectralType spectral_type) constant returns (PlanetType planet_type) {
+    function getPlanetType(uint8 planet, OrbitZone zone, ObjectClass class, SpectralType spectralType) constant onlyAuthorized returns (PlanetType planetType) {
     
         // Roll for a type.
         var roll = root.derive("planet").derive(uint256(planet)).d(1, 100, 0);
@@ -247,7 +271,7 @@ contract MacroversePrototype {
                 return PlanetType.Hostile;
             }
         } else if (class == ObjectClass.MainSequence &&
-            (spectral_type == SpectralType.TypeF || spectral_type == SpectralType.TypeG || spectral_type == SpectralType.TypeK) &&
+            (spectralType == SpectralType.TypeF || spectralType == SpectralType.TypeG || spectralType == SpectralType.TypeK) &&
             zone == OrbitZone.ZoneB) {
             // Habitable zone around a nice, normal star
             if (roll <= 5) {
@@ -306,21 +330,21 @@ contract MacroversePrototype {
      * Get the diameter of the given planet, in km. Approximated to the nearest 1000, or 10,000 for giants.
      * Asteroid belts do not have a diameter.
      */
-    function getPlanetDiameter(uint8 planet, PlanetType planet_type) constant returns (uint) {
+    function getPlanetDiameter(uint8 planet, PlanetType planetType) constant onlyAuthorized returns (uint) {
         // Make a node to roll with.
         var node = root.derive("planet").derive(uint256(planet)).derive("diameter");
         
-        if (planet_type == PlanetType.AsteroidBelt) {
+        if (planetType == PlanetType.AsteroidBelt) {
             return 0;
-        } else if (planet_type == PlanetType.Giant) {
+        } else if (planetType == PlanetType.Giant) {
             return uint(node.d(3, 6, 0)) * 10000;
-        } else if (planet_type == PlanetType.VaccuumRock || planet_type == PlanetType.VaccuumIce) {
+        } else if (planetType == PlanetType.VaccuumRock || planetType == PlanetType.VaccuumIce) {
             return uint(node.d(1, 10, 0)) * 1000;
-        } else if (planet_type == PlanetType.Desert) {
+        } else if (planetType == PlanetType.Desert) {
             return uint(node.d(2, 6, 2)) * 1000;
-        } else if (planet_type == PlanetType.Hostile) {
+        } else if (planetType == PlanetType.Hostile) {
             return uint(node.d(3, 6, 1)) * 1000;
-        } else if (planet_type == PlanetType.Marginal || planet_type == PlanetType.Earthlike) {
+        } else if (planetType == PlanetType.Marginal || planetType == PlanetType.Earthlike) {
             return uint(node.d(2, 6, 5)) * 1000;
         }
     }
@@ -328,13 +352,13 @@ contract MacroversePrototype {
     /**
      * Get the number of moons that a planet has, given its number and type.
      */
-    function getPlanetMoonCount(uint8 planet, PlanetType planet_type) constant returns (uint8) {
+    function getPlanetMoonCount(uint8 planet, PlanetType planetType) constant onlyAuthorized returns (uint8) {
         // Make a node to roll with.
         var node = root.derive("planet").derive(uint256(planet)).derive("moons");
         
-        if (planet_type == PlanetType.AsteroidBelt) {
+        if (planetType == PlanetType.AsteroidBelt) {
             return 0;
-        } else if (planet_type == PlanetType.Giant) {
+        } else if (planetType == PlanetType.Giant) {
             return uint8(node.d(2, 10, 0));
         } else {
             var roll = node.d(1, 10, 0);
