@@ -115,6 +115,13 @@ library RealMath {
         // x.y to (x+z).(y+w) fixed point, then divide by denom in z.w fixed point.
         return int128((int256(real_numerator) * REAL_ONE) / int256(real_denominator));
     }
+    
+    /**
+     * Create a real from a rational fraction.
+     */
+    function fraction(int88 numerator, int88 denominator) constant returns (int128) {
+        return div(toReal(numerator), toReal(denominator));
+    }
 }
 
 
