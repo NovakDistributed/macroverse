@@ -14,24 +14,34 @@ contract MRVToken is StandardToken, Ownable {
     string public constant name = "Macroverse Token";
     string public constant symbol = "MRV";
     uint public decimals;
-    address public multisig;
+    address beneficiary;
     
     // How many MRV can be sold in the crowdsale?
-    uint public maxSupply;
+    uint public maxCrowdsaleSupplyInWholeTokens;
+    // 1 ether = 5000 MRV
+    uint public constant WHOLE_TOKENS_PER_ETH = 5000;
     
-    bool crowdsaleStarted;
-    bool crowdsaleEnded;
+    bool public crowdsaleStarted;
+    bool public crowdsaleEnded;
 
     /**
-    * Deploy a new MRVToken contract, paying to the given multisig wallet.
+    * Deploy a new MRVToken contract, paying to the given address.
     */
-    function MRVToken(address _multisig) {
-        multisig = _multisig;
+    function MRVToken(address sendProceedsTo) {
+        beneficiary = sendProceedsTo;
         decimals = 18; // Start with 18 decimals, same as ETH
         crowdsaleStarted = false;
         crowdsaleEnded = false;
         // Default to a max supply of 100 million tokens available.
-        maxSupply = 100000000;
+        maxCrowdsaleSupplyInWholeTokens = 100000000;
+    }
+    
+    /**
+    * @dev Fallback function which receives ether and sends the appropriate number of tokens to the 
+    * msg.sender.
+    */
+    function () payable {
+        createTokens(msg.sender);
     }
     
     /**
@@ -58,6 +68,7 @@ contract MRVToken is StandardToken, Ownable {
         if (!crowdsaleStarted) throw;
         _;
     }
+    
     
     /**
      * Determine if the crowdsale is currently happening.
@@ -90,20 +101,11 @@ contract MRVToken is StandardToken, Ownable {
     /**
      * Before the crowdsale opens, the max token count can be configured.
      */
-    function setMaxSupply(uint new_max) onlyOwner onlyBeforeOpened {
-        maxSupply = new_max;
+    function setMaxSupply(uint newMaxInWholeTokens) onlyOwner onlyBeforeOpened {
+        maxCrowdsaleSupplyInWholeTokens = newMaxInWholeTokens;
     }
 
-    // 1 ether = 5000 MRV
-    uint public constant PRICE = 5000;
-
-    /**
-    * @dev Fallback function which receives ether and sends the appropriate number of tokens to the 
-    * msg.sender.
-    */
-    function () payable {
-        createTokens(msg.sender);
-    }
+    
 
     /**
     * @dev Creates tokens and send to the specified address.
@@ -114,11 +116,11 @@ contract MRVToken is StandardToken, Ownable {
             throw;
         }
 
-        uint tokens = msg.value.mul(getPrice()); // Exploits the fact that we have 18 decimals, like ETH.
+        uint tokens = msg.value.mul(WHOLE_TOKENS_PER_ETH); // Exploits the fact that we have 18 decimals, like ETH.
         
         var newTotalSupply = totalSupply.add(tokens);
         
-        if (newTotalSupply > maxSupply * 10 ** 18) {
+        if (newTotalSupply > maxCrowdsaleSupplyInWholeTokens * 10 ** 18) {
             // This would be too many tokens issued.
             // Don't mess around with partial order fills.
             throw;
@@ -128,16 +130,8 @@ contract MRVToken is StandardToken, Ownable {
 
         balances[recipient] = balances[recipient].add(tokens);
 
-        if (!multisig.send(msg.value)) {
+        if (!beneficiary.send(msg.value)) {
             throw;
         }
-    }
-
-    /**
-    * @dev replace this with any other price function
-    * @return The price per unit of token. 
-    */
-    function getPrice() constant returns (uint result) {
-        return PRICE;
     }
 }
