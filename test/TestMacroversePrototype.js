@@ -81,9 +81,10 @@ contract('MacroversePrototype', function(accounts) {
         let objType = (await instance.getObjectSpectralType.call(seed, objClass)).toNumber()
         // Then make the mass
         let objMass = fromReal(await instance.getObjectMass.call(seed, objClass, objType))
+        // And decide if it has planets
+        let hasPlanets = await instance.getObjectHasPlanets.call(seed, objClass, objType)
         
-        
-        console.log("Star " + star + " at " + x + "," + y + "," + z + " ly is a " + objectClasses[objClass] + " " + spectralTypes[objType] + " of " + objMass + " solar masses")
+        console.log("Star " + star + " at " + x + "," + y + "," + z + " ly is a " + objectClasses[objClass] + " " + spectralTypes[objType] + " of " + objMass + " solar masses" + (hasPlanets ? " with planets" : ""))
       }())
     }
     

@@ -237,6 +237,33 @@ contract MacroversePrototype is ControlledAccess {
         }
     }
     
+    /**
+     * Determine if the given star has any orbiting planets or not.
+     */
+    function getObjectHasPlanets(bytes32 seed, ObjectClass objectClass, SpectralType spectralType) constant onlyControlledAccess returns (bool) {
+        var node = RNG.RandNode(seed).derive("hasplanets");
+        var roll = node.getIntBetween(1, 1000);
+
+        if (objectClass == ObjectClass.MainSequence) {
+            if (spectralType == SpectralType.TypeO || spectralType == SpectralType.TypeB) {
+                return (roll <= 1);
+            } else if (spectralType == SpectralType.TypeA) {
+                return (roll <= 500);
+            } else if (spectralType == SpectralType.TypeF || spectralType == SpectralType.TypeG || spectralType == SpectralType.TypeK) {
+                return (roll <= 990);
+            } else if (spectralType == SpectralType.TypeM) {
+                return (roll <= 634);
+            }
+        } else if (objectClass == ObjectClass.Giant) {
+            return (roll <= 90);
+        } else if (objectClass == ObjectClass.Supergiant) {
+            return (roll <= 50);
+        } else {
+           // Black hole, neutron star, or white dwarf
+           return (roll <= 70);
+        }
+    }
+    
 
 }
  
