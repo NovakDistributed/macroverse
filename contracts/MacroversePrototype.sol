@@ -13,6 +13,17 @@ contract MacroversePrototype is ControlledAccess {
     using RNG for *;
     using RealMath for *;
 
+    // How big is a sector on a side in LY?
+    int16 constant SECTOR_SIZE = 25;
+    // How far out dowes the sector system extend?
+    int16 constant MAX_SECTOR = 10000;
+    // How big is the galaxy?
+    int16 constant DISK_RADIUS_IN_SECTORS = 6800;
+    // How thick is its disk?
+    int16 constant DISK_HALFHEIGHT_IN_SECTORS = 40;
+    // How big is the central sphere?
+    int16 constant CORE_RADIUS_IN_SECTORS = 1000;
+    
     // There are kinds of stars.
     // We can add more later; these are from http://www.mit.edu/afs.new/sipb/user/sekullbe/furble/planet.txt
     //                 0           1      2             3           4            5
@@ -22,36 +33,11 @@ contract MacroversePrototype is ControlledAccess {
     enum SpectralType { TypeO, TypeB, TypeA, TypeF, TypeG, TypeK, TypeM, NotApplicable }
     // Each type has subtypes 0-9, except O which only has 5-9
     
-    // Object Frequencies from  Ross Smith
-    // BlackHole: 0.000035
-    // NeutronStar: 0.000665
-    // WhiteDwarf: 0.0693
-    //  TypeB: 0.014 
-    //  TypeA: 0.014
-    //  TypeG: 0.014
-    //  TypeK: 0.0133
-    // MainSequence: 0.92
-    //  
-    // Giant: 0.0099
-    // Supergiant: 0.0001
-    
-    // Object Frequencies from http://www.kcvs.ca/martin/astro/au/unit4/85/chp8_5.htm
-    // Giants + Supergiants: ~1.1%
-    // Main sequence: ~99%
-    
-    // New Algorithm
-    // Galaxy is divided into 25-ly sectors
-    // Galaxy radius is 100k ly = 4k sectors
-    // Each sector has a density sampled from the galaxy function.
-    // Decide if star should be main sequence, giant, supergiant, or wd/bh
-    // Pick a spectral class and mass
-    // Apply mass-luminosity relation for appropriate mass range to get luminosity
-    
     // This root RandNode provides the seed for the universe.
     RNG.RandNode root;
     
     /**
-     * Deploy a new copy of the Macroverse prototype contract. Use the given seed to generate the star system.
+     * Deploy a new copy of the Macroverse prototype contract. Use the given seed to generate a galaxy, down to the star level.
      * Use the contract at the given address to regulate access.
      */
     function MacroversePrototype(bytes32 baseSeed, address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) {
@@ -62,33 +48,34 @@ contract MacroversePrototype is ControlledAccess {
      * Get the density (between 0 and 1 as a fixed-point real88x40) of stars in the given sector. Sector 0,0,0 is centered on the galactic origin.
      * +Y is upwards.
      */
-    function getGalaxyDensity(int sectorX, int sectorY, int sectorZ) constant onlyControlledAccess returns (int128 realDensity) {
+    function getGalaxyDensity(int16 sectorX, int16 sectorY, int16 sectorZ) constant onlyControlledAccess returns (int128 realDensity) {
         // For the prototype, we have a central sphere and a surrounding disk.
         
         // Enforce absolute bounds.
-        if (sectorX > 5000) return 0;
-        if (sectorY > 5000) return 0;
-        if (sectorZ > 5000) return 0;
-        if (sectorX < -5000) return 0;
-        if (sectorY < -5000) return 0;
-        if (sectorZ < -5000) return 0;
+        if (sectorX > MAX_SECTOR) return 0;
+        if (sectorY > MAX_SECTOR) return 0;
+        if (sectorZ > MAX_SECTOR) return 0;
+        if (sectorX < -MAX_SECTOR) return 0;
+        if (sectorY < -MAX_SECTOR) return 0;
+        if (sectorZ < -MAX_SECTOR) return 0;
         
-        if (sectorX * sectorX + sectorY * sectorY + sectorZ * sectorZ < 500 ** 2) {
+        if (sectorX * sectorX + sectorY * sectorY + sectorZ * sectorZ < CORE_RADIUS_IN_SECTORS * CORE_RADIUS_IN_SECTORS) {
             // Central sphere
             return RealMath.fraction(9, 10);
-        } else if (sectorX * sectorX + sectorZ * sectorZ < 4000 ** 2 && sectorY < 200 && sectorY > -200) {
+        } else if (sectorX * sectorX + sectorZ * sectorZ < DISK_RADIUS_IN_SECTORS * DISK_RADIUS_IN_SECTORS && sectorY < DISK_HALFHEIGHT_IN_SECTORS && sectorY > -DISK_HALFHEIGHT_IN_SECTORS) {
             // Disk
             return RealMath.fraction(1, 2);
         } else {
             // General background object rate
-            return RealMath.fraction(1, 100);
+            // Set so that some background sectors do indeed have an object in them.
+            return RealMath.fraction(1, 60);
         }
     }
     
     /**
      * Get the number of objects in the sector at the given coordinates.
      */
-    function getSectorObjectCount(int sectorX, int sectorY, int sectorZ) constant onlyControlledAccess returns (uint) {
+    function getSectorObjectCount(int16 sectorX, int16 sectorY, int16 sectorZ) constant onlyControlledAccess returns (uint16) {
         // Decide on a base item count
         var sectorNode = root.derive(sectorX).derive(sectorY).derive(sectorZ);
         var maxObjects = sectorNode.derive("count").d(3, 20, 0);
@@ -96,14 +83,14 @@ contract MacroversePrototype is ControlledAccess {
         // Multiply by the density function
         var presentObjects = RealMath.toReal(maxObjects).mul(getGalaxyDensity(sectorX, sectorY, sectorZ));
         
-        return uint(RealMath.fromReal(presentObjects));
+        return uint16(RealMath.fromReal(RealMath.round(presentObjects)));
     }
     
     /**
      * Get the seed for an object in a sector.
      */
-    function getSectorObjectSeed(int sectorX, int sectorY, int sectorZ, uint object) constant onlyControlledAccess returns (bytes32) {
-        return root.derive(sectorX).derive(sectorY).derive(sectorZ).derive(object)._hash;
+    function getSectorObjectSeed(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 object) constant onlyControlledAccess returns (bytes32) {
+        return root.derive(sectorX).derive(sectorY).derive(sectorZ).derive(uint(object))._hash;
     }
     
     /**
