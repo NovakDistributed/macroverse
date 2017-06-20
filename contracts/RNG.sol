@@ -83,6 +83,14 @@ library RNG {
     }
     
     /**
+     * Get a real between realLow (inclusive) and realHigh (exclusive).
+     * Only actually has the bits of entropy from getReal, so some values will not occur.
+     */
+    function getRealBetween(RandNode self, int128 realLow, int128 realHigh) internal constant returns (int128) {
+        return getReal(self).mul(realHigh - realLow) + realLow;
+    }
+    
+    /**
      * Roll a number of die of the given size, add/subtract a bonus, and return the result.
      * Max size is 100.
      */
