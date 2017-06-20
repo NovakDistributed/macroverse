@@ -189,6 +189,18 @@ contract MacroversePrototype is ControlledAccess {
     }
     
     /**
+     * Get the position of a star within its sector, as reals from 0 to 25.
+     * Note that stars may end up implausibly close together. Such is life in the Macroverse.
+     */
+    function getObjectPosition(bytes32 seed) constant onlyControlledAccess returns (int128 realX, int128 realY, int128 realZ) {
+        var node = RNG.RandNode(seed).derive("position");
+        
+        realX = node.derive("x").getRealBetween(RealMath.toReal(0), RealMath.toReal(25));
+        realY = node.derive("y").getRealBetween(RealMath.toReal(0), RealMath.toReal(25));
+        realZ = node.derive("z").getRealBetween(RealMath.toReal(0), RealMath.toReal(25));
+    }
+    
+    /**
      * Get the mass of a star, in solar masses as a real, given its seed and class and spectral type.
      */
     function getObjectMass(bytes32 seed, ObjectClass objectClass, SpectralType spectralType) constant onlyControlledAccess returns (int128) {
