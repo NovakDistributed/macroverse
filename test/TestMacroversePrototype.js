@@ -52,39 +52,47 @@ contract('MacroversePrototype', function(accounts) {
     assert.isBelow(objMass, 100, "A star is <100 solar masses")
     
   })
-  /*
+  
   it("should let us scan sector 0", async function() {
     let instance = await MacroversePrototype.deployed()
     
     let starCount = (await instance.getSectorObjectCount.call(0, 0, 0)).toNumber()
     console.log("Stars in origin sector: ", starCount)
     
+    let starPromises = []
+    
     for (let star = 0; star < starCount; star++) {
-      // Generate each star
-      // Make a seed
-      let seed = await instance.getSectorObjectSeed.call(0, 0, 0, star)
       
-      // Decide on a position
-      let [ x, y, z] = await instance.getObjectPosition.call(seed)
-      x = fromReal(x)
-      y = fromReal(y)
-      z = fromReal(z)
+      starPromises.push(async function() {
       
-      // Then get the class
-      let objClass = (await instance.getObjectClass.call(seed)).toNumber()
-      // Then make the spectral type
-      let objType = (await instance.getObjectSpectralType.call(seed, objClass)).toNumber()
-      // Then make the mass
-      let objMass = fromReal(await instance.getObjectMass.call(seed, objClass, objType))
-      
-      
-      console.log("Star " + star + " at " + x + "," + y + "," + z + " ly is a " + objectClasses[objClass] + " " + spectralTypes[objType] + " of " + objMass + " solar masses")
+        // Generate each star
+        // Make a seed
+        let seed = await instance.getSectorObjectSeed.call(0, 0, 0, star)
+        
+        // Decide on a position
+        let [ x, y, z] = await instance.getObjectPosition.call(seed)
+        x = fromReal(x)
+        y = fromReal(y)
+        z = fromReal(z)
+        
+        // Then get the class
+        let objClass = (await instance.getObjectClass.call(seed)).toNumber()
+        // Then make the spectral type
+        let objType = (await instance.getObjectSpectralType.call(seed, objClass)).toNumber()
+        // Then make the mass
+        let objMass = fromReal(await instance.getObjectMass.call(seed, objClass, objType))
+        
+        
+        console.log("Star " + star + " at " + x + "," + y + "," + z + " ly is a " + objectClasses[objClass] + " " + spectralTypes[objType] + " of " + objMass + " solar masses")
+      }())
     }
+    
+    await Promise.all(starPromises)
     
     assert.ok(true, "Report can be printed without error")
     
   })
-  */
+  
   
   
 })
