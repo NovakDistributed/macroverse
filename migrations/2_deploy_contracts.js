@@ -23,7 +23,7 @@ module.exports = async function(deployer, network, accounts) {
   await deployer.deploy(MRVToken, accounts[0]).then(function() {
   
     // Deploy a minimum balance access control strategy
-    return deployer.deploy(MinimumBalanceAccessControl, MRVToken.address, web3.toWei(5000, "ether")).then(async function() {
+    return deployer.deploy(MinimumBalanceAccessControl, MRVToken.address, web3.toWei(100, "ether")).then(async function() {
       // Deploy the actual MG prototypes and point them initially at that access control contract.
       await deployer.deploy(MacroversePrototype, "prototypeseed12", MinimumBalanceAccessControl.address)
       await deployer.deploy(SingleStarPrototype, "prototypeseed12", MinimumBalanceAccessControl.address)

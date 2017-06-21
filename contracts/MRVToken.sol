@@ -51,7 +51,7 @@ contract MRVToken is StandardToken, Ownable {
     // How many of the low base-10 digits are to the right of the decimal point?
     // Note that this is not constant! After the crowdsale, the contract owner can
     // adjust the decimal places, allowing for 10-to-1 splits and merges.
-    uint public decimals;
+    uint8 public decimals;
     
     // Crowdsale Parameters
     
@@ -115,7 +115,7 @@ contract MRVToken is StandardToken, Ownable {
     * tokens remaining to be bought, your transaction will be rolled back and you will
     * no tokens and waste your gas.
     */
-    function () payable onlyDuringCrowdsale onlyBeforeCloseTimeout {
+    function() payable onlyDuringCrowdsale onlyBeforeCloseTimeout {
         createTokens(msg.sender);
     }
     
@@ -206,7 +206,7 @@ contract MRVToken is StandardToken, Ownable {
     /**
      * Allow anyone to start the crowdsale if the time-until-start timer was set and has expired.
      */
-    startCrowdsaleByTimeout() onlyBeforeOpened onlyAfterOpenTimeout {
+    function startCrowdsaleByTimeout() onlyBeforeOpened onlyAfterOpenTimeout {
         crowdsaleStarted = true;
     }    
     
@@ -216,14 +216,14 @@ contract MRVToken is StandardToken, Ownable {
      * Further calls will re-set the timer to count from the time the transaction is processed.
      * The timer can be re-set after it has tripped, unless someone has already opened the crowdsale.
      */
-    setCrowdsaleOpenTimerFor(uint minutesFromNow) onlyOwner onlyBeforeOpened {
+    function setCrowdsaleOpenTimerFor(uint minutesFromNow) onlyOwner onlyBeforeOpened {
         anyoneCanOpenCrowdsaleAfter = now + minutesFromNow * 1 minutes;
     }
     
     /**
      * Let the owner stop the crowdsale open timer, as long as the crowdsale has not yet opened.
      */
-    clearCrowdsaleOpenTimer() onlyOwner onlyBeforeOpened {
+    function clearCrowdsaleOpenTimer() onlyOwner onlyBeforeOpened {
         anyoneCanOpenCrowdsaleAfter = 0;
     }
     
@@ -233,14 +233,14 @@ contract MRVToken is StandardToken, Ownable {
      * Before the timer expires, it can be set to a different time, but after the timer expires, it
      * cannot be changed.
      */
-    setCrowdsaleCloseTimerFor(uint minutesFromNow) onlyOwner onlyBeforeCloseTimeout {
+    function setCrowdsaleCloseTimerFor(uint minutesFromNow) onlyOwner onlyBeforeCloseTimeout {
         acceptNoContributionsAfter = now + minutesFromNow * 1 minutes;
     }
     
     /**
      * Let the owner stop the crowdsale close timer, as long as it has not yet expired.
      */
-    clearCrowdsaleOpenTimer() onlyOwner onlyBeforeCloseTimeout {
+    function clearCrowdsaleCloseTimer() onlyOwner onlyBeforeCloseTimeout {
         acceptNoContributionsAfter = 0;
     }
     
@@ -252,7 +252,7 @@ contract MRVToken is StandardToken, Ownable {
      * Create tokens for the given address, in response to a payment.
      * Cannot be called by outside callers; use the fallback function, which will create tokens for whoever pays it.
      */
-    function createTokens(address recipient) internal payable onlyDuringCrowdsale onlyBeforeCloseTimeout {
+    function createTokens(address recipient) internal onlyDuringCrowdsale onlyBeforeCloseTimeout {
         if (msg.value == 0) {
             throw;
         }
@@ -261,7 +261,7 @@ contract MRVToken is StandardToken, Ownable {
         
         var newTotalSupply = totalSupply.add(tokens);
         
-        if (newTotalSupply > maxCrowdsaleSupplyInWholeTokens * 10 ** 18) {
+        if (newTotalSupply > (wholeTokensReserved + maxCrowdsaleSupplyInWholeTokens) * 10 ** 18) {
             // This would be too many tokens issued.
             // Don't mess around with partial order fills.
             throw;
@@ -289,7 +289,7 @@ contract MRVToken is StandardToken, Ownable {
     /**
      * Allow anyone to end the crowdsale if the time-until-end timer was set and has expired.
      */
-    endCrowdsaleByTimeout() onlyDuringCrowdsale onlyAfterCloseTimeout {
+    function endCrowdsaleByTimeout() onlyDuringCrowdsale onlyAfterCloseTimeout {
         crowdsaleEnded = true;
     }    
     
@@ -304,7 +304,7 @@ contract MRVToken is StandardToken, Ownable {
      * However, it relies on the contract owner taking the time to update the decimal place value.
      * Note that this changes the decimals IMMEDIATELY with NO NOTICE to users.
      */
-    function setDecimals(uint newDecimals) onlyOwner onlyAfterClosed {
+    function setDecimals(uint8 newDecimals) onlyOwner onlyAfterClosed {
         decimals = newDecimals;
     }
 

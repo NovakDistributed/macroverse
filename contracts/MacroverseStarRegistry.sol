@@ -1,7 +1,8 @@
 pragma solidity ^0.4.11;
 
-import "./zeppelin/token/ERC20.sol";
+import "./MRVToken.sol";
 import "./zeppelin/ownership/Ownable.sol";
+import "./zeppelin/ownership/HasNoEther.sol";
 
 /**
  * The Macroverse Star Registry keeps track of who currently owns virtual real estate in the
@@ -37,16 +38,16 @@ import "./zeppelin/ownership/Ownable.sol";
 contract MacroverseStarRegistry is Ownable {
     
     // This is the token in which star ownership deposits have to be paid.
-    public ERC20 tokenAddress;
+    MRVToken public tokenAddress;
     // This is the minimum ownership deposit in atomic token units.
-    public uint minDepositInAtomicUnits;
+    uint public minDepositInAtomicUnits;
     
     // This maps from star or other body seed to the address that owns it.
     // This can be queried without meeting the access control requirements.
-    public mapping(bytes32 => address) ownerOf;
+    mapping(bytes32 => address) public ownerOf;
     
     // This holds what deposit was paid for each owned item.
-    public mapping(bytes23 => uint) depositFor;
+    mapping(bytes32 => uint) public depositFor;
     
     // This event is fired when ownership of a star system. Giving up ownership transfers to the 0 address.
     event StarOwnershipChanged(bytes32 indexed starSeed, address indexed newOwner);
@@ -58,9 +59,9 @@ contract MacroverseStarRegistry is Ownable {
      */
     function MacroverseRegistry(address depositTokenAddress, uint initialMinDepositInAtomicUnits) {
         // We can only use one token for the lifetime of the contract.
-        tokenAddress = ERC20(depositTokenAddress);
+        tokenAddress = MRVToken(depositTokenAddress);
         // But the minimum deposit for new claims can change
-        minDepositInAtomicUnits = initialMinDepositInAtomicUnits
+        minDepositInAtomicUnits = initialMinDepositInAtomicUnits;
     }
     
     /**
@@ -95,9 +96,8 @@ contract MacroverseStarRegistry is Ownable {
         depositFor[starSeed] = depositInAtomicUnits;
         
         // After state changes, try to take the money
-        bool gotDeposit = tokenAddress.transferFrom(msg.sender, this, depositInAtomicUnits);
-        // If we can't get it (because they don't have it or didn't authorize us), fail and roll back.
-        if (!gotDeposit) throw;
+        tokenAddress.transferFrom(msg.sender, this, depositInAtomicUnits);
+        // The MRV token will throw if transferFrom fails.
     }
     
     /**
@@ -131,18 +131,19 @@ contract MacroverseStarRegistry is Ownable {
         // You can't give up things you don't own.
         if (ownerOf[starSeed] != msg.sender) throw;
         
+        // How much should we return?
+        var depositSize = depositFor[starSeed];
+        
         // Clear ownership
         ownerOf[starSeed] = 0;
-        
-        // Announce it
+        // Clear the deposit value
+        depositFor[starSeed] = 0;
+
+        // Announce lack of ownership of the thing
         StarOwnershipChanged(starSeed, 0);
         
         // Pay back deposit
-        bool returnedDeposit = tokenAddress.transfer(this, depositFor[starSeed]);
-        // If it fails, something has gone terribly wrong.
-        if (!returnedDeposit) throw;
-        
-        // Clear the deposit value.
-        depositFor[starSeed] = 0;
+        tokenAddress.transfer(this, depositSize);
+        // We know MRVToken throws on a failed transfer
     }
 }
