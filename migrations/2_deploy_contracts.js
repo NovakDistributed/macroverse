@@ -1,6 +1,7 @@
 var RealMath = artifacts.require("./RealMath.sol");
 var RNG = artifacts.require("./RNG.sol");
 var MacroversePrototype = artifacts.require("./MacroversePrototype.sol")
+var MacroverseStarRegistry = artifacts.require("./MacroverseStarRegistry.sol")
 var SingleStarPrototype = artifacts.require("./SingleStarPrototype.sol")
 
 var MRVToken = artifacts.require("./MRVToken.sol")

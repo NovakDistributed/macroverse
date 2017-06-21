@@ -8,6 +8,17 @@ import "./ControlledAccess.sol";
 
 /**
  * Represents a prorotype Macroverse Generator for a galaxy.
+ *
+ * Permission to call methods on this contract is regulated by a configurable
+ * AccessControl contract. One such set of terms might be to require that the
+ * account initiating a transaction have a certain minimum MRV token balance.
+ *
+ * The owner of this contract reserves the right to supersede it with a new
+ * version, and to modify the terms for accessing this contract, at any time,
+ * for any reason, and without notice. This includes the right to indefinitely
+ * or permanently suspend or terminate access to this contract for any person,
+ * account, or other contract, or for all persons, accounts, or other
+ * contracts. The owner also reserves the right to not do any of the above.
  */
 contract MacroversePrototype is ControlledAccess {
     using RNG for *;
