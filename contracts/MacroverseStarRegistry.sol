@@ -2,7 +2,6 @@ pragma solidity ^0.4.11;
 
 import "./MRVToken.sol";
 import "./zeppelin/ownership/Ownable.sol";
-import "./zeppelin/ownership/HasNoEther.sol";
 
 /**
  * The Macroverse Star Registry keeps track of who currently owns virtual real estate in the
@@ -57,7 +56,7 @@ contract MacroverseStarRegistry is Ownable {
      * The given token will be used to pay deposits, and the given minimum
      * deposit size will be required.
      */
-    function MacroverseRegistry(address depositTokenAddress, uint initialMinDepositInAtomicUnits) {
+    function MacroverseStarRegistry(address depositTokenAddress, uint initialMinDepositInAtomicUnits) {
         // We can only use one token for the lifetime of the contract.
         tokenAddress = MRVToken(depositTokenAddress);
         // But the minimum deposit for new claims can change
@@ -80,7 +79,8 @@ contract MacroverseStarRegistry is Ownable {
      * current minimum deposit.
      *
      * YOU and ONLY YOU are responsible for remembering the seeds of stars you
-     * own, so you can get your deposits back when you are done with them.
+     * own, so you can get your deposits back when you are done with them. You
+     * can't easily get a listing from this contract.
      */
     function claimOwnership(bytes32 starSeed, uint depositInAtomicUnits) {
         // You can't claim things that are already owned.
@@ -133,6 +133,8 @@ contract MacroverseStarRegistry is Ownable {
         
         // How much should we return?
         var depositSize = depositFor[starSeed];
+        // And to whom?
+        var oldOwner = ownerOf[starSeed];
         
         // Clear ownership
         ownerOf[starSeed] = 0;
@@ -143,7 +145,7 @@ contract MacroverseStarRegistry is Ownable {
         StarOwnershipChanged(starSeed, 0);
         
         // Pay back deposit
-        tokenAddress.transfer(this, depositSize);
+        tokenAddress.transfer(oldOwner, depositSize);
         // We know MRVToken throws on a failed transfer
     }
 }

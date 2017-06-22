@@ -19,9 +19,9 @@ contract('MacroversePrototype', function(accounts) {
     let instance = await MacroversePrototype.deployed()
     
     await instance.getGalaxyDensity.call(0, 0, 0).then(function () {
-      assert.ok(false, "successfully made unauthorized query")
+      assert.ok(false, "Successfully made unauthorized query")
     }).catch(async function () {
-      assert.ok(true, "unauthorized query was rejected")
+      assert.ok(true, "Unauthorized query was rejected")
     })
   })
   
@@ -38,8 +38,8 @@ contract('MacroversePrototype', function(accounts) {
     let instance = await MacroversePrototype.deployed()
     var density = fromReal(await instance.getGalaxyDensity.call(0, 0, 0))
     
-    assert.isAbove(density, 0.899999, "density at the center of the galaxy is not too small")
-    assert.isBelow(density, 0.900001, "density at the center of the galaxy is not too big")
+    assert.isAbove(density, 0.899999, "Density at the center of the galaxy is not too small")
+    assert.isBelow(density, 0.900001, "Density at the center of the galaxy is not too big")
   })
   
   it("should produce stars of reasonable mass", async function() {
