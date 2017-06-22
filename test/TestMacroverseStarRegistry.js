@@ -107,6 +107,22 @@ contract('MacroverseStarRegistry', function(accounts) {
     
   })
   
+  it("should allow misplaced tokens to not be stuck", async function() {
+    let instance = await MacroverseStarRegistry.deployed()
+    let token = await MRVToken.deployed()
+    
+    assert.equal((await token.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4001, "ether"), "We start with the right MRV token balance")
+    
+    await token.transfer(instance.address, web3.toWei(5, "ether"))
+    
+    assert.equal((await token.balanceOf.call(accounts[0])).toNumber(), web3.toWei(3996, "ether"), "We can send extra to the contract")
+    
+    await instance.reclaimToken(token.address)
+    
+    assert.equal((await token.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4001, "ether"), "We get exactly the excess MRV back")
+    
+  })
+  
   it("should not allow abdication of ownership on other people's stuff", async function() {
     let instance = await MacroverseStarRegistry.deployed()
     

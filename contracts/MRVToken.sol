@@ -3,6 +3,8 @@ pragma solidity ^0.4.11;
 
 import "./zeppelin/token/StandardToken.sol";
 import "./zeppelin/ownership/Ownable.sol";
+import "./zeppelin/ownership/HasNoTokens.sol";
+import "./zeppelin/ownership/HasNoContracts.sol";
 
 
 /**
@@ -38,7 +40,7 @@ import "./zeppelin/ownership/Ownable.sol";
  *   open or close timer, and generally refrain from doing things that the contract would otherwise
  *   authorize them to do.
  */
-contract MRVToken is StandardToken, Ownable {
+contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
 
     // Token Parameters
 
@@ -306,6 +308,15 @@ contract MRVToken is StandardToken, Ownable {
      */
     function setDecimals(uint8 newDecimals) onlyOwner onlyAfterClosed {
         decimals = newDecimals;
+    }
+    
+    /**
+     * If Ether somehow manages to get into this contract, provide a way to get it out again.
+     * During normal crowdsale operation, ETH is immediately forwarded to the beneficiary.
+     */
+    function reclaimEther() external onlyOwner {
+        // Send the ETH. Make sure it worked.
+        assert(owner.send(this.balance));
     }
 
 }

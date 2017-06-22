@@ -2,6 +2,10 @@ pragma solidity ^0.4.11;
 
 import "./MRVToken.sol";
 import "./zeppelin/ownership/Ownable.sol";
+import "./zeppelin/ownership/HasNoEther.sol";
+import "./zeppelin/ownership/HasNoContracts.sol";
+import "./zeppelin/token/ERC20Basic.sol";
+import "./zeppelin/SafeMath.sol";
 
 /**
  * The Macroverse Star Registry keeps track of who currently owns virtual real estate in the
@@ -33,8 +37,13 @@ import "./zeppelin/ownership/Ownable.sol";
  * The deployer of this contract reserves the right to supersede it with a new version at any time,
  * for any reason, and without notice. The deployer of this contract reserves the right to leave it
  * in place as is indefinitely.
+ *
+ * The deployer of this contract reserves the right to claim and keep any tokens or ETH or contracts
+ * sent to this contract, in excess of the MRV balance that this contract thinks it is supposed to
+ * have.
  */
-contract MacroverseStarRegistry is Ownable {
+contract MacroverseStarRegistry is Ownable, HasNoEther, HasNoContracts {
+    using SafeMath for *;
     
     // This is the token in which star ownership deposits have to be paid.
     MRVToken public tokenAddress;
@@ -47,6 +56,10 @@ contract MacroverseStarRegistry is Ownable {
     
     // This holds what deposit was paid for each owned item.
     mapping(bytes32 => uint) public depositFor;
+    
+    // This tracks how much MRV the contract is supposed to have.
+    // If it ends up with extra (because someone incorrectly used transfer() instead of approve()), the owner can remove it.
+    uint public expectedMrvBalance;
     
     // This event is fired when ownership of a star system. Giving up ownership transfers to the 0 address.
     event StarOwnershipChanged(bytes32 indexed starSeed, address indexed newOwner);
@@ -67,7 +80,7 @@ contract MacroverseStarRegistry is Ownable {
      * Allow the owner to set the minimum deposit amount for granting new
      * ownership claims.
      */
-    function setMinimumDeposit(uint newMinimumDepositInAtomicUnits) onlyOwner {
+    function setMinimumDeposit(uint newMinimumDepositInAtomicUnits) external onlyOwner {
         minDepositInAtomicUnits = newMinimumDepositInAtomicUnits;
     }
     
@@ -82,7 +95,7 @@ contract MacroverseStarRegistry is Ownable {
      * own, so you can get your deposits back when you are done with them. You
      * can't easily get a listing from this contract.
      */
-    function claimOwnership(bytes32 starSeed, uint depositInAtomicUnits) {
+    function claimOwnership(bytes32 starSeed, uint depositInAtomicUnits) external {
         // You can't claim things that are already owned.
         if (ownerOf[starSeed] != 0) throw;
         
@@ -94,6 +107,7 @@ contract MacroverseStarRegistry is Ownable {
         // Go ahead and do the state changes
         ownerOf[starSeed] = msg.sender;
         depositFor[starSeed] = depositInAtomicUnits;
+        expectedMrvBalance = expectedMrvBalance.add(depositInAtomicUnits);
         
         // After state changes, try to take the money
         tokenAddress.transferFrom(msg.sender, this, depositInAtomicUnits);
@@ -106,12 +120,16 @@ contract MacroverseStarRegistry is Ownable {
      * your owned stars, or to own stars. But you might not be able to
      * query anything about them.
      */
-    function transferOwnership(bytes32 starSeed, address newOwner) {
+    function transferOwnership(bytes32 starSeed, address newOwner) external {
         // You can't send things you don't own.
         if (ownerOf[starSeed] != msg.sender) throw;
         
         // Don't try to burn star ownership; use abdicateOwnership instead.
         if (newOwner == 0) throw;
+        // Don't send stars to the contract either
+        if (newOwner == address(this)) throw;
+        // Or to the token
+        if (newOwner == address(tokenAddress)) throw;
         
         // Transfer owenership
         ownerOf[starSeed] = newOwner;
@@ -127,7 +145,7 @@ contract MacroverseStarRegistry is Ownable {
      * The MRV deposit originally paid to acquire ownership of the star will
      * be paid out to the sender of the message.
      */
-    function abdicateOwnership(bytes32 starSeed) {
+    function abdicateOwnership(bytes32 starSeed) external {
         // You can't give up things you don't own.
         if (ownerOf[starSeed] != msg.sender) throw;
         
@@ -140,6 +158,9 @@ contract MacroverseStarRegistry is Ownable {
         ownerOf[starSeed] = 0;
         // Clear the deposit value
         depositFor[starSeed] = 0;
+        
+        // Update expected balance
+        expectedMrvBalance = expectedMrvBalance.sub(depositSize);
 
         // Announce lack of ownership of the thing
         StarOwnershipChanged(starSeed, 0);
@@ -147,5 +168,24 @@ contract MacroverseStarRegistry is Ownable {
         // Pay back deposit
         tokenAddress.transfer(oldOwner, depositSize);
         // We know MRVToken throws on a failed transfer
+    }
+    
+    /**
+     * Allow the owner to collect any non-MRV tokens, or any excess MRV, that ends up in this contract.
+     */
+    function reclaimToken(address otherToken) external onlyOwner {
+        ERC20Basic other = ERC20Basic(otherToken);
+        
+        // We will send our whole balance
+        uint excessBalance = other.balanceOf(this);
+        
+        // Unless we're talking about the MRV token
+        if (address(other) == address(tokenAddress)) {
+            // In which case we send only any balance that we shouldn't have
+            excessBalance = excessBalance.sub(expectedMrvBalance);
+        }
+        
+        // Make the transfer. If it doesn't work, we can try again later.
+        other.transfer(owner, excessBalance);
     }
 }
