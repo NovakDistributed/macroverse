@@ -16,7 +16,9 @@ import "./zeppelin/ownership/HasNoContracts.sol";
  * 
  * * MRV tokens will be sold at a rate of 5,000 per ETH.
  *
- * * Unless adjusted later by the owner, up to 100 million tokens will be available.
+ * * All MRV token sales are final. No refunds can be issued by the contract.
+ *
+ * * Unless adjusted later by the crowdsale operator, up to 100 million tokens will be available.
  *
  * * An additional 5,000 tokens are reserved for the crowdsale beneficiary. 
  *
@@ -34,11 +36,16 @@ import "./zeppelin/ownership/HasNoContracts.sol";
  * * The crowdsale cannot be reopened, and no tokens can be created, after the crowdsale closes.
  *
  * * The crowdsale operator reserves the right to adjust the decimal places of the MRV token at
- *   any time after the crowdsale closes, for any reason, and without notice.
+ *   any time after the crowdsale closes, for any reason, and without notice. MRV tokens are
+ *   initially divisible to 18 decimal places.
  *
  * * The crowdsale operator reserves the right to not open or close the crowdsale, not set the
  *   open or close timer, and generally refrain from doing things that the contract would otherwise
  *   authorize them to do.
+ *
+ * * The crowdsale operator reserves the right to claim and keep any ETH or tokens that end up in
+ *   the contract's account. During normal crowdsale operation, ETH is not stored in the contract's
+ *   account, and is instead sent directly to the beneficiary.
  */
 contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
 
@@ -182,7 +189,7 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     /**
      * Determine if the crowdsale is currently happening.
      */
-    function isCrowdsaleActive() returns (bool) {
+    function isCrowdsaleActive() constant returns (bool) {
         return (crowdsaleStarted && !crowdsaleEnded);
     }
     
