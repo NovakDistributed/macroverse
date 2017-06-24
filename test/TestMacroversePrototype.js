@@ -61,6 +61,8 @@ contract('MacroversePrototype', function(accounts) {
     
     let starPromises = []
     
+    let foundPlanets = false;
+    
     for (let star = 0; star < starCount; star++) {
       
       starPromises.push(async function() {
@@ -85,12 +87,18 @@ contract('MacroversePrototype', function(accounts) {
         let hasPlanets = await instance.getObjectHasPlanets.call(seed, objClass, objType)
         
         console.log("Star " + star + " at " + x + "," + y + "," + z + " ly is a " + objectClasses[objClass] + " " + spectralTypes[objType] + " of " + objMass + " solar masses" + (hasPlanets ? " with planets" : ""))
+        
+        if (hasPlanets) {
+          foundPlanets = true;
+        }
+        
       }())
     }
     
     await Promise.all(starPromises)
     
     assert.ok(true, "Report can be printed without error")
+    assert.equal(foundPlanets, true, "Planets are found")
     
   })
   
