@@ -171,6 +171,90 @@ contract('MRVToken', function(accounts) {
     // See if we got them
     assert.isAtLeast((await instance.balanceOf.call(accounts[1])).toNumber(), web3.toWei(5000, "ether"), "Tokens can be bought")
   })
+  
+  it("should not let random people set the stop timer", async function() {
+    let instance = await MRVToken.deployed()
+    
+    await instance.setCrowdsaleCloseTimerFor(30, {from: accounts[1]}).then(function() {
+      assert.ok(false, "Set timer")
+    }).catch(function() {
+      assert.ok(true, "Did not set timer")
+    })
+    
+    assert.equal(await instance.closeTimer.call(), 0, "Close timer is not set")
+  })
+  
+  it("should let the owner set the stop timer", async function() {
+    let instance = await MRVToken.deployed()
+    
+    await instance.setCrowdsaleCloseTimerFor(30)
+    
+    assert.isAtLeast(await instance.closeTimer.call(), 1, "Close timer is set")
+  })
+  
+  it("should not let random people unset the stop timer", async function() {
+    let instance = await MRVToken.deployed()
+    
+    await instance.clearCrowdsaleCloseTimer({from: accounts[1]}).then(function() {
+      assert.ok(false, "Unset timer")
+    }).catch(function() {
+      assert.ok(true, "Did not unset timer")
+    })
+    
+    assert.isAtLeast(await instance.closeTimer.call(), 1, "Close timer is set")
+  })
+  
+  it("should let the owner unset the stop timer before it ends", async function() {
+    let instance = await MRVToken.deployed()
+    
+    // Go ahead some time
+    await advanceTime(29)
+    
+    await instance.clearCrowdsaleCloseTimer()
+    
+    assert.equal(await instance.closeTimer.call(), 0, "Close timer is not set")
+  })
+  
+  it("should say the crowdsale is still open", async function() {
+    let instance = await MRVToken.deployed()
+    assert.equal((await instance.isCrowdsaleActive.call()), true, "The crowdsale is still open")
+  })
+  
+  it("should let the owner start the stop timer again", async function() {
+    let instance = await MRVToken.deployed()
+    
+    await instance.setCrowdsaleCloseTimerFor(50)
+    
+    assert.isAtLeast(await instance.closeTimer.call(), 1, "Close timer is set")
+  })
+  
+  it("should reject contributions after the stop timer elapses", async function() {
+    let instance = await MRVToken.deployed()
+    
+    // Go ahead some time
+    await advanceTime(51)
+    
+    // Fail to get tokens
+    await instance.sendTransaction({from: accounts[2], value: web3.toWei(1, "ether")}).then(function () {
+      assert.ok(false, "Successfully bought after close")
+    }).catch(async function () {
+      assert.equal((await instance.balanceOf.call(accounts[2])).toNumber(), 0, "Failed to buy after close")
+    })
+    
+  })
+  
+  it("should say the crowdsale is over after the stop timer elapses", async function() {
+    let instance = await MRVToken.deployed()
+    assert.equal((await instance.isCrowdsaleActive.call()), false, "The crowdsale is still not started")
+  })
+  
+  it("should let anyone call the timer check method", async function() {
+    let instance = await MRVToken.deployed()
+
+    await instance.checkCloseTimer({from: accounts[2]})
+    
+    // We can't check the internal closed bool.
+  })
 })
 
 // New test case, for new contract
@@ -231,7 +315,7 @@ contract('MRVToken', function(accounts) {
     
     // Fail to get any more
     await instance.sendTransaction({from: account, value: web3.toWei(2/5000, "ether")}).then(function () {
-      assert.ok(false, "successfully bought excess tokens")
+      assert.ok(false, "Successfully bought excess tokens")
     }).catch(async function () {
       assert.equal((await instance.balanceOf.call(account)).toNumber() - initialBalance, web3.toWei(CROWDSALE_MAX_TOKENS, "ether"), "No more tokens than the max can be issued")
     })
