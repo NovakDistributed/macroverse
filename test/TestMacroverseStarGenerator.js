@@ -1,4 +1,4 @@
-let MacroversePrototype = artifacts.require("MacroversePrototype");
+let MacroverseStarGenerator = artifacts.require("MacroverseStarGenerator");
 let UnrestrictedAccessControl = artifacts.require("UnrestrictedAccessControl");
 
 // Define a bit of JS for interpreting contract results.
@@ -14,9 +14,9 @@ function fromReal(real) {
 let objectClasses = ['Supergiant', 'Giant', 'MainSequence', 'WhiteDwarf', 'NeutronStar', 'BlackHole']
 let spectralTypes = ['TypeO', 'TypeB', 'TypeA', 'TypeF', 'TypeG', 'TypeK', 'TypeM', 'NotApplicable']
 
-contract('MacroversePrototype', function(accounts) {
+contract('MacroverseStarGenerator', function(accounts) {
   it("should initially reject queries", async function() {
-    let instance = await MacroversePrototype.deployed()
+    let instance = await MacroverseStarGenerator.deployed()
     
     await instance.getGalaxyDensity.call(0, 0, 0).then(function () {
       assert.ok(false, "Successfully made unauthorized query")
@@ -26,7 +26,7 @@ contract('MacroversePrototype', function(accounts) {
   })
   
   it("should let us change access control to unrestricted", async function() {
-    let instance = await MacroversePrototype.deployed()
+    let instance = await MacroverseStarGenerator.deployed()
     let unrestricted = await UnrestrictedAccessControl.deployed()
     await instance.changeAccessControl(unrestricted.address)
     
@@ -35,7 +35,7 @@ contract('MacroversePrototype', function(accounts) {
   })
   
   it("should let us read the density", async function() {
-    let instance = await MacroversePrototype.deployed()
+    let instance = await MacroverseStarGenerator.deployed()
     var density = fromReal(await instance.getGalaxyDensity.call(0, 0, 0))
     
     assert.isAbove(density, 0.899999, "Density at the center of the galaxy is not too small")
@@ -43,7 +43,7 @@ contract('MacroversePrototype', function(accounts) {
   })
   
   it("should produce stars of reasonable mass", async function() {
-    let instance = await MacroversePrototype.deployed()
+    let instance = await MacroverseStarGenerator.deployed()
     let seed = await instance.getSectorObjectSeed.call(0, 0, 0, 0)
     let objClass = (await instance.getObjectClass.call(seed)).toNumber()
     let objType = (await instance.getObjectSpectralType.call(seed, objClass)).toNumber()
@@ -54,7 +54,7 @@ contract('MacroversePrototype', function(accounts) {
   })
   
   it("should let us scan sector 0", async function() {
-    let instance = await MacroversePrototype.deployed()
+    let instance = await MacroverseStarGenerator.deployed()
     
     let starCount = (await instance.getSectorObjectCount.call(0, 0, 0)).toNumber()
     console.log("Stars in origin sector: ", starCount)

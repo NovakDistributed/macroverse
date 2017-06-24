@@ -20,7 +20,7 @@ import "./ControlledAccess.sol";
  * account, or other contract, or for all persons, accounts, or other
  * contracts. The owner also reserves the right to not do any of the above.
  */
-contract MacroversePrototype is ControlledAccess {
+contract MacroverseStarGenerator is ControlledAccess {
     using RNG for *;
     using RealMath for *;
 
@@ -51,7 +51,7 @@ contract MacroversePrototype is ControlledAccess {
      * Deploy a new copy of the Macroverse prototype contract. Use the given seed to generate a galaxy, down to the star level.
      * Use the contract at the given address to regulate access.
      */
-    function MacroversePrototype(bytes32 baseSeed, address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) {
+    function MacroverseStarGenerator(bytes32 baseSeed, address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) {
         root = RNG.RandNode(baseSeed);
     }
     
