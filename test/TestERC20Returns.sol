@@ -40,9 +40,6 @@ contract SuccessCoin is ERC20 {
 }
 
 contract TestERC20Returns {
-    function testDoNothing() {
-        Assert.equal(uint(1), uint(1), "1 is 1");
-    }
 
     function testTransferSuccessReturnsTrue() {
         SuccessCoin success = new SuccessCoin();

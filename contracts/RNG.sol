@@ -2,8 +2,6 @@ pragma solidity ^0.4.11;
 
 import "./RealMath.sol";
 
-// TODO: don't just take selfs, use some kind of composite-able slice-based thing to avoid concat-ing.
-
 library RNG {
     using RealMath for *;
 
