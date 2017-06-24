@@ -140,8 +140,6 @@ contract('MacroverseStarRegistry', function(accounts) {
     
     await instance.abdicateOwnership("COOL_STAR_9000", {from: accounts[1]})
     
-    console.log(await token.balanceOf.call(accounts[0]), await token.balanceOf.call(accounts[1]), await token.balanceOf.call(instance.address))
-    
     assert.equal((await token.balanceOf.call(accounts[1])).toNumber(), web3.toWei(999, "ether"), "The correct number of MRV tokens are returned")
     assert.equal((await token.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4001, "ether"), "The initial claimant doesn't have them")
     assert.equal((await token.balanceOf.call(instance.address)).toNumber(), web3.toWei(0, "ether"), "The star registry no longer has them")

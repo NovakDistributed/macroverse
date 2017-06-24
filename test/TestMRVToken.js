@@ -266,6 +266,19 @@ contract('MRVToken', function(accounts) {
     assert.equal((await instance.isCrowdsaleActive.call()), false, "The crowdsale is initially not started")
   })
  
+  it("should not allow decimals to be changed before the crowdsale starts", async function() {
+    let instance = await MRVToken.deployed();
+    
+    assert.equal((await instance.decimals.call()), 18, "The decimals start at 18")
+    
+    await instance.setDecimals(30).then(function() {
+      assert.ok(false, "Set decimals")
+    }).catch(function() {
+      assert.ok(true, "Did not set decimals")
+    })
+    
+    assert.equal((await instance.decimals.call()), 18, "The decimals are not changed")
+  })
   
   it("should pay 5000 MRV per ETH", async function() {
     
@@ -288,6 +301,41 @@ contract('MRVToken', function(accounts) {
     // See if we got them
     assert.equal(finalBalance - initialBalance, web3.toWei(5000, "ether"), "The correct number of tokens are issued")
   })
+  
+  it("should not allow decimals to be changed before the crowdsale ends", async function() {
+    let instance = await MRVToken.deployed();
+    
+    await instance.setDecimals(30).then(function() {
+      assert.ok(false, "Set decimals")
+    }).catch(function() {
+      assert.ok(true, "Did not set decimals")
+    })
+    
+    assert.equal((await instance.decimals.call()), 18, "The decimals are not changed")
+  })
+  
+  it("should allow decimals to be changed after the crowdsale ends", async function() {
+    let instance = await MRVToken.deployed();
+    
+    await instance.endCrowdsale()
+    
+    await instance.setDecimals(30)
+    
+    assert.equal((await instance.decimals.call()), 30, "The decimals are changed")
+  })
+  
+  it("should not allow decimals to be changed by random people", async function() {
+    let instance = await MRVToken.deployed();
+    
+    await instance.setDecimals(22, {from: accounts[1]}).then(function() {
+      assert.ok(false, "Set decimals")
+    }).catch(function() {
+      assert.ok(true, "Did not set decimals")
+    })
+    
+    assert.equal((await instance.decimals.call()), 30, "The decimals are not changed")
+  })
+  
 })
 
 contract('MRVToken', function(accounts) {
