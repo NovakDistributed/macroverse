@@ -1,25 +1,37 @@
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.11;
 
 
 import './Claimable.sol';
 
 
-/*
- * DelayedClaimable
- * Extension for the Claimable contract, where the ownership needs to be claimed before/after certain block number
+/**
+ * @title DelayedClaimable
+ * @dev Extension for the Claimable contract, where the ownership needs to be claimed before/after
+ * a certain block number.
  */
 contract DelayedClaimable is Claimable {
 
-  uint public end;
-  uint public start;
+  uint256 public end;
+  uint256 public start;
 
-  function setLimits(uint _start, uint _end) onlyOwner {
+  /**
+   * @dev Used to specify the time period during which a pending 
+   * owner can claim ownership. 
+   * @param _start The earliest time ownership can be claimed.
+   * @param _end The latest time ownership can be claimed. 
+   */
+  function setLimits(uint256 _start, uint256 _end) onlyOwner {
     if (_start > _end)
         throw;
     end = _end;
     start = _start;
   }
 
+
+  /**
+   * @dev Allows the pendingOwner address to finalize the transfer, as long as it is called within 
+   * the specified start and end time. 
+   */
   function claimOwnership() onlyPendingOwner {
     if ((block.number > end) || (block.number < start))
         throw;
