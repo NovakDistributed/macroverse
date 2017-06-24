@@ -1,5 +1,23 @@
 var MRVToken = artifacts.require("MRVToken");
 
+// We need a function to advance time
+function advanceTime(minutes) {
+  return new Promise(function (resolve, reject) {
+    web3.currentProvider.sendAsync({
+      jsonrpc: "2.0",
+      method: "evm_increaseTime",
+      params: [60 * minutes],
+      id: new Date().getTime()
+    }, function(err, result) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    })
+  })
+}
+
 contract('MRVToken', function(accounts) {
   it("should start inactive", async function() {
     let instance = await MRVToken.deployed();
@@ -13,10 +31,17 @@ contract('MRVToken', function(accounts) {
     assert.equal((await instance.balanceOf.call(account)).toNumber(), web3.toWei(5000, "ether"), "The beneficiary has 5000 MRV before the crowdsale starts")
   })
   
+  it("should reject attempts by random people to start the crowdsale", async function() { 
+    let instance = await MRVToken.deployed()
+    await instance.startCrowdsale({from: accounts[1]}).then(function() {
+      assert.ok(false, "Started crowdsale")
+    }).catch(function() {
+      assert.ok(true, "Did not start crowdsale")
+    })
+    assert.equal(await instance.isCrowdsaleActive.call(), false, "The crowdsale does not start")
+  })
+  
   it("should allow the crowdsale to start", async function() { 
-    // Start crowdsale
-    // Note that we can't await the isCrowdsaleActive result for some reason; we have to use then.
-    // This may be a bug in web3 or Truffle
     let instance = await MRVToken.deployed()
     
     // DON'T use .call(). .call() confusingly runs things locally, while just () actually sends them.
@@ -24,6 +49,127 @@ contract('MRVToken', function(accounts) {
 
     assert.equal(await instance.isCrowdsaleActive.call(), true, "The crowdsale starts")
 
+  })
+  
+  it("should reject attempts by random people to stop the crowdsale", async function() { 
+    let instance = await MRVToken.deployed()
+    await instance.endCrowdsale({from: accounts[1]}).then(function() {
+      assert.ok(false, "Stopped crowdsale")
+    }).catch(function() {
+      assert.ok(true, "Did not stop crowdsale")
+    })
+    assert.equal(await instance.isCrowdsaleActive.call(), true, "The crowdsale does not stop")
+  })
+  
+  it("should allow the crowdsale to stop", async function() {
+     let instance = await MRVToken.deployed()
+     
+     await instance.endCrowdsale()
+     
+     assert.equal(await instance.isCrowdsaleActive.call(), false, "The crowdsale stops")
+  })
+  
+  it("should reject attempts to restart the crowdsale", async function() { 
+    let instance = await MRVToken.deployed()
+    await instance.startCrowdsale().then(function() {
+      assert.ok(false, "Started crowdsale")
+    }).catch(function() {
+      assert.ok(true, "Did not start crowdsale")
+    })
+    assert.equal(await instance.isCrowdsaleActive.call(), false, "The crowdsale does not restart")
+  })
+  
+})
+
+contract('MRVToken', function(accounts) {
+  it("should start with the start timer unset", async function() {
+    let instance = await MRVToken.deployed()
+    assert.equal(await instance.openTimer.call(), 0, "Open timer is not set")
+  })
+  
+  it("should not let random people set the start timer", async function() {
+    let instance = await MRVToken.deployed()
+    
+    await instance.setCrowdsaleOpenTimerFor(30, {from: accounts[1]}).then(function() {
+      assert.ok(false, "Set timer")
+    }).catch(function() {
+      assert.ok(true, "Did not set timer")
+    })
+    
+    assert.equal(await instance.openTimer.call(), 0, "Open timer is not set")
+  })
+  
+  it("should let the owner set the start timer", async function() {
+    let instance = await MRVToken.deployed()
+    
+    await instance.setCrowdsaleOpenTimerFor(30)
+    
+    assert.isAtLeast(await instance.openTimer.call(), 1, "Open timer is set")
+  })
+  
+  it("should not let random people unset the start timer", async function() {
+    let instance = await MRVToken.deployed()
+    
+    await instance.clearCrowdsaleOpenTimer({from: accounts[1]}).then(function() {
+      assert.ok(false, "Unset timer")
+    }).catch(function() {
+      assert.ok(true, "Did not unset timer")
+    })
+    
+    assert.isAtLeast(await instance.openTimer.call(), 1, "Open timer is set")
+  })
+  
+  it("should let the owner unset the start timer before it elapses", async function() {
+    let instance = await MRVToken.deployed()
+    
+    // Go ahead some time
+    await advanceTime(29)
+    
+    await instance.clearCrowdsaleOpenTimer()
+    
+    assert.equal(await instance.openTimer.call(), 0, "Open timer is not set")
+    
+  })
+  
+  it("should say the crowdsale is still closed", async function() {
+    let instance = await MRVToken.deployed()
+    assert.equal((await instance.isCrowdsaleActive.call()), false, "The crowdsale is still not started")
+  })
+  
+  it("should let the owner set the start timer again", async function() {
+    let instance = await MRVToken.deployed()
+    
+    await instance.setCrowdsaleOpenTimerFor(50)
+    
+    assert.isAtLeast(await instance.openTimer.call(), 1, "Open timer is set")
+  })
+  
+  it("should not let the owner unset the start timer after it elapses", async function() {
+    let instance = await MRVToken.deployed()
+    
+    
+    // Go ahead some time
+    await advanceTime(51)
+    
+    await instance.clearCrowdsaleOpenTimer().then(function() {
+      assert.ok(false, "Unset timer")
+    }).catch(function() {
+      assert.ok(true, "Did not unset timer")
+    })
+    
+   assert.isAtLeast(await instance.openTimer.call(), 1, "Open timer is set")
+    
+  })
+  
+  it("should say the crowdsale is open now that the timer has elapsed", async function() {
+    let instance = await MRVToken.deployed()
+    assert.equal((await instance.isCrowdsaleActive.call()), true, "The crowdsale is now open")
+
+    // Buy tokens
+    await instance.sendTransaction({from: accounts[1], value: web3.toWei(1, "ether")})
+    
+    // See if we got them
+    assert.isAtLeast((await instance.balanceOf.call(accounts[1])).toNumber(), web3.toWei(5000, "ether"), "Tokens can be bought")
   })
 })
 

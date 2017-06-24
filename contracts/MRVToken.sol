@@ -72,15 +72,18 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     uint public constant wholeTokensReserved = 5000;
     // How many tokens per ETH during the crowdsale?
     uint public constant wholeTokensPerEth = 5000;
+    
     // Set to true when the crowdsale starts
-    bool public crowdsaleStarted;
+    // Internal flag. Use isCrowdsaleActive instead().
+    bool crowdsaleStarted;
     // Set to true when the crowdsale ends
-    bool public crowdsaleEnded;
+    // Internal flag. Use isCrowdsaleActive instead().
+    bool crowdsaleEnded;
     // We can also set some timers to open and close the crowdsale. 0 = timer is not set.
-    // After this time, anyone can call startCrowdsaleByTimeout() and start the crowdsale.
-    uint anyoneCanOpenCrowdsaleAfter = 0;
-    // After this time, no contributions will be accepted, and anyone can call endCrowdsaleByTimeout() to end the crowdsale;
-    uint acceptNoContributionsAfter = 0;
+    // After this time, the crowdsale will open with a call to checkOpenTimer().
+    uint public openTimer = 0;
+    // After this time, no contributions will be accepted, and the crowdsale will close with a call to checkCloseTimer().
+    uint public closeTimer = 0;
     
     ////////////
     // Constructor
@@ -122,9 +125,9 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     *
     * Note that all orders are fill-or-kill. If you send in more ether than there are
     * tokens remaining to be bought, your transaction will be rolled back and you will
-    * no tokens and waste your gas.
+    * get no tokens and waste your gas.
     */
-    function() payable onlyDuringCrowdsale onlyBeforeCloseTimeout {
+    function() payable onlyDuringCrowdsale {
         createTokens(msg.sender);
     }
     
@@ -133,10 +136,20 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     ////////////
     
     /**
+     * Only allow some actions before the crowdsale closes, whether it's open or not.
+     */
+    modifier onlyBeforeClosed {
+        checkCloseTimer();
+        if (crowdsaleEnded) throw;
+        _;
+    }
+    
+    /**
      * Only allow some actions after the crowdsale is over.
-     * This requires the crowdsale to be actually closed by a transaction, not just the timer to have elapsed.
+     * Will set the crowdsale closed if it should be.
      */
     modifier onlyAfterClosed {
+        checkCloseTimer();
         if (!crowdsaleEnded) throw;
         _;
     }
@@ -145,54 +158,69 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
      * Only allow some actions before the crowdsale starts.
      */
     modifier onlyBeforeOpened {
+        checkOpenTimer();
         if (crowdsaleStarted) throw;
         _;
     }
     
     /**
      * Only allow some actions while the crowdsale is active.
-     * Does not check whether the crowdsale is due to close; for that, use onlyBeforeCloseTimeout.
+     * Will set the crowdsale open if it should be.
      */
     modifier onlyDuringCrowdsale {
+        checkOpenTimer();
+        checkCloseTimer();
         if (crowdsaleEnded) throw;
         if (!crowdsaleStarted) throw;
         _;
     }
+
+    ////////////
+    // Status and utility functions
+    ////////////
     
     /**
-     * Only allow some actions after the timer for when the crowdsale should open has elapsed.
+     * Determine if the crowdsale should open by timer.
      */
-    modifier onlyAfterOpenTimeout {
-        if (anyoneCanOpenCrowdsaleAfter == 0) throw;
-        if (now <= anyoneCanOpenCrowdsaleAfter) throw;
-        _;
+    function openTimerElapsed() constant returns (bool) {
+        return (openTimer != 0 && now > openTimer);
     }
     
     /**
-     * Only allow some actions before the timer for when to end the crowdsale expires, or when that timer has not been set.
+     * Determine if the crowdsale should close by timer.
      */
-    modifier onlyBeforeCloseTimeout {
-        if (acceptNoContributionsAfter != 0 && now > acceptNoContributionsAfter) throw;
-        _;
+    function closeTimerElapsed() constant returns (bool) {
+        return (closeTimer != 0 && now > closeTimer);
     }
     
     /**
-     * Only allow some actions after the timer for when the crowdsale should close has elapsed.
+     * If the open timer has elapsed, start the crowdsale.
+     * Can be called by people, but also gets called when people try to contribute.
      */
-    modifier onlyAfterCloseTimeout {
-        if (acceptNoContributionsAfter == 0) throw;
-        if (now <= acceptNoContributionsAfter) throw;
-        _;
+    function checkOpenTimer() {
+        if (openTimerElapsed()) {
+            crowdsaleStarted = true;
+            openTimer = 0;
+        }
     }
     
+    /**
+     * If the close timer has elapsed, stop the crowdsale.
+     */
+    function checkCloseTimer() {
+        if (closeTimerElapsed()) {
+            crowdsaleEnded = true;
+            closeTimer = 0;
+        }
+    }
     
     /**
      * Determine if the crowdsale is currently happening.
      */
     function isCrowdsaleActive() constant returns (bool) {
-        return (crowdsaleStarted && !crowdsaleEnded);
+        // The crowdsale is happening if it is open or due to open, and it isn't closed or due to close.
+        return ((crowdsaleStarted || openTimerElapsed()) && !(crowdsaleEnded || closeTimerElapsed()));
     }
-    
     
     ////////////
     // Before the crowdsale: configuration
@@ -206,18 +234,11 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     }
     
     /**
-     * Allow the owner to start the crowdsale.
+     * Allow the owner to start the crowdsale at any time, manually.
      */
     function startCrowdsale() onlyOwner onlyBeforeOpened {
         crowdsaleStarted = true;
     }
-    
-    /**
-     * Allow anyone to start the crowdsale if the time-until-start timer was set and has expired.
-     */
-    function startCrowdsaleByTimeout() onlyBeforeOpened onlyAfterOpenTimeout {
-        crowdsaleStarted = true;
-    }    
     
     /**
      * Let the owner start the timer for the crowdsale start. Without further owner intervention,
@@ -226,32 +247,31 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
      * The timer can be re-set after it has tripped, unless someone has already opened the crowdsale.
      */
     function setCrowdsaleOpenTimerFor(uint minutesFromNow) onlyOwner onlyBeforeOpened {
-        anyoneCanOpenCrowdsaleAfter = now + minutesFromNow * 1 minutes;
+        openTimer = now + minutesFromNow * 1 minutes;
     }
     
     /**
      * Let the owner stop the crowdsale open timer, as long as the crowdsale has not yet opened.
      */
     function clearCrowdsaleOpenTimer() onlyOwner onlyBeforeOpened {
-        anyoneCanOpenCrowdsaleAfter = 0;
+        openTimer = 0;
     }
     
     /**
      * Let the owner start the timer for the crowdsale end. Counts from when the function is called,
      * *not* from the start of the crowdsale.
-     * Before the timer expires, it can be set to a different time, but after the timer expires, it
-     * cannot be changed.
      */
-    function setCrowdsaleCloseTimerFor(uint minutesFromNow) onlyOwner onlyBeforeCloseTimeout {
-        acceptNoContributionsAfter = now + minutesFromNow * 1 minutes;
+    function setCrowdsaleCloseTimerFor(uint minutesFromNow) onlyOwner {
+        closeTimer = now + minutesFromNow * 1 minutes;
     }
     
     /**
      * Let the owner stop the crowdsale close timer, as long as it has not yet expired.
      */
-    function clearCrowdsaleCloseTimer() onlyOwner onlyBeforeCloseTimeout {
-        acceptNoContributionsAfter = 0;
+    function clearCrowdsaleCloseTimer() onlyOwner onlyBeforeClosed {
+        closeTimer = 0;
     }
+    
     
     ////////////
     // During the crowdsale
@@ -261,7 +281,7 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
      * Create tokens for the given address, in response to a payment.
      * Cannot be called by outside callers; use the fallback function, which will create tokens for whoever pays it.
      */
-    function createTokens(address recipient) internal onlyDuringCrowdsale onlyBeforeCloseTimeout {
+    function createTokens(address recipient) internal onlyDuringCrowdsale {
         if (msg.value == 0) {
             throw;
         }
@@ -289,18 +309,11 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     }
     
     /**
-     * Allow the owner to end the crowdsale.
+     * Allow the owner to end the crowdsale early.
      */
     function endCrowdsale() onlyOwner onlyDuringCrowdsale {
         crowdsaleEnded = true;
-    }
-    
-    /**
-     * Allow anyone to end the crowdsale if the time-until-end timer was set and has expired.
-     */
-    function endCrowdsaleByTimeout() onlyDuringCrowdsale onlyAfterCloseTimeout {
-        crowdsaleEnded = true;
-    }    
+    }  
     
     ////////////
     // After the crowdsale: token maintainance
