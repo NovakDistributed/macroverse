@@ -20,7 +20,7 @@ import "./zeppelin/ownership/HasNoContracts.sol";
  *
  * * Unless adjusted later by the crowdsale operator, up to 100 million tokens will be available.
  *
- * * An additional 5,000 tokens are reserved for the crowdsale beneficiary. 
+ * * An additional 5,000 tokens are reserved. 
  *
  * * Participate in the crowdsale by sending ETH to this contract, when the crowdsale is open.
  *
@@ -90,18 +90,19 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     ////////////
     
     /**
-    * Deploy a new MRVToken contract, paying crowdsale proceeds to the given address.
+    * Deploy a new MRVToken contract, paying crowdsale proceeds to the given address,
+    * and awarding reserved tokens to the other given address.
     */
-    function MRVToken(address sendProceedsTo) {
+    function MRVToken(address sendProceedsTo, address sendTokensTo) {
         // Proceeds of the crowdsale go here.
         beneficiary = sendProceedsTo;
         
         // Start with 18 decimals, same as ETH
         decimals = 18;
         
-        // Initially, the reserved tokens belong to the beneficiary.
+        // Initially, the reserved tokens belong to the given address.
         totalSupply = wholeTokensReserved * 10 ** 18;
-        balances[beneficiary] = totalSupply;
+        balances[sendTokensTo] = totalSupply;
         
         // Initially the crowdsale has not yet started or ended.
         crowdsaleStarted = false;
@@ -130,6 +131,12 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     function() payable onlyDuringCrowdsale {
         createTokens(msg.sender);
     }
+    
+    ////////////
+    // Events
+    ////////////
+    
+    
     
     ////////////
     // Modifiers (encoding important crowdsale logic)
