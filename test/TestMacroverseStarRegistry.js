@@ -24,8 +24,10 @@ contract('MacroverseStarRegistry', function(accounts) {
     let instance = await MacroverseStarRegistry.deployed()
     let token = await MRVToken.deployed()
     
-    // Approve a lot of funds
-    await token.approve(MacroverseStarRegistry.address, web3.toWei(10000, "ether"))
+    // Approve all the funds.
+    // Don't do any more approvals in the test because the token requires us
+    // to reduce approved amount to 0 defore approving any more.
+    await token.approve(MacroverseStarRegistry.address, await token.balanceOf.call(accounts[0]))
     
     await instance.claimOwnership("COOL_STAR_9000", web3.toWei(10000, "ether")).then(function () {
       assert.ok(false, "Successfully claimed star without funds for deposit")
@@ -42,9 +44,6 @@ contract('MacroverseStarRegistry', function(accounts) {
     let token = await MRVToken.deployed()
     
     assert.equal((await instance.minDepositInAtomicUnits.call()).toNumber(), web3.toWei(1000, "ether"), "The minimum deposit is as expected for the test")
-    
-    // Approve a lot of funds
-    await token.approve(MacroverseStarRegistry.address, web3.toWei(10000, "ether"))
     
     await instance.claimOwnership("COOL_STAR_9000", web3.toWei(999, "ether")).then(function () {
       assert.ok(false, "Successfully claimed star with too-small deposit")
@@ -72,9 +71,6 @@ contract('MacroverseStarRegistry', function(accounts) {
     let instance = await MacroverseStarRegistry.deployed()
     let token = await MRVToken.deployed()
     
-    // Approve a lot of funds
-    await token.approve(MacroverseStarRegistry.address, web3.toWei(10000, "ether"))
-    
     // Now the min deposit is 999 MRV, from the last test
     await instance.claimOwnership("COOL_STAR_9000", web3.toWei(999, "ether"))
     assert.equal(await instance.ownerOf.call("COOL_STAR_9000"), accounts[0], "The star is now owned by us")
@@ -87,9 +83,6 @@ contract('MacroverseStarRegistry', function(accounts) {
   it("should not allow claiming things already owned", async function() {
     let instance = await MacroverseStarRegistry.deployed()
     let token = await MRVToken.deployed()
-
-    // Approve a lot of funds
-    await token.approve(MacroverseStarRegistry.address, web3.toWei(10000, "ether"))
     
     await instance.claimOwnership("COOL_STAR_9000", web3.toWei(999, "ether")).then(function () {
       assert.ok(false, "Successfully claimed star that is already claimed")
