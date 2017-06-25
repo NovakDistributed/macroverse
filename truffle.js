@@ -3,7 +3,7 @@ module.exports = {
     development: {
       host: "localhost",
       port: 8545,
-      network_id: "default" // Match any network id except those otherwise specified
+      network_id: "*" // Match any network id. We could use "default" but then Solidity tests can't find libraries.
     },
     live: {
       network_id: 1,
