@@ -1,0 +1,38 @@
+{
+  "contract_name": "UnrestrictedAccessControl",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "name": "origin",
+          "type": "address"
+        }
+      ],
+      "name": "allowQuery",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x60606040523415600b57fe5b5b60888061001a6000396000f300606060405263ffffffff60e060020a6000350416634af5fb0f81146020575bfe5b3415602757fe5b603f600160a060020a03600435811690602435166053565b604080519115158252519081900360200190f35b60015b929150505600a165627a7a723058203a1b78f6df06dfd5c9707dcee8b9d76db1b4b569961f8339599ceb9993ae44070029",
+  "networks": {
+    "1498357132526": {
+      "events": {},
+      "links": {},
+      "address": "0x534603b15303841d4eb1ba1e0caaffe68eff1807",
+      "updated_at": 1498363737188
+    }
+  },
+  "schema_version": "0.0.5",
+  "updated_at": 1498363737188
+}
