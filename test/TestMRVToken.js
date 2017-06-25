@@ -33,7 +33,7 @@ contract('MRVToken', function(accounts) {
   
   it("should reject attempts by random people to start the crowdsale", async function() { 
     let instance = await MRVToken.deployed()
-    await instance.startCrowdsale({from: accounts[1]}).then(function() {
+    await instance.openCrowdsale({from: accounts[1]}).then(function() {
       assert.ok(false, "Started crowdsale")
     }).catch(function() {
       assert.ok(true, "Did not start crowdsale")
@@ -45,7 +45,7 @@ contract('MRVToken', function(accounts) {
     let instance = await MRVToken.deployed()
     
     // DON'T use .call(). .call() confusingly runs things locally, while just () actually sends them.
-    await instance.startCrowdsale()
+    await instance.openCrowdsale()
 
     assert.equal(await instance.isCrowdsaleActive.call(), true, "The crowdsale starts")
 
@@ -53,7 +53,7 @@ contract('MRVToken', function(accounts) {
   
   it("should reject attempts by random people to stop the crowdsale", async function() { 
     let instance = await MRVToken.deployed()
-    await instance.endCrowdsale({from: accounts[1]}).then(function() {
+    await instance.closeCrowdsale({from: accounts[1]}).then(function() {
       assert.ok(false, "Stopped crowdsale")
     }).catch(function() {
       assert.ok(true, "Did not stop crowdsale")
@@ -64,14 +64,14 @@ contract('MRVToken', function(accounts) {
   it("should allow the crowdsale to stop", async function() {
      let instance = await MRVToken.deployed()
      
-     await instance.endCrowdsale()
+     await instance.closeCrowdsale()
      
      assert.equal(await instance.isCrowdsaleActive.call(), false, "The crowdsale stops")
   })
   
   it("should reject attempts to restart the crowdsale", async function() { 
     let instance = await MRVToken.deployed()
-    await instance.startCrowdsale().then(function() {
+    await instance.openCrowdsale().then(function() {
       assert.ok(false, "Started crowdsale")
     }).catch(function() {
       assert.ok(true, "Did not start crowdsale")
@@ -285,7 +285,7 @@ contract('MRVToken', function(accounts) {
     let instance = await MRVToken.deployed()
     let account = accounts[0]
     
-    await instance.startCrowdsale()
+    await instance.openCrowdsale()
 
     assert.equal(await instance.isCrowdsaleActive.call(), true, "The crowdsale starts")
     
@@ -317,7 +317,7 @@ contract('MRVToken', function(accounts) {
   it("should allow decimals to be changed after the crowdsale ends", async function() {
     let instance = await MRVToken.deployed();
     
-    await instance.endCrowdsale()
+    await instance.closeCrowdsale()
     
     await instance.setDecimals(30)
     
@@ -350,7 +350,7 @@ contract('MRVToken', function(accounts) {
     await instance.setMaxSupply(CROWDSALE_MAX_TOKENS)
     
     // Start crowdsale
-    await instance.startCrowdsale()
+    await instance.openCrowdsale()
     
     // We may have some MRV already.
     let initialBalance = (await instance.balanceOf.call(account)).toNumber();

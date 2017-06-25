@@ -136,7 +136,14 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     // Events
     ////////////
     
-    
+    // Fired when the crowdsale is recorded as started.
+    event CrowdsaleOpen(uint time);
+    // Fired when someone contributes to the crowdsale and buys MRV
+    event TokenPurchase(uint time, uint etherAmount, address from);
+    // Fired when the crowdsale is recorded as ended.
+    event CrowdsaleClose(uint time);
+    // Fired when the decimal point moves
+    event DecimalChange(uint8 newDecimals);
     
     ////////////
     // Modifiers (encoding important crowdsale logic)
@@ -208,6 +215,7 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
         if (openTimerElapsed()) {
             crowdsaleStarted = true;
             openTimer = 0;
+            CrowdsaleOpen(now);
         }
     }
     
@@ -218,6 +226,7 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
         if (closeTimerElapsed()) {
             crowdsaleEnded = true;
             closeTimer = 0;
+            CrowdsaleClose(now);
         }
     }
     
@@ -241,10 +250,12 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     }
     
     /**
-     * Allow the owner to start the crowdsale at any time, manually.
+     * Allow the owner to start the crowdsale manually.
      */
-    function startCrowdsale() onlyOwner onlyBeforeOpened {
+    function openCrowdsale() onlyOwner onlyBeforeOpened {
         crowdsaleStarted = true;
+        openTimer = 0;
+        CrowdsaleOpen(now);
     }
     
     /**
@@ -267,8 +278,9 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     /**
      * Let the owner start the timer for the crowdsale end. Counts from when the function is called,
      * *not* from the start of the crowdsale.
+     * It is possible, but a bad idea, to set this before the open timer.
      */
-    function setCrowdsaleCloseTimerFor(uint minutesFromNow) onlyOwner {
+    function setCrowdsaleCloseTimerFor(uint minutesFromNow) onlyOwner onlyBeforeClosed {
         closeTimer = now + minutesFromNow * 1 minutes;
     }
     
@@ -306,6 +318,9 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
         // Otherwise, we can fill the order entirely, so make the tokens and put them in the specified account.
         totalSupply = newTotalSupply;
         balances[recipient] = balances[recipient].add(tokens);
+        
+        // Announce the purchase
+        TokenPurchase(now, msg.value, recipient);
 
         // Lastly (after all state changes), send the money to the crowdsale beneficiary.
         // This allows the crowdsale contract itself not to hold any ETH.
@@ -316,10 +331,12 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
     }
     
     /**
-     * Allow the owner to end the crowdsale early.
+     * Allow the owner to end the crowdsale manually.
      */
-    function endCrowdsale() onlyOwner onlyDuringCrowdsale {
+    function closeCrowdsale() onlyOwner onlyDuringCrowdsale {
         crowdsaleEnded = true;
+        closeTimer = 0;
+        CrowdsaleClose(now);
     }  
     
     ////////////
@@ -335,6 +352,8 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
      */
     function setDecimals(uint8 newDecimals) onlyOwner onlyAfterClosed {
         decimals = newDecimals;
+        // Announce the change
+        DecimalChange(decimals);
     }
     
     /**

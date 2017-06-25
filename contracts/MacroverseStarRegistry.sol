@@ -62,7 +62,7 @@ contract MacroverseStarRegistry is Ownable, HasNoEther, HasNoContracts {
     uint public expectedMrvBalance;
     
     // This event is fired when ownership of a star system. Giving up ownership transfers to the 0 address.
-    event StarOwnershipChanged(bytes32 indexed starSeed, address indexed newOwner);
+    event StarOwnershipChange(bytes32 indexed starSeed, address indexed newOwner);
     
     /**
      * Deploy a new copy of the Macroverse Star Registry.
@@ -109,6 +109,9 @@ contract MacroverseStarRegistry is Ownable, HasNoEther, HasNoContracts {
         depositFor[starSeed] = depositInAtomicUnits;
         expectedMrvBalance = expectedMrvBalance.add(depositInAtomicUnits);
         
+        // Announce it
+        StarOwnershipChange(starSeed, msg.sender);
+        
         // After state changes, try to take the money
         tokenAddress.transferFrom(msg.sender, this, depositInAtomicUnits);
         // The MRV token will throw if transferFrom fails.
@@ -135,7 +138,7 @@ contract MacroverseStarRegistry is Ownable, HasNoEther, HasNoContracts {
         ownerOf[starSeed] = newOwner;
         
         // Announce it
-        StarOwnershipChanged(starSeed, newOwner);
+        StarOwnershipChange(starSeed, newOwner);
     }
     
     // In a future version, we might want an ERC20-style authorization system, to let a contract move your things for you.
@@ -163,7 +166,7 @@ contract MacroverseStarRegistry is Ownable, HasNoEther, HasNoContracts {
         expectedMrvBalance = expectedMrvBalance.sub(depositSize);
 
         // Announce lack of ownership of the thing
-        StarOwnershipChanged(starSeed, 0);
+        StarOwnershipChange(starSeed, 0);
         
         // Pay back deposit
         tokenAddress.transfer(oldOwner, depositSize);
