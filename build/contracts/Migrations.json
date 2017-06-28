@@ -72,16 +72,10 @@
     "1": {
       "events": {},
       "links": {},
-      "address": "0x15846aba1ffbce0bc565fd85d37692e5b42bbb9f",
-      "updated_at": 1498366494126
-    },
-    "1498357132526": {
-      "events": {},
-      "links": {},
-      "address": "0xb94862800f8d7c1de167348fb8e7ef0911d96609",
-      "updated_at": 1498363737189
+      "address": "0x60a0ad7808244c41654e9b88ae8a73c5bf9ffdcb",
+      "updated_at": 1498371396145
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1498366494126
+  "updated_at": 1498371396145
 }

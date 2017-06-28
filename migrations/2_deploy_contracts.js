@@ -11,6 +11,10 @@ var LIVE_BENEFICIARY="0x2fe5bdc68d73b1f570b97422021a0c9cdccae79f"
 var LIVE_TOKEN_ACCOUNT="0x368651F6c2b3a7174ac30A5A062b65F2342Fb6F1"
 
 module.exports = async function(deployer, network, accounts) {
+  await deployer.deploy(MacroverseStarRegistry, "0xab6cf87a50f17d7f5e1feaf81b6fe9ffbe8ebf84", web3.toWei(1000, "ether"))
+  
+  return
+  
   deployer.deploy(RealMath)
   deployer.link(RealMath, RNG)
   deployer.deploy(RNG)

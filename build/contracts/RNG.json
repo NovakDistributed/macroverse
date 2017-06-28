@@ -2,14 +2,7 @@
   "contract_name": "RNG",
   "abi": [],
   "unlinked_binary": "0x60606040523415600b57fe5b5b60338060196000396000f30060606040525bfe00a165627a7a723058202e7693a298d5420c4d38623d52679bf63d8bddf3fe27215a06cb42ac54fb30110029",
-  "networks": {
-    "1498357132526": {
-      "events": {},
-      "links": {},
-      "address": "0x5bdfdb0b791245d9a977da348426cf3fad8029d2",
-      "updated_at": 1498363737182
-    }
-  },
+  "networks": {},
   "schema_version": "0.0.5",
-  "updated_at": 1498363737182
+  "updated_at": 1498371193384
 }
