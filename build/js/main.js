@@ -1,3 +1,4 @@
+// Turn an err, result-callback-taking function into a promise for the result of calling it
 function promiseify(toCall) {
   return new Promise(function (resolve, reject) {
     toCall(function(err, result) {
@@ -10,7 +11,19 @@ function promiseify(toCall) {
   })
 }
 
-let REAL_FBITS = 40;
+// Make a promise time out in the given number of ms
+function timeoutPromise(time, promise) {
+  return Promise.race([promise, new Promise(function(resolve, reject) {
+    setTimeout(function() {
+      reject('Timout!')
+    }, time)
+  })])
+}
+
+// How long should we wait for a promise when loading stars?
+let MAX_WAIT_TIME = 10000
+
+let REAL_FBITS = 40
 
 function fromReal(real) {
   // Convert from 40 bit fixed point
@@ -73,27 +86,43 @@ class StarCache {
     let path = sectorX + ',' + sectorY + ',' + sectorZ + '/' + objectNumber
     
     if (!this.cache.hasOwnProperty(path)) {
-       // Make a new object
+      
+      // Make a new object
       let obj = {number: objectNumber, sectorX, sectorY, sectorZ}
       
-      // Work out the seed
-      obj.seed = await this.generator.getSectorObjectSeed.call(sectorX, sectorY, sectorZ, objectNumber)
-      
-      // Decide on a position
-      let [ x, y, z] = await this.generator.getObjectPosition.call(obj.seed)
-      obj.x = fromReal(x)
-      obj.y = fromReal(y)
-      obj.z = fromReal(z)
-      
-      obj.objClass = (await this.generator.getObjectClass.call(obj.seed)).toNumber()
-      obj.objType = (await this.generator.getObjectSpectralType.call(obj.seed, obj.objClass)).toNumber()
-      
-      obj.hasPlanets = await this.generator.getObjectHasPlanets.call(obj.seed, obj.objClass, obj.objType)
-      
-      obj.objMass = fromReal(await this.generator.getObjectMass.call(obj.seed, obj.objClass, obj.objType))
-      
-      // Save it
-      this.cache[path] = obj
+      for (let tryNumber = 0; tryNumber < 10; tryNumber++) {
+        
+        try {
+          // Work out the seed
+          obj.seed = await timeoutPromise(MAX_WAIT_TIME, this.generator.getSectorObjectSeed.call(sectorX, sectorY, sectorZ, objectNumber))
+          
+          // Decide on a position
+          let [ x, y, z] = await timeoutPromise(MAX_WAIT_TIME, this.generator.getObjectPosition.call(obj.seed))
+          obj.x = fromReal(x)
+          obj.y = fromReal(y)
+          obj.z = fromReal(z)
+          
+          obj.objClass = (await timeoutPromise(MAX_WAIT_TIME, this.generator.getObjectClass.call(obj.seed))).toNumber()
+          obj.objType = (await timeoutPromise(MAX_WAIT_TIME, this.generator.getObjectSpectralType.call(obj.seed, obj.objClass))).toNumber()
+          
+          obj.hasPlanets = await timeoutPromise(MAX_WAIT_TIME, this.generator.getObjectHasPlanets.call(obj.seed, obj.objClass, obj.objType))
+          
+          obj.objMass = fromReal(await timeoutPromise(MAX_WAIT_TIME, this.generator.getObjectMass.call(obj.seed, obj.objClass, obj.objType)))
+          
+          // Save it
+          this.cache[path] = obj
+          console.log('Successfully loaded star ' + path)
+          break
+          
+        } catch (err) {
+          // Ignore errors (probably lost RPC requests) and retry from the beginning
+          console.log('Retrying star ' + path + ' try ' + tryNumber + ' after error: ', err)
+        }
+      }
+    }
+    
+    if (!this.cache.hasOwnProperty(path)) {
+      throw new Error('Unable to load ' + path + ' from Ethereum blockchain. Check your RPC node!')
     }
     
     return this.cache[path]
@@ -151,10 +180,11 @@ async function startApp() {
   let starCount = await cache.getObjectCount(0, 0, 0)
   console.log("Stars in origin sector: ", starCount)
   
+  let starPromises = []
   
   for (let star = 0; star < starCount; star++) {
     
-    await (async function() {
+    starPromises.push(async function() {
       // Go get the star properties
       let obj = await cache.getObject(0, 0, 0, star)
       
@@ -174,6 +204,11 @@ async function startApp() {
     }())
     
   }
+  
+  await Promise.all(starPromises)
+  
+  console.log('All stars downloaded successfully.')
+  
 }
 
 // Get the material that a star or object ought to use, given the class name of its spectral type
