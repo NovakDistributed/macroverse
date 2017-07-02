@@ -4,9 +4,16 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 
-body {
-    margin-top: 0px; /*50px;*/ /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+/* Contract UI components */
+.starinfo {
+    display: none;
 }
+ 
+body {
+    margin-top: 0px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+}
+
+
 
 /* Cool Fonts */
 h1,h2,h3,.navbar { 
@@ -53,45 +60,6 @@ h1.display-3 {
     background-image: url('../img/logo-white.svg');
 }
 
-/* Space out forms */
-
-.form-padded {
-    margin-top: 2em;
-    margin-bottom: 2em;
-}
-
-.action {
-    margin-top: 1em;
-}
-
-/* Make the subscribe form at the top match the buttons */
-.tall-form {
-    font-size: 18px;
-    line-height: 1.3333333;
-    border-radius: 6px;
-}
-
-/* Let us make the inline countdowns narrower */
-.countdown-inline {
-    width: 75%;
-}
-/* Or make them the right color */
-.top-countdown {
-    color: rgba(255,255,255,0.9);;
-}
-
-/* We programmed the page to change based on time, to reflect what ought to be the crowdsale state. */
-.before-crowdsale {
-
-}
-
-.during-crowdsale {
-    display: none;
-}
-
-.after-crowdsale {
-    display: none;
-}
 
 /* The rest of One Page Wonder */
 
