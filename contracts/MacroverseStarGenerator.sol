@@ -21,8 +21,10 @@ import "./ControlledAccess.sol";
  * contracts. The owner also reserves the right to not do any of the above.
  */
 contract MacroverseStarGenerator is ControlledAccess {
+    // TODO: RNG doesn't get linked against because we can't pass the struct to the library...
     using RNG for *;
     using RealMath for *;
+    // No SafeMath or it might confuse RealMath
 
     // How big is a sector on a side in LY?
     int16 constant SECTOR_SIZE = 25;
@@ -70,10 +72,10 @@ contract MacroverseStarGenerator is ControlledAccess {
         if (sectorY < -MAX_SECTOR) return 0;
         if (sectorZ < -MAX_SECTOR) return 0;
         
-        if (sectorX * sectorX + sectorY * sectorY + sectorZ * sectorZ < CORE_RADIUS_IN_SECTORS * CORE_RADIUS_IN_SECTORS) {
+        if (int(sectorX) * int(sectorX) + int(sectorY) * int(sectorY) + int(sectorZ) * int(sectorZ) < int(CORE_RADIUS_IN_SECTORS) * int(CORE_RADIUS_IN_SECTORS)) {
             // Central sphere
             return RealMath.fraction(9, 10);
-        } else if (sectorX * sectorX + sectorZ * sectorZ < DISK_RADIUS_IN_SECTORS * DISK_RADIUS_IN_SECTORS && sectorY < DISK_HALFHEIGHT_IN_SECTORS && sectorY > -DISK_HALFHEIGHT_IN_SECTORS) {
+        } else if (int(sectorX) * int(sectorX) + int(sectorZ) * int(sectorZ) < int(DISK_RADIUS_IN_SECTORS) * int(DISK_RADIUS_IN_SECTORS) && sectorY < DISK_HALFHEIGHT_IN_SECTORS && sectorY > -DISK_HALFHEIGHT_IN_SECTORS) {
             // Disk
             return RealMath.fraction(1, 2);
         } else {
