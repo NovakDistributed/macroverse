@@ -1,7 +1,7 @@
 {
   "contract_name": "RNG",
   "abi": [],
-  "unlinked_binary": "0x60606040523415600b57fe5b5b60338060196000396000f30060606040525bfe00a165627a7a723058202e7693a298d5420c4d38623d52679bf63d8bddf3fe27215a06cb42ac54fb30110029",
+  "unlinked_binary": "0x60606040523415600b57fe5b5b60338060196000396000f30060606040525bfe00a165627a7a72305820789934df2327796fde4220cb0982049ad6508d97106545c82dc048d778d3f5610029",
   "networks": {
     "1": {
       "events": {},
@@ -14,8 +14,14 @@
       "links": {},
       "address": "0xa317dfbd0aed461f8709689214be251f00340dd3",
       "updated_at": 1498956673541
+    },
+    "1499322568364": {
+      "events": {},
+      "links": {},
+      "address": "0x02b2114a137c7c5994ad7caa928344ebf983ea05",
+      "updated_at": 1499323884397
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1498956673541
+  "updated_at": 1499324879779
 }
