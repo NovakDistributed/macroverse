@@ -36,7 +36,7 @@ contract('MacroverseStarGenerator', function(accounts) {
   
   it("should let us read the density", async function() {
     let instance = await MacroverseStarGenerator.deployed()
-    var density = fromReal(await instance.getGalaxyDensity.call(0, 0, 0))
+    let density = fromReal(await instance.getGalaxyDensity.call(0, 0, 0))
     
     assert.isAbove(density, 0.899999, "Density at the center of the galaxy is not too small")
     assert.isBelow(density, 0.900001, "Density at the center of the galaxy is not too big")
@@ -44,39 +44,108 @@ contract('MacroverseStarGenerator', function(accounts) {
   
   it("should report 0.9 density out to a radius of 500", async function() {
     let instance = await MacroverseStarGenerator.deployed()
-    var density = fromReal(await instance.getGalaxyDensity.call(499, 0, 0))
+    let density = fromReal(await instance.getGalaxyDensity.call(999, 0, 0))
     assert.isAbove(density, 0.899999, "Density just inside the central bubble is not too small")
     assert.isBelow(density, 0.900001, "Density just inside the central bubble is not too big")
     
-    density = fromReal(await instance.getGalaxyDensity.call(250, 0, 433))
+    density = fromReal(await instance.getGalaxyDensity.call(250, 866, 433))
     assert.isAbove(density, 0.899999, "Density just inside the central bubble is not too small")
     assert.isBelow(density, 0.900001, "Density just inside the central bubble is not too big")
     
-    density = fromReal(await instance.getGalaxyDensity.call(250, 0, 433))
+    density = fromReal(await instance.getGalaxyDensity.call(250, 866, 433))
     assert.isAbove(density, 0.899999, "Density just inside the central bubble is not too small")
     assert.isBelow(density, 0.900001, "Density just inside the central bubble is not too big")
     
-    density = fromReal(await instance.getGalaxyDensity.call(35, 100, 488))
+    density = fromReal(await instance.getGalaxyDensity.call(35, 872, 488))
     assert.isAbove(density, 0.899999, "Density just inside the central bubble is not too small")
     assert.isBelow(density, 0.900001, "Density just inside the central bubble is not too big")
     
     density = fromReal(await instance.getGalaxyDensity.call(131, 0, 0))
     assert.isAbove(density, 0.899999, "Density well inside the central bubble is not too small")
     assert.isBelow(density, 0.900001, "Density well inside the central bubble is not too big")
+    
+    density = fromReal(await instance.getGalaxyDensity.call(35, 872, 489))
+    assert.isBelow(density, 0.899999, "Density just outside the central bubble is smaller")
+    
+    density = fromReal(await instance.getGalaxyDensity.call(0, 1000, 0))
+    assert.isBelow(density, 0.499999, "Density just above  the central bubble is smaller still")
   })
   
   it("should report 1/60 density way out", async function() {
     let instance = await MacroverseStarGenerator.deployed()
-    var density = fromReal(await instance.getGalaxyDensity.call(999, 999, 999))
+    let density = fromReal(await instance.getGalaxyDensity.call(999, 999, 999))
     assert.isAbove(density, 0.016, "Density way out is not too small")
     assert.isBelow(density, 0.017, "Density way out is not too big")
   })
   
   it("should report 1/2 density in the main disk", async function() {
     let instance = await MacroverseStarGenerator.deployed()
-    var density = fromReal(await instance.getGalaxyDensity.call(-6000, -5, -13))
+    let density = fromReal(await instance.getGalaxyDensity.call(-6000, -5, -13))
     assert.isAbove(density, 0.499999, "Density in disk is not too small")
     assert.isBelow(density, 0.500001, "Density in disk is not too big")
+  })
+  
+  it("should have lots of things in the disk", async function() {
+    let instance = await MacroverseStarGenerator.deployed()
+    let objectCount = 0;
+    let sectorCount = 0;
+    for (let x = -1; x < 2; x++) {
+      for(let y = -1; y < 2; y++) {
+        for (let z = -1; z < 2; z++) {
+          let sectorObjects = (await instance.getSectorObjectCount.call(x, y, z)).toNumber()
+          console.log(x, y, z, sectorObjects)
+          objectCount += sectorObjects
+          sectorCount += 1
+        }
+      }
+    }
+    
+    let average = objectCount / sectorCount;
+    
+    assert.isAbove(average, 20, "Enough objects exist in the core")
+    assert.isBelow(average, 30, "Too many objects don't exist in the core")
+  })
+  
+  it("should have some objects way out", async function() {
+    let instance = await MacroverseStarGenerator.deployed()
+    let objectCount = 0;
+    let sectorCount = 0;
+    for (let x = -1; x < 2; x++) {
+      for(let y = -1; y < 2; y++) {
+        for (let z = -1; z < 2; z++) {
+          let sectorObjects = (await instance.getSectorObjectCount.call(x + 999, y + 999, z + 999)).toNumber()
+          console.log(x, y, z, sectorObjects)
+          objectCount += sectorObjects
+          sectorCount += 1
+        }
+      }
+    }
+    
+    let average = objectCount / sectorCount;
+    
+    assert.isAbove(average, 0, "Enough objects exist in deep space")
+    assert.isBelow(average, 1, "Too many objects don't exist in deep space")
+  })
+  
+  it("should have a moderate number of objects in the disk", async function() {
+    let instance = await MacroverseStarGenerator.deployed()
+    let objectCount = 0;
+    let sectorCount = 0;
+    for (let x = -1; x < 2; x++) {
+      for(let y = -1; y < 2; y++) {
+        for (let z = -1; z < 2; z++) {
+          let sectorObjects = (await instance.getSectorObjectCount.call(x - 3000, y, z + 3000)).toNumber()
+          console.log(x, y, z, sectorObjects)
+          objectCount += sectorObjects
+          sectorCount += 1
+        }
+      }
+    }
+    
+    let average = objectCount / sectorCount;
+    
+    assert.isAbove(average, 10, "Enough objects exist in the disk")
+    assert.isBelow(average, 20, "Too many objects don't exist in the disk")
   })
   
   it("should produce stars of reasonable mass", async function() {
