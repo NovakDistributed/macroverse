@@ -305,8 +305,32 @@
       "links": {},
       "address": "0x0ccb8b79e160e058b29ec1109bcfef1fd77bf964",
       "updated_at": 1499323884397
+    },
+    "1499403595579": {
+      "events": {
+        "0x575875f7fca9a5932686f3a3f2153e91772df070936be6bba7edbc61d339e60f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "starSeed",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "StarOwnershipChange",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xd3808a07b3ec5cd18ca98b21a70dd5c9fcd3d051",
+      "updated_at": 1499403607698
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1499323884397
+  "updated_at": 1499403607698
 }
