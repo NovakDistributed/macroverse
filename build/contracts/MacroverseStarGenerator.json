@@ -262,8 +262,8 @@
       "links": {
         "RealMath": "0x3c018100533af417f286331e0ba3b65a288fa848"
       },
-      "address": "0x56d96b6a5f33e2efe5be66065d5b9c230b1f4e0e",
-      "updated_at": 1498363737188
+      "address": "0xc9650c155Bb268A1667B5F9c68701638cAE93d3f",
+      "updated_at": 1499408241790
     },
     "1498956432419": {
       "events": {},
@@ -299,5 +299,5 @@
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1499407897225
+  "updated_at": 1499408241790
 }
