@@ -8,30 +8,6 @@
       "links": {},
       "address": "0x670a7b074b629e36c2fee2cd2d3683aaa6aa801a",
       "updated_at": 1498363737182
-    },
-    "1498956432419": {
-      "events": {},
-      "links": {},
-      "address": "0xa317dfbd0aed461f8709689214be251f00340dd3",
-      "updated_at": 1498956673541
-    },
-    "1499322568364": {
-      "events": {},
-      "links": {},
-      "address": "0x02b2114a137c7c5994ad7caa928344ebf983ea05",
-      "updated_at": 1499323884397
-    },
-    "1499403595579": {
-      "events": {},
-      "links": {},
-      "address": "0xe3f273ab9a77f417ea6c82f2ce510c935425fe24",
-      "updated_at": 1499403607824
-    },
-    "1499405812972": {
-      "events": {},
-      "links": {},
-      "address": "0x0837fac610449e8fadd0c555170cc1ed8b7012ad",
-      "updated_at": 1499407897224
     }
   },
   "schema_version": "0.0.5",
