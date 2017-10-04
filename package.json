@@ -17,6 +17,6 @@
         "url": "https://github.com/NovakDistributed/macroverse.git"
     },
     "dependencies": {
-        "zeppelin-solidity": "^1.0.6"
+        "zeppelin-solidity": "1.1.0"
     }
 }

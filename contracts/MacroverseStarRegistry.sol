@@ -5,7 +5,7 @@ import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "zeppelin-solidity/contracts/ownership/HasNoEther.sol";
 import "zeppelin-solidity/contracts/ownership/HasNoContracts.sol";
 import "zeppelin-solidity/contracts/token/ERC20Basic.sol";
-import "zeppelin-solidity/contracts/SafeMath.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
  * The Macroverse Star Registry keeps track of who currently owns virtual real estate in the
