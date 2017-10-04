@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 import "./AccessControl.sol";
 
-import "./zeppelin/ownership/Ownable.sol";
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /**
  * Represents a contract that is Ownable, and which has methods that are to be protected by an AccessControl strategy selected by the owner.

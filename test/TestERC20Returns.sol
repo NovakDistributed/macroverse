@@ -2,7 +2,7 @@ pragma solidity ^0.4.11;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../contracts/zeppelin/token/ERC20.sol";
+import "zeppelin-solidity/contracts/token/ERC20.sol";
 
 // The real ERC20 standard has approve, transfer, and transferFrom returning bools, but the
 // OpenZeppelin implementation just has them throw/not throw.

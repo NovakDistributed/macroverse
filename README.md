@@ -11,4 +11,45 @@ For full details, see the [whitepaper](https://macroverse.io/MacroverseWhitepape
 
 Macroverse is a project of Novak Distributed. Macroverse is (C) 2017 Novak Distributed, all rights reserved.
 
-Some code in this repository is from [OpenZeppelin](https://github.com/OpenZeppelin/zeppelin-solidity). This code is MIT-licensed.
+## Installation
+
+Make sure you have the Truffle build tool:
+
+```
+npm install -g truffle
+```
+
+And testrpc:
+```
+npm install -g ethereum-testrpc
+```
+
+Then install from source:
+
+```
+git clone https://github.com/NovakDistributed/macroverse.git
+cd macroverse
+npm install
+```
+
+Then build the smart contracts (to make sure they still work):
+
+```
+truffle build
+```
+
+Start a trestrpc node:
+
+```
+testrpc
+```
+
+And run the tests:
+
+```
+truffle test
+```
+
+
+
+

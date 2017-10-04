@@ -1,0 +1,22 @@
+{
+    "name": "macroverse",
+    "version": "1.1.0",
+    "descrioption": "An entire universe on the Ethereum blockchain",
+    "keywords": [
+        "macroverse",
+        "Ethereum",
+        "procedural",
+        "generation"
+    ],
+    "homepage": "https://macroverse.io/",
+    "bugs": {
+        "url": "https://github.com/novakdistributed/macroverse/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NovakDistributed/macroverse.git"
+    },
+    "dependencies": {
+        "zeppelin-solidity": "^1.0.6"
+    }
+}

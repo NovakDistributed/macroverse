@@ -1,10 +1,10 @@
 pragma solidity ^0.4.11;
 
 
-import "./zeppelin/token/StandardToken.sol";
-import "./zeppelin/ownership/Ownable.sol";
-import "./zeppelin/ownership/HasNoTokens.sol";
-import "./zeppelin/ownership/HasNoContracts.sol";
+import "zeppelin-solidity/contracts/token/StandardToken.sol";
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "zeppelin-solidity/contracts/ownership/HasNoTokens.sol";
+import "zeppelin-solidity/contracts/ownership/HasNoContracts.sol";
 
 
 /**
