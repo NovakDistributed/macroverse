@@ -60,10 +60,10 @@ contract('MacroverseStarRegistry', function(accounts) {
     let token = await MRVToken.deployed()
     
     await instance.setMinimumDeposit(web3.toWei(12345, "ether"))
-    assert.equal((await instance.minDepositInAtomicUnits.call(accounts[0])).toNumber(), web3.toWei(12345, "ether"), "The minimum deposit can be raised")
+    assert.equal((await instance.minDepositInAtomicUnits.call()).toNumber(), web3.toWei(12345, "ether"), "The minimum deposit can be raised")
     
     await instance.setMinimumDeposit(web3.toWei(999, "ether"))
-    assert.equal((await instance.minDepositInAtomicUnits.call(accounts[0])).toNumber(), web3.toWei(999, "ether"), "The minimum deposit can be lowered")
+    assert.equal((await instance.minDepositInAtomicUnits.call()).toNumber(), web3.toWei(999, "ether"), "The minimum deposit can be lowered")
     
   })
   
