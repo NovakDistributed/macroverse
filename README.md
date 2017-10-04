@@ -9,7 +9,7 @@ Players will be able to own a token, MRV, that provides access to this procedura
 
 For full details, see the [whitepaper](https://macroverse.io/MacroverseWhitepaper.pdf) and read the [smart contracts](https://github.com/NovakDistributed/macroverse/tree/master/contracts).
 
-Macroverse is a project of Novak Distributed. Macroverse is (C) 2017 Novak Distributed, all rights reserved.
+Macroverse is a project of Novak Distributed. Macroverse is (C) 2017 Novak Distributed. See [LICENSE](LICENSE) for licensing information.
 
 ## Installation
 
