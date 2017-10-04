@@ -32,12 +32,6 @@ cd macroverse
 npm install
 ```
 
-Then build the smart contracts (to make sure they still work):
-
-```
-truffle build
-```
-
 Start a trestrpc node:
 
 ```
