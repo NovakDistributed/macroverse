@@ -13,7 +13,7 @@ mv.REAL_ONE = web3.toBigNumber(2).toPower(mv.REAL_FBITS)
 
 mv.fromReal = function(real) {
   // Convert from 40 bit fixed point
-  return real.dividedBy(REAL_ONE).toNumber()
+  return real.dividedBy(mv.REAL_ONE).toNumber()
 }
 
 mv.objectClasses = ['Supergiant', 'Giant', 'MainSequence', 'WhiteDwarf', 'NeutronStar', 'BlackHole']
