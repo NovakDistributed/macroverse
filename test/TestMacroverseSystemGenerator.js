@@ -26,24 +26,37 @@ contract('MacroverseSystemGenerator', function(accounts) {
   
   it("should have 8 planets in the fred system", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
-    let count = (await instance.getObjectPlanetCount.call('fred', mv.objectClass['MainSequence'], mv.spectralType['TypeG'])).toNumber();
+    let count = (await instance.getObjectPlanetCount.call('fred', mv.objectClass['MainSequence'], mv.spectralType['TypeG'])).toNumber()
     assert.equal(count, 8);
   
   })
   
   it("should have a Terrestrial planet first", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
-    let planetClass = mv.planetClasses[(await instance.getPlanetClass.call('fred', 0, 8)).toNumber()];
-    assert.equal(planetClass, 'Terrestrial');
+    let planetClass = mv.planetClasses[(await instance.getPlanetClass.call('fred', 0, 8)).toNumber()]
+    assert.equal(planetClass, 'Terrestrial')
   })
   
   it("should be a super-earth", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
     let planetClassNum = mv.planetClass['Terrestrial']
-    let planetMass = mv.fromReal(await instance.getPlanetMass.call('fred', 0, planetClassNum));
+    let planetMass = mv.fromReal(await instance.getPlanetMass.call('fred', 0, planetClassNum))
     
-    assert.isAbove(planetMass, 6.27);
-    assert.isBelow(planetMass, 6.29);
+    assert.isAbove(planetMass, 6.27)
+    assert.isBelow(planetMass, 6.29)
+  })
+  
+  it("should let us dump the whole system", async function() {
+    let instance = await MacroverseSystemGenerator.deployed()
+    let count = (await instance.getObjectPlanetCount.call('fred', mv.objectClass['MainSequence'], mv.spectralType['TypeG'])).toNumber()
+    
+    for (let i = 0; i < count; i++) {
+        let planetClassNum = (await instance.getPlanetClass.call('fred', i, count)).toNumber()
+        let planetMass = mv.fromReal(await instance.getPlanetMass.call('fred', i, planetClassNum))
+        console.log('Planet ' + i + ': ' + mv.planetClasses[planetClassNum] + ' with mass ' + planetMass + ' Earths')
+    }
+        
+  
   })
   
 })
