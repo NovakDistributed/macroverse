@@ -38,3 +38,19 @@ mv.spectralType = {
   'NotApplicable': 7
 }
 
+mv.planetClasses = ['Lunar', 'Terrestrial', 'Uranian', 'Jovian', 'AsteroidBelt'],
+mv.planetClass = {
+  'Lunar': 0,
+  'Terrestrial': 1,
+  'Uranian': 2,
+  'Jovian': 3,
+  'AsteroidBelt': 4
+}
+
+
+
+
+
+
+
+

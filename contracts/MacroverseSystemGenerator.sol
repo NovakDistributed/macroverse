@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.15;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -29,10 +29,15 @@ contract MacroverseSystemGenerator is ControlledAccess {
     // No SafeMath or it might confuse RealMath
 
     /**
+     * Define different types of planet.
+     */
+    enum PlanetClass {Lunar, Terrestrial, Uranian, Jovian, AsteroidBelt}
+
+    /**
      * Deploy a new copy of the MacroverseSystemGenerator.
      */
     function MacroverseSystemGenerator(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) {
-        
+        // Nothing to do!
     }
     
     /**
@@ -41,7 +46,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Star Generator.
      */
     function getObjectPlanetCount(bytes32 seed, MacroverseStarGenerator.ObjectClass objectClass,
-        MacroverseStarGenerator.SpectralType spectralType) constant onlyControlledAccess returns (uint16) {
+        MacroverseStarGenerator.SpectralType spectralType) constant onlyControlledAccess returns (int16) {
         
         var node = RNG.RandNode(seed).derive("planetcount");
         
@@ -72,11 +77,88 @@ contract MacroverseSystemGenerator is ControlledAccess {
            limit = 2;
         }
         
-        uint16 roll = uint16(node.getIntBetween(1, limit));
+        var roll = int16(node.getIntBetween(1, limit));
         
         return roll;
     }
     
+    /**
+     * Decide what kind of planet a given planet is.
+     * It depends on its place in the order.
+     */
+    function getPlanetClass(bytes32 seed, int16 planetNumber, int16 totalPlanets) constant onlyControlledAccess returns (PlanetClass) {
+        // TODO: do something based on metallicity?
+        var node = RNG.RandNode(seed).derive(planetNumber).derive("class");
+        
+        var roll = node.getIntBetween(1, 100);
+        
+        // Inner planets should be more planet-y, ideally smaller
+        // Asteroid belts shouldn't be first that often
+        
+        if (planetNumber == 0 && totalPlanets != 1) {
+            // Innermost planet of a multi-planet system
+            // No asteroid belts allowed!
+            if (roll < 70) {
+                return PlanetClass.Lunar;
+            } else if (roll < 80) {
+                return PlanetClass.Terrestrial;
+            } else if (roll < 90) {
+                return PlanetClass.Uranian;
+            } else {
+                return PlanetClass.Jovian;
+            }
+        } else if (planetNumber < totalPlanets / 2) {
+            // Inner system
+            if (roll < 20) {
+                return PlanetClass.Lunar;
+            } else if (roll < 40) {
+                return PlanetClass.Terrestrial;
+            } else if (roll < 70) {
+                return PlanetClass.Uranian;
+            } else if (roll < 80) {
+                return PlanetClass.Jovian;
+            } else {
+                return PlanetClass.AsteroidBelt;
+            }
+        } else {
+            // Outer system
+            if (roll < 20) {
+                return PlanetClass.Lunar;
+            } else if (roll < 30) {
+                return PlanetClass.Terrestrial;
+            } else if (roll < 60) {
+                return PlanetClass.Uranian;
+            } else if (roll < 90) {
+                return PlanetClass.Jovian;
+            } else {
+                return PlanetClass.AsteroidBelt;
+            }
+        }
+    }
+    
+    /**
+     * Decide what the mass of the planet is. We can't do even the mass of
+     * Jupiter in the ~88 bits we have in a real (should we have used int256 as
+     * the backing type?) so we work in Earth masses.
+     */
+    function getPlanetMass(bytes32 seed, int8 planetNumber, PlanetClass class) constant onlyControlledAccess returns (int128) {
+        var node = RNG.RandNode(seed).derive(planetNumber).derive("mass");
+        
+        if (class == PlanetClass.Lunar) {
+            return node.getRealBetween(RealMath.fraction(1, 100), RealMath.fraction(9, 100));
+        } else if (class == PlanetClass.Terrestrial) {
+            return node.getRealBetween(RealMath.fraction(10, 100), RealMath.toReal(9));
+        } else if (class == PlanetClass.Uranian) {
+            return node.getRealBetween(RealMath.toReal(9), RealMath.toReal(20));
+        } else if (class == PlanetClass.Jovian) {
+            return node.getRealBetween(RealMath.toReal(50), RealMath.toReal(400));
+        } else if (class == PlanetClass.AsteroidBelt) {
+            return node.getRealBetween(RealMath.fraction(1, 100), RealMath.fraction(20, 100));
+        } else {
+            // Not real!
+            revert();
+        }
+    }
 
 }
  
