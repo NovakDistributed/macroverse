@@ -159,6 +159,113 @@ contract MacroverseSystemGenerator is ControlledAccess {
             revert();
         }
     }
+    
+    /**
+     * Decide what the planet's orbit's periapsis is, in meters.
+     * This is the first statistic about the orbit to be generated.
+     * For the first planet, realPrevClearance is 0.
+     */
+    function getPlanetPeriapsis(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realPrevClearance) constant onlyControlledAccess returns (int128) {
+        
+        var node = RNG.RandNode(seed).derive(planetNumber).derive("periapsis");
+        
+        // Define minimum and maximum periapsis distance above previous planet's
+        // cleared band in millions of km
+        int88 minimum;
+        int88 maximum;
+        if (class == PlanetClass.Lunar) {
+            minimum = 20;
+            maximum = 60;
+        } else if (class == PlanetClass.Terrestrial) {
+            minimum = 40;
+            maximum = 70;
+        } else if (class == PlanetClass.Uranian) {
+            minimum = 1000;
+            maximum = 2000;
+        } else if (class == PlanetClass.Jovian) {
+            minimum = 300;
+            maximum = 500;
+        } else if (class == PlanetClass.AsteroidBelt) {
+            minimum = 20;
+            maximum = 500;
+        } else {
+            // Not real!
+            revert();
+        }
+        
+        int128 realSeparation = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        return realPrevClearance + RealMath.mul(realSeparation, RealMath.toReal(1000000000)); 
+    }
+    
+    /**
+     * Decide what the planet's orbit's apoapsis is, in meters.
+     * This is the second statistic about the orbit to be generated.
+     */
+    function getPlanetApoapsis(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realPeriapsis) constant onlyControlledAccess returns (int128) {
+        
+        var node = RNG.RandNode(seed).derive(planetNumber).derive("apoapsis");
+        
+        // Define minimum and maximum apoapsis distance above planet's periapsis
+        int88 minimum;
+        int88 maximum;
+        if (class == PlanetClass.Lunar) {
+            minimum = 0;
+            maximum = 3;
+        } else if (class == PlanetClass.Terrestrial) {
+            minimum = 0;
+            maximum = 5;
+        } else if (class == PlanetClass.Uranian) {
+            minimum = 20;
+            maximum = 500;
+        } else if (class == PlanetClass.Jovian) {
+            minimum = 10;
+            maximum = 100;
+        } else if (class == PlanetClass.AsteroidBelt) {
+            minimum = 10;
+            maximum = 50;
+        } else {
+            // Not real!
+            revert();
+        }
+        
+        int128 realWidth = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        return realPeriapsis + RealMath.mul(realWidth, RealMath.toReal(1000000000)); 
+    }
+    
+    /**
+     * Decide how far out the cleared band after the planet's orbit is.
+     */
+    function getPlanetClearance(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realApoapsis) constant onlyControlledAccess returns (int128) {
+        
+        var node = RNG.RandNode(seed).derive(planetNumber).derive("cleared");
+        
+        // Define minimum and maximum clearance in millions of km.
+        // TODO: Constants should be sort of like the periapsis constants I think? But maybe not identical.
+        int88 minimum;
+        int88 maximum;
+        if (class == PlanetClass.Lunar) {
+            minimum = 20;
+            maximum = 60;
+        } else if (class == PlanetClass.Terrestrial) {
+            minimum = 40;
+            maximum = 70;
+        } else if (class == PlanetClass.Uranian) {
+            minimum = 1000;
+            maximum = 2000;
+        } else if (class == PlanetClass.Jovian) {
+            minimum = 300;
+            maximum = 500;
+        } else if (class == PlanetClass.AsteroidBelt) {
+            minimum = 20;
+            maximum = 500;
+        } else {
+            // Not real!
+            revert();
+        }
+        
+        int128 realSeparation = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        return realApoapsis + RealMath.mul(realSeparation, RealMath.toReal(1000000000)); 
+    }
 
 }
  

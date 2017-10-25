@@ -16,6 +16,15 @@ mv.fromReal = function(real) {
   return real.dividedBy(mv.REAL_ONE).toNumber()
 }
 
+mv.toReal = function(float) {
+  // Convert to 40 bit fixed point
+  return mv.REAL_ONE.times(float)
+}
+
+// Useful astronomical constants
+// 1 Astronomical Unit in meters
+mv.AU = 149597870700
+
 mv.objectClasses = ['Supergiant', 'Giant', 'MainSequence', 'WhiteDwarf', 'NeutronStar', 'BlackHole']
 mv.objectClass = {
   'Supergiant': 0,
