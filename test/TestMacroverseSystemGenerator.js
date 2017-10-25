@@ -46,6 +46,25 @@ contract('MacroverseSystemGenerator', function(accounts) {
     assert.isBelow(planetMass, 6.29)
   })
   
+  it("should have an orbit from about 0.32 to 0.35 AU", async function() {
+    let instance = await MacroverseSystemGenerator.deployed()
+    let planetClassNum = mv.planetClass['Terrestrial']
+    
+    let realPeriapsis = await instance.getPlanetPeriapsis.call('fred', 0, planetClassNum, mv.toReal(0))
+    let realApoapsis =  await instance.getPlanetApoapsis.call('fred', 0, planetClassNum, realPeriapsis)
+    let realClearance =  await instance.getPlanetClearance.call('fred', 0, planetClassNum, realApoapsis)
+    
+    assert.isAbove(mv.fromReal(realPeriapsis) / mv.AU, 0.32)
+    assert.isBelow(mv.fromReal(realPeriapsis) / mv.AU, 0.33)
+    
+    assert.isAbove(mv.fromReal(realApoapsis) / mv.AU, 0.35)
+    assert.isBelow(mv.fromReal(realApoapsis) / mv.AU, 0.36)
+
+    // We sould also have reasonably symmetric-ish clearance    
+    assert.isAbove(mv.fromReal(realClearance) / mv.AU, 0.60)
+    assert.isBelow(mv.fromReal(realPeriapsis) / mv.AU, 0.70)
+  })
+  
   it("should let us dump the whole system", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
     let count = (await instance.getObjectPlanetCount.call('fred', mv.objectClass['MainSequence'], mv.spectralType['TypeG'])).toNumber()
