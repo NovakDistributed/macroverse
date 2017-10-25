@@ -57,12 +57,12 @@ contract('MacroverseSystemGenerator', function(accounts) {
         let realMass = await instance.getPlanetMass.call('fred', i, planetClassNum)
         let planetMass = mv.fromReal(realMass)
         let realPeriapsis = await instance.getPlanetPeriapsis.call('fred', i, planetClassNum, lastClearance)
-        let planetPeriapsis = mv.fromReal(realPeriapsis) / 1000000000;
+        let planetPeriapsis = mv.fromReal(realPeriapsis) / mv.AU;
         let realApoapsis = await instance.getPlanetApoapsis.call('fred', i, planetClassNum, realPeriapsis)
-        let planetApoapsis = mv.fromReal(realApoapsis) / 1000000000;
+        let planetApoapsis = mv.fromReal(realApoapsis) / mv.AU;
         lastClearance = await instance.getPlanetClearance.call('fred', i, planetClassNum, realApoapsis)
         console.log('Planet ' + i + ': ' + mv.planetClasses[planetClassNum] + ' with mass ' +
-            planetMass + ' Earths between ' + planetPeriapsis + ' and ' + planetApoapsis + ' M km')
+            planetMass + ' Earths between ' + planetPeriapsis + ' and ' + planetApoapsis + ' AU')
     }
         
   
