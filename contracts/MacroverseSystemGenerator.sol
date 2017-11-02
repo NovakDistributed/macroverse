@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -46,7 +46,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Star Generator.
      */
     function getObjectPlanetCount(bytes32 seed, MacroverseStarGenerator.ObjectClass objectClass,
-        MacroverseStarGenerator.SpectralType spectralType) constant onlyControlledAccess returns (int16) {
+        MacroverseStarGenerator.SpectralType spectralType) public view onlyControlledAccess returns (int16) {
         
         var node = RNG.RandNode(seed).derive("planetcount");
         
@@ -86,7 +86,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Decide what kind of planet a given planet is.
      * It depends on its place in the order.
      */
-    function getPlanetClass(bytes32 seed, int16 planetNumber, int16 totalPlanets) constant onlyControlledAccess returns (PlanetClass) {
+    function getPlanetClass(bytes32 seed, int16 planetNumber, int16 totalPlanets) public view onlyControlledAccess returns (PlanetClass) {
         // TODO: do something based on metallicity?
         var node = RNG.RandNode(seed).derive(planetNumber).derive("class");
         
@@ -141,7 +141,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Jupiter in the ~88 bits we have in a real (should we have used int256 as
      * the backing type?) so we work in Earth masses.
      */
-    function getPlanetMass(bytes32 seed, int8 planetNumber, PlanetClass class) constant onlyControlledAccess returns (int128) {
+    function getPlanetMass(bytes32 seed, int8 planetNumber, PlanetClass class) public view onlyControlledAccess returns (int128) {
         var node = RNG.RandNode(seed).derive(planetNumber).derive("mass");
         
         if (class == PlanetClass.Lunar) {
@@ -165,7 +165,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * This is the first statistic about the orbit to be generated.
      * For the first planet, realPrevClearance is 0.
      */
-    function getPlanetPeriapsis(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realPrevClearance) constant onlyControlledAccess returns (int128) {
+    function getPlanetPeriapsis(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realPrevClearance) public view onlyControlledAccess returns (int128) {
         
         var node = RNG.RandNode(seed).derive(planetNumber).derive("periapsis");
         
@@ -201,7 +201,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Decide what the planet's orbit's apoapsis is, in meters.
      * This is the second statistic about the orbit to be generated.
      */
-    function getPlanetApoapsis(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realPeriapsis) constant onlyControlledAccess returns (int128) {
+    function getPlanetApoapsis(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realPeriapsis) public view onlyControlledAccess returns (int128) {
         
         var node = RNG.RandNode(seed).derive(planetNumber).derive("apoapsis");
         
@@ -235,7 +235,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Decide how far out the cleared band after the planet's orbit is.
      */
-    function getPlanetClearance(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realApoapsis) constant onlyControlledAccess returns (int128) {
+    function getPlanetClearance(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realApoapsis) public view onlyControlledAccess returns (int128) {
         
         var node = RNG.RandNode(seed).derive(planetNumber).derive("cleared");
         

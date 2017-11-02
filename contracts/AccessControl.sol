@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity 0.4.18;
 
 /**
  * Interface for an access control strategy for Macrtoverse contracts.
@@ -9,5 +9,5 @@ contract AccessControl {
     /**
      * Should a query be allowed for this msg.sender (calling contract) and this tx.origin (calling user)?
      */
-    function allowQuery(address sender, address origin) constant returns (bool);
+    function allowQuery(address sender, address origin) public view returns (bool);
 }

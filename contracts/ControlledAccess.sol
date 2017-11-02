@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.18;
 
 import "./AccessControl.sol";
 
@@ -15,14 +15,14 @@ contract ControlledAccess is Ownable {
     /**
      * Make a new ControlledAccess contract, controlling access with the given AccessControl strategy.
      */
-    function ControlledAccess(address originalAccessControl) {
+    function ControlledAccess(address originalAccessControl) internal {
         accessControl = AccessControl(originalAccessControl);
     }
     
     /**
      * Change the access control strategy of the prototype.
      */
-    function changeAccessControl(address newAccessControl) onlyOwner {
+    function changeAccessControl(address newAccessControl) public onlyOwner {
         accessControl = AccessControl(newAccessControl);
     }
     
@@ -30,7 +30,7 @@ contract ControlledAccess is Ownable {
      * Only allow queries approved by the access control contract.
      */
     modifier onlyControlledAccess {
-        if (!accessControl.allowQuery(msg.sender, tx.origin)) throw;
+        if (!accessControl.allowQuery(msg.sender, tx.origin)) revert();
         _;
     }
     

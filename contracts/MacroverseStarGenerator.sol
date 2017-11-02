@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.18;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -61,7 +61,7 @@ contract MacroverseStarGenerator is ControlledAccess {
      * Get the density (between 0 and 1 as a fixed-point real88x40) of stars in the given sector. Sector 0,0,0 is centered on the galactic origin.
      * +Y is upwards.
      */
-    function getGalaxyDensity(int16 sectorX, int16 sectorY, int16 sectorZ) constant onlyControlledAccess returns (int128 realDensity) {
+    function getGalaxyDensity(int16 sectorX, int16 sectorY, int16 sectorZ) public view onlyControlledAccess returns (int128 realDensity) {
         // For the prototype, we have a central sphere and a surrounding disk.
         
         // Enforce absolute bounds.
@@ -88,7 +88,7 @@ contract MacroverseStarGenerator is ControlledAccess {
     /**
      * Get the number of objects in the sector at the given coordinates.
      */
-    function getSectorObjectCount(int16 sectorX, int16 sectorY, int16 sectorZ) constant onlyControlledAccess returns (uint16) {
+    function getSectorObjectCount(int16 sectorX, int16 sectorY, int16 sectorZ) public view onlyControlledAccess returns (uint16) {
         // Decide on a base item count
         var sectorNode = root.derive(sectorX).derive(sectorY).derive(sectorZ);
         var maxObjects = sectorNode.derive("count").d(3, 20, 0);
@@ -102,14 +102,14 @@ contract MacroverseStarGenerator is ControlledAccess {
     /**
      * Get the seed for an object in a sector.
      */
-    function getSectorObjectSeed(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 object) constant onlyControlledAccess returns (bytes32) {
+    function getSectorObjectSeed(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 object) public view onlyControlledAccess returns (bytes32) {
         return root.derive(sectorX).derive(sectorY).derive(sectorZ).derive(uint(object))._hash;
     }
     
     /**
      * Get the class of the star system with the given seed.
      */
-    function getObjectClass(bytes32 seed) constant onlyControlledAccess returns (ObjectClass) {
+    function getObjectClass(bytes32 seed) public view onlyControlledAccess returns (ObjectClass) {
         // Make a node for rolling for the class.
         var node = RNG.RandNode(seed).derive("class");
         // Roll an impractical d10,000
@@ -137,7 +137,7 @@ contract MacroverseStarGenerator is ControlledAccess {
     /**
      * Get the spectral type for an object with the given seed of the given class.
      */
-    function getObjectSpectralType(bytes32 seed, ObjectClass objectClass) constant onlyControlledAccess returns (SpectralType) {
+    function getObjectSpectralType(bytes32 seed, ObjectClass objectClass) public view onlyControlledAccess returns (SpectralType) {
         var node = RNG.RandNode(seed).derive("type");
         var roll = node.getIntBetween(1, 10000000); // Even more implausible dice
 
@@ -192,7 +192,7 @@ contract MacroverseStarGenerator is ControlledAccess {
      * Get the position of a star within its sector, as reals from 0 to 25.
      * Note that stars may end up implausibly close together. Such is life in the Macroverse.
      */
-    function getObjectPosition(bytes32 seed) constant onlyControlledAccess returns (int128 realX, int128 realY, int128 realZ) {
+    function getObjectPosition(bytes32 seed) public view onlyControlledAccess returns (int128 realX, int128 realY, int128 realZ) {
         var node = RNG.RandNode(seed).derive("position");
         
         realX = node.derive("x").getRealBetween(RealMath.toReal(0), RealMath.toReal(25));
@@ -203,7 +203,7 @@ contract MacroverseStarGenerator is ControlledAccess {
     /**
      * Get the mass of a star, in solar masses as a real, given its seed and class and spectral type.
      */
-    function getObjectMass(bytes32 seed, ObjectClass objectClass, SpectralType spectralType) constant onlyControlledAccess returns (int128) {
+    function getObjectMass(bytes32 seed, ObjectClass objectClass, SpectralType spectralType) public view onlyControlledAccess returns (int128) {
         var node = RNG.RandNode(seed).derive("mass");
          
         if (objectClass == ObjectClass.BlackHole) {
@@ -240,7 +240,7 @@ contract MacroverseStarGenerator is ControlledAccess {
     /**
      * Determine if the given star has any orbiting planets or not.
      */
-    function getObjectHasPlanets(bytes32 seed, ObjectClass objectClass, SpectralType spectralType) constant onlyControlledAccess returns (bool) {
+    function getObjectHasPlanets(bytes32 seed, ObjectClass objectClass, SpectralType spectralType) public view onlyControlledAccess returns (bool) {
         var node = RNG.RandNode(seed).derive("hasplanets");
         var roll = node.getIntBetween(1, 1000);
 
