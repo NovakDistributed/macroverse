@@ -8,11 +8,13 @@ contract('MacroverseSystemGenerator', function(accounts) {
   it("should initially reject queries", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
     
-    await instance.getObjectPlanetCount.call('fred', mv.objectClass['MainSequence'], mv.spectralType['TypeG']).then(function () {
-      assert.ok(false, "Successfully made unauthorized query")
-    }).catch(async function () {
-      assert.ok(true, "Unauthorized query was rejected")
-    })
+    let failure_found = false
+    
+    await (instance.getObjectPlanetCount.call('fred', mv.objectClass['MainSequence'], mv.spectralType['TypeG'], {from: accounts[1]}).catch(async function () {
+      failure_found = true
+    }))
+    
+    assert.equal(failure_found, true, "Unauthorized query should fail")
   })
   
   it("should let us change access control to unrestricted", async function() {
@@ -22,6 +24,18 @@ contract('MacroverseSystemGenerator', function(accounts) {
     
     assert.ok(true, "Access control can be changed without error")
     
+  })
+  
+  it("should then accept queries", async function() {
+    let instance = await MacroverseSystemGenerator.deployed()
+    
+    let failure_found = false
+    
+    await (instance.getObjectPlanetCount.call('fred', mv.objectClass['MainSequence'], mv.spectralType['TypeG'], {from: accounts[1]}).catch(async function () {
+      failure_found = true
+    }))
+    
+    assert.equal(failure_found, false, "Authorized query should succeed")
   })
   
   it("should have 8 planets in the fred system", async function() {

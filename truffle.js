@@ -1,10 +1,6 @@
 module.exports = {
   networks: {
-    development: {
-      host: "localhost",
-      port: 8545,
-      network_id: "*" // Match any network id. We could use "default" but then Solidity tests can't find libraries.
-    },
+    // Development network is now all in-memory in Truffle 4.
     live: {
       network_id: 1,
       host: "localhost",
