@@ -28,6 +28,9 @@ contract MacroverseSystemGenerator is ControlledAccess {
     using RealMath for *;
     // No SafeMath or it might confuse RealMath
 
+    // This is pi * 2^40, rounded.
+    int128 constant REAL_PI = 3454217652358;
+
     /**
      * Define different types of planet.
      */
@@ -160,6 +163,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
         }
     }
     
+    // Define the orbit shape
+    
     /**
      * Decide what the planet's orbit's periapsis is, in meters.
      * This is the first statistic about the orbit to be generated.
@@ -206,6 +211,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
         var node = RNG.RandNode(seed).derive(planetNumber).derive("apoapsis");
         
         // Define minimum and maximum apoapsis distance above planet's periapsis
+        // Think in gigameters (millions of km)
         int88 minimum;
         int88 maximum;
         if (class == PlanetClass.Lunar) {
@@ -241,6 +247,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
         
         // Define minimum and maximum clearance in millions of km.
         // TODO: Constants should be sort of like the periapsis constants I think? But maybe not identical.
+        // Think in gigameters (millions of km)
         int88 minimum;
         int88 maximum;
         if (class == PlanetClass.Lunar) {
@@ -266,6 +273,89 @@ contract MacroverseSystemGenerator is ControlledAccess {
         int128 realSeparation = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
         return realApoapsis + RealMath.mul(realSeparation, RealMath.toReal(1000000000)); 
     }
+    
+    /**
+     * Convert from periapsis and apoapsis to semimajor axis and eccentricity.
+     */
+    function convertShape(int128 realPeriapsis, int128 realApoapsis) public view onlyControlledAccess returns (int128 realSemimajor, int128 realEccentricity) {
+        // Semimajor axis is average of apoapsis and periapsis
+        realSemimajor = RealMath.div(realApoapsis + realPeriapsis, RealMath.toReal(2));
+        
+        // Eccentricity is ratio of difference and sum
+        realEccentricity = RealMath.div(realApoapsis - realPeriapsis, realApoapsis + realPeriapsis);
+    }
+    
+    // Define the orbital plane
+    
+    /**
+     * Get the longitude of the ascending node (angle from galactic +X to ascending node) for a planet.
+     */ 
+    function getPlanetLan(bytes32 seed, int8 planetNumber, PlanetClass class) returns (int128) {
+        var node = RNG.RandNode(seed).derive(planetNumber).derive("LAN");
+        // Angles should be uniform from 0 to 2 PI
+        return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
+    }
+    
+    /**
+     * Get the inclination (angle from galactic XZ plane to orbital plane at the ascending node) for a planet.
+     * Inclination is always positive. If it were negative, the ascending node would really be the descending node.
+     * Result is a real in radians.
+     */ 
+    function getPlanetInclination(bytes32 seed, int8 planetNumber, PlanetClass class) public view onlyControlledAccess returns (int128) {
+        var node = RNG.RandNode(seed).derive(planetNumber).derive("inclination");
+    
+        // Define minimum and maximum inclinations in milliradians
+        // 175 milliradians = ~ 10 degrees
+        int88 minimum;
+        int88 maximum;
+        if (class == PlanetClass.Lunar) {
+            minimum = 0;
+            maximum = 175;
+        } else if (class == PlanetClass.Terrestrial) {
+            minimum = 0;
+            maximum = 87;
+        } else if (class == PlanetClass.Uranian) {
+            minimum = 0;
+            maximum = 35;
+        } else if (class == PlanetClass.Jovian) {
+            minimum = 0;
+            maximum = 52;
+        } else if (class == PlanetClass.AsteroidBelt) {
+            minimum = 0;
+            maximum = 262;
+        } else {
+            // Not real!
+            revert();
+        }
+        
+        return RealMath.div(node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum)), RealMath.toReal(1000));    
+    }
+    
+    // Define the orbit's embedding in the plane (and in time)
+    
+    /**
+     * Get the argument of periapsis (angle from ascending node to periapsis position, in the orbital plane) for a planet.
+     */
+    function getPlanetAop(bytes32 seed, int8 planetNumber, PlanetClass class) public view onlyControlledAccess returns (int128) {
+        var node = RNG.RandNode(seed).derive(planetNumber).derive("AOP");
+        // Angles should be uniform from 0 to 2 PI.
+        // We already made sure planets wouldn't get too close together when laying out the orbits.
+        return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
+    }
+    
+    /**
+     * Get the true anomaly (angle from periapsis to position at time 0) for a planet.
+     */
+    function getPlanetTrueAnomaly(bytes32 seed, int8 planetNumber, PlanetClass class) public view onlyControlledAccess returns (int128) {
+        var node = RNG.RandNode(seed).derive(planetNumber).derive("TA");
+        // Angles should be uniform from 0 to 2 PI.
+        return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
+    } 
+    
+    // Functions for orbital mechanics. Maybe should be a library?
+    // Please don't do these in Solidity unless you have to; you can do orbital mechanics in JS just fine with actual floats.
+    
+    
 
 }
  

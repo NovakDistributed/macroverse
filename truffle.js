@@ -1,6 +1,13 @@
 module.exports = {
   networks: {
     // Development network is now all in-memory in Truffle 4.
+    truffle: {
+       host: "localhost",
+       port: 9545,
+       network_id: "4447",
+       gas: 4700000,
+       gasPrice: 4000000000
+    },
     live: {
       network_id: 1,
       host: "localhost",
