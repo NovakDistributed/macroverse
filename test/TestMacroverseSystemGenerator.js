@@ -65,8 +65,8 @@ contract('MacroverseSystemGenerator', function(accounts) {
     let planetClassNum = mv.planetClass['Terrestrial']
     
     let realPeriapsis = await instance.getPlanetPeriapsis.call('fred', 0, planetClassNum, mv.toReal(0))
-    let realApoapsis =  await instance.getPlanetApoapsis.call('fred', 0, planetClassNum, realPeriapsis)
-    let realClearance =  await instance.getPlanetClearance.call('fred', 0, planetClassNum, realApoapsis)
+    let realApoapsis = await instance.getPlanetApoapsis.call('fred', 0, planetClassNum, realPeriapsis)
+    let realClearance = await instance.getPlanetClearance.call('fred', 0, planetClassNum, realApoapsis)
     
     assert.isAbove(mv.fromReal(realPeriapsis) / mv.AU, 0.32)
     assert.isBelow(mv.fromReal(realPeriapsis) / mv.AU, 0.33)
@@ -79,23 +79,64 @@ contract('MacroverseSystemGenerator', function(accounts) {
     assert.isBelow(mv.fromReal(realPeriapsis) / mv.AU, 0.70)
   })
   
+  it("should have a semimajor axis of 0.33 AU and an eccentricity of 0.04", async function() {
+  
+    let instance = await MacroverseSystemGenerator.deployed()
+    let planetClassNum = mv.planetClass['Terrestrial']
+    
+    let realPeriapsis = await instance.getPlanetPeriapsis.call('fred', 0, planetClassNum, mv.toReal(0))
+    let realApoapsis = await instance.getPlanetApoapsis.call('fred', 0, planetClassNum, realPeriapsis)
+    
+    let [realSemimajor, realEccentricity] = await instance.convertOrbitShape.call(realPeriapsis, realApoapsis)
+    
+    assert.isAbove(mv.fromReal(realSemimajor) / mv.AU, 0.32)
+    assert.isBelow(mv.fromReal(realSemimajor) / mv.AU, 0.34)
+    
+    assert.isAbove(mv.fromReal(realEccentricity), 0.03)
+    assert.isBelow(mv.fromReal(realEccentricity), 0.05)
+  
+  })
+  
   it("should let us dump the whole system", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
     let count = (await instance.getObjectPlanetCount.call('fred', mv.objectClass['MainSequence'], mv.spectralType['TypeG'])).toNumber()
     
     var lastClearance = mv.toReal(0)
     
+    // TODO: adopt per-planet seeds!
+    
     for (let i = 0; i < count; i++) {
+        // Define the planet
         let planetClassNum = (await instance.getPlanetClass.call('fred', i, count)).toNumber()
         let realMass = await instance.getPlanetMass.call('fred', i, planetClassNum)
         let planetMass = mv.fromReal(realMass)
+        
+        // Define the orbit shape
         let realPeriapsis = await instance.getPlanetPeriapsis.call('fred', i, planetClassNum, lastClearance)
         let planetPeriapsis = mv.fromReal(realPeriapsis) / mv.AU;
         let realApoapsis = await instance.getPlanetApoapsis.call('fred', i, planetClassNum, realPeriapsis)
         let planetApoapsis = mv.fromReal(realApoapsis) / mv.AU;
         lastClearance = await instance.getPlanetClearance.call('fred', i, planetClassNum, realApoapsis)
+        
+        let [realSemimajor, realEccentricity] = await instance.convertOrbitShape.call(realPeriapsis, realApoapsis)
+        let planetEccentricity = mv.fromReal(realEccentricity);
+        
+        // Define the orbital plane. Make sure to convert everything to degrees for display.
+        let realLan = await instance.getPlanetLan.call('fred', i, planetClassNum)
+        let planetLan = mv.degrees(mv.fromReal(realLan))
+        let realInclination = await instance.getPlanetInclination.call('fred', i, planetClassNum)
+        let planetInclination = mv.degrees(mv.fromReal(realInclination))
+        
+        // Define the position in the orbital plane
+        let realAop = await instance.getPlanetAop.call('fred', i, planetClassNum)
+        let planetAop = mv.degrees(mv.fromReal(realAop))
+        let realTrueAnomaly = await instance.getPlanetTrueAnomaly.call('fred', i, planetClassNum)
+        let planetTrueAnomaly = mv.degrees(mv.fromReal(realTrueAnomaly))
+        
         console.log('Planet ' + i + ': ' + mv.planetClasses[planetClassNum] + ' with mass ' +
             planetMass + ' Earths between ' + planetPeriapsis + ' and ' + planetApoapsis + ' AU')
+        console.log('\tEccentricity: ' + planetEccentricity + ' LAN: ' + planetLan + '° Inclination: ' + planetInclination + '°')
+        console.log('\tAOP: ' + planetAop + '° True Anomaly: ' + planetTrueAnomaly + '°')
     }
         
   

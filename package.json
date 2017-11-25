@@ -17,6 +17,7 @@
         "url": "https://github.com/NovakDistributed/macroverse.git"
     },
     "dependencies": {
+        "radians-degrees": "^1.0.0",
         "zeppelin-solidity": "1.3.0"
     },
     "license": "SEE LICENSE IN LICENSE",

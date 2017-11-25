@@ -21,6 +21,9 @@ mv.toReal = function(float) {
   return mv.REAL_ONE.times(float)
 }
 
+// Convert from float radians to float degrees.
+mv.degrees = require('radians-degrees');
+
 // Useful astronomical constants
 // 1 Astronomical Unit in meters
 mv.AU = 149597870700

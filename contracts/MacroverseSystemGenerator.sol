@@ -277,7 +277,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Convert from periapsis and apoapsis to semimajor axis and eccentricity.
      */
-    function convertShape(int128 realPeriapsis, int128 realApoapsis) public view onlyControlledAccess returns (int128 realSemimajor, int128 realEccentricity) {
+    function convertOrbitShape(int128 realPeriapsis, int128 realApoapsis) public view onlyControlledAccess returns (int128 realSemimajor, int128 realEccentricity) {
         // Semimajor axis is average of apoapsis and periapsis
         realSemimajor = RealMath.div(realApoapsis + realPeriapsis, RealMath.toReal(2));
         
