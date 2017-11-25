@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 /**
  * RealMath: fixed-point math library, based on fractional and integer parts.
  * Using int128 as real88x40, which isn't in Solidity yet.
- * 40 fractional bits gest us down to 1E-12 precision, while still letting us
+ * 40 fractional bits gets us down to 1E-12 precision, while still letting us
  * go up to galaxy scale counting in meters.
  * Internally uses the wider int256 for some math.
  */
@@ -121,6 +121,42 @@ library RealMath {
      */
     function fraction(int88 numerator, int88 denominator) public pure returns (int128) {
         return div(toReal(numerator), toReal(denominator));
+    }
+    
+    // Now we have some fancy math things (like pow and trig stuff). This isn't
+    // in the RealMath that was deployed with the original Macroverse
+    // deployment, so it needs to be linked into your contract statically.
+    
+    /**
+     * Raise a number to an integer power in O(log power) time.
+     * See <https://stackoverflow.com/a/101613>
+     */
+    function ipow(int128 real_base, int88 exponent) public pure returns (int128) {
+        // Start with the 0th power
+        int128 real_result = REAL_ONE;
+        while (exponent != 0) {
+            // While there are still bits set
+            if ((exponent & 0x1) == 0x1) {
+                // If the low bit is set, multiply in the (many-times-squared) base
+                real_result = mul(real_result, real_base);
+            }
+            // Shift off the low bit
+            exponent = exponent >> 1;
+            // Do the squaring
+            real_base = mul(real_base, real_base);
+        }
+        
+        // Return the final result.
+        return real_result;
+    }
+    
+    /**
+     * Calculate the natural log of a number. Uses ipow and the series given at
+     * <https://math.stackexchange.com/a/61283>.
+     */
+    function ln(int128 real_arg) public pure returns (int128) {
+        // TODO: implement
+        return 0;
     }
 }
 
