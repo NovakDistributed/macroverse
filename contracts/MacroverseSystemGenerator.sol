@@ -39,19 +39,19 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Deploy a new copy of the MacroverseSystemGenerator.
      */
-    function MacroverseSystemGenerator(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) {
+    function MacroverseSystemGenerator(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
         // Nothing to do!
     }
     
     /**
-     * If the object has any planets at all, get theœplanet count. Will return
+     * If the object has any planets at all, get the planet count. Will return
      * nonzero numbers always, so make sure to check getObjectHasPlanets in the
      * Star Generator.
      */
-    function getObjectPlanetCount(bytes32 seed, MacroverseStarGenerator.ObjectClass objectClass,
+    function getObjectPlanetCount(bytes32 starSeed, MacroverseStarGenerator.ObjectClass objectClass,
         MacroverseStarGenerator.SpectralType spectralType) public view onlyControlledAccess returns (int16) {
         
-        var node = RNG.RandNode(seed).derive("planetcount");
+        var node = RNG.RandNode(starSeed).derive("planetcount");
         
         
         int16 limit;
@@ -86,12 +86,20 @@ contract MacroverseSystemGenerator is ControlledAccess {
     }
     
     /**
+     * Get the seed for a planet from the seed for the star and its number.
+     */
+    function getPlanetSeed(bytes32 starSeed, int16 planetNumber) public view onlyControlledAccess returns (bytes32) {
+        return RNG.RandNode(starSeed).derive(planetNumber)._hash;
+    }
+    
+    /**
      * Decide what kind of planet a given planet is.
      * It depends on its place in the order.
+     * Takes the *planet*'s seed, its number, and the total planets in the system.
      */
     function getPlanetClass(bytes32 seed, int16 planetNumber, int16 totalPlanets) public view onlyControlledAccess returns (PlanetClass) {
         // TODO: do something based on metallicity?
-        var node = RNG.RandNode(seed).derive(planetNumber).derive("class");
+        var node = RNG.RandNode(seed).derive("class");
         
         var roll = node.getIntBetween(1, 100);
         
@@ -144,8 +152,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Jupiter in the ~88 bits we have in a real (should we have used int256 as
      * the backing type?) so we work in Earth masses.
      */
-    function getPlanetMass(bytes32 seed, int8 planetNumber, PlanetClass class) public view onlyControlledAccess returns (int128) {
-        var node = RNG.RandNode(seed).derive(planetNumber).derive("mass");
+    function getPlanetMass(bytes32 seed, PlanetClass class) public view onlyControlledAccess returns (int128) {
+        var node = RNG.RandNode(seed).derive("mass");
         
         if (class == PlanetClass.Lunar) {
             return node.getRealBetween(RealMath.fraction(1, 100), RealMath.fraction(9, 100));
@@ -168,11 +176,14 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Decide what the planet's orbit's periapsis is, in meters.
      * This is the first statistic about the orbit to be generated.
-     * For the first planet, realPrevClearance is 0.
+     *
+     * For the first planet, realPrevClearance is 0. For others, it is the
+     * clearance (i.e. distance from star that the planet has cleared out) of
+     * the previous planet.
      */
-    function getPlanetPeriapsis(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realPrevClearance) public view onlyControlledAccess returns (int128) {
+    function getPlanetPeriapsis(bytes32 seed, PlanetClass class, int128 realPrevClearance) public view onlyControlledAccess returns (int128) {
         
-        var node = RNG.RandNode(seed).derive(planetNumber).derive("periapsis");
+        var node = RNG.RandNode(seed).derive("periapsis");
         
         // Define minimum and maximum periapsis distance above previous planet's
         // cleared band in millions of km
@@ -206,9 +217,9 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Decide what the planet's orbit's apoapsis is, in meters.
      * This is the second statistic about the orbit to be generated.
      */
-    function getPlanetApoapsis(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realPeriapsis) public view onlyControlledAccess returns (int128) {
+    function getPlanetApoapsis(bytes32 seed, PlanetClass class, int128 realPeriapsis) public view onlyControlledAccess returns (int128) {
         
-        var node = RNG.RandNode(seed).derive(planetNumber).derive("apoapsis");
+        var node = RNG.RandNode(seed).derive("apoapsis");
         
         // Define minimum and maximum apoapsis distance above planet's periapsis
         // Think in gigameters (millions of km)
@@ -241,9 +252,9 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Decide how far out the cleared band after the planet's orbit is.
      */
-    function getPlanetClearance(bytes32 seed, int8 planetNumber, PlanetClass class, int128 realApoapsis) public view onlyControlledAccess returns (int128) {
+    function getPlanetClearance(bytes32 seed, PlanetClass class, int128 realApoapsis) public view onlyControlledAccess returns (int128) {
         
-        var node = RNG.RandNode(seed).derive(planetNumber).derive("cleared");
+        var node = RNG.RandNode(seed).derive("cleared");
         
         // Define minimum and maximum clearance in millions of km.
         // TODO: Constants should be sort of like the periapsis constants I think? But maybe not identical.
@@ -290,8 +301,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Get the longitude of the ascending node (angle from galactic +X to ascending node) for a planet.
      */ 
-    function getPlanetLan(bytes32 seed, int8 planetNumber, PlanetClass class) returns (int128) {
-        var node = RNG.RandNode(seed).derive(planetNumber).derive("LAN");
+    function getPlanetLan(bytes32 seed) public view onlyControlledAccess returns (int128) {
+        var node = RNG.RandNode(seed).derive("LAN");
         // Angles should be uniform from 0 to 2 PI
         return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
     }
@@ -301,8 +312,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Inclination is always positive. If it were negative, the ascending node would really be the descending node.
      * Result is a real in radians.
      */ 
-    function getPlanetInclination(bytes32 seed, int8 planetNumber, PlanetClass class) public view onlyControlledAccess returns (int128) {
-        var node = RNG.RandNode(seed).derive(planetNumber).derive("inclination");
+    function getPlanetInclination(bytes32 seed, PlanetClass class) public view onlyControlledAccess returns (int128) {
+        var node = RNG.RandNode(seed).derive("inclination");
     
         // Define minimum and maximum inclinations in milliradians
         // 175 milliradians = ~ 10 degrees
@@ -336,8 +347,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Get the argument of periapsis (angle from ascending node to periapsis position, in the orbital plane) for a planet.
      */
-    function getPlanetAop(bytes32 seed, int8 planetNumber, PlanetClass class) public view onlyControlledAccess returns (int128) {
-        var node = RNG.RandNode(seed).derive(planetNumber).derive("AOP");
+    function getPlanetAop(bytes32 seed) public view onlyControlledAccess returns (int128) {
+        var node = RNG.RandNode(seed).derive("AOP");
         // Angles should be uniform from 0 to 2 PI.
         // We already made sure planets wouldn't get too close together when laying out the orbits.
         return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
@@ -346,8 +357,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Get the true anomaly (angle from periapsis to position at time 0) for a planet.
      */
-    function getPlanetTrueAnomaly(bytes32 seed, int8 planetNumber, PlanetClass class) public view onlyControlledAccess returns (int128) {
-        var node = RNG.RandNode(seed).derive(planetNumber).derive("TA");
+    function getPlanetTrueAnomaly(bytes32 seed) public view onlyControlledAccess returns (int128) {
+        var node = RNG.RandNode(seed).derive("TA");
         // Angles should be uniform from 0 to 2 PI.
         return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
     } 

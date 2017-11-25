@@ -53,7 +53,7 @@ contract MacroverseStarGenerator is ControlledAccess {
      * Deploy a new copy of the Macroverse prototype contract. Use the given seed to generate a galaxy, down to the star level.
      * Use the contract at the given address to regulate access.
      */
-    function MacroverseStarGenerator(bytes32 baseSeed, address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) {
+    function MacroverseStarGenerator(bytes32 baseSeed, address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
         root = RNG.RandNode(baseSeed);
     }
     

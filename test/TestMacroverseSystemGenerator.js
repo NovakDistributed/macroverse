@@ -47,14 +47,17 @@ contract('MacroverseSystemGenerator', function(accounts) {
   
   it("should have a Terrestrial planet first", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
-    let planetClass = mv.planetClasses[(await instance.getPlanetClass.call('fred', 0, 8)).toNumber()]
+    
+    let planetSeed = await instance.getPlanetSeed.call('fred', 0)
+    let planetClass = mv.planetClasses[(await instance.getPlanetClass.call(planetSeed, 0, 8)).toNumber()]
     assert.equal(planetClass, 'Terrestrial')
   })
   
   it("should be a super-earth", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
+    let planetSeed = await instance.getPlanetSeed.call('fred', 0)
     let planetClassNum = mv.planetClass['Terrestrial']
-    let planetMass = mv.fromReal(await instance.getPlanetMass.call('fred', 0, planetClassNum))
+    let planetMass = mv.fromReal(await instance.getPlanetMass.call(planetSeed, planetClassNum))
     
     assert.isAbove(planetMass, 6.27)
     assert.isBelow(planetMass, 6.29)
@@ -62,11 +65,12 @@ contract('MacroverseSystemGenerator', function(accounts) {
   
   it("should have an orbit from about 0.32 to 0.35 AU", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
+    let planetSeed = await instance.getPlanetSeed.call('fred', 0)
     let planetClassNum = mv.planetClass['Terrestrial']
     
-    let realPeriapsis = await instance.getPlanetPeriapsis.call('fred', 0, planetClassNum, mv.toReal(0))
-    let realApoapsis = await instance.getPlanetApoapsis.call('fred', 0, planetClassNum, realPeriapsis)
-    let realClearance = await instance.getPlanetClearance.call('fred', 0, planetClassNum, realApoapsis)
+    let realPeriapsis = await instance.getPlanetPeriapsis.call(planetSeed, planetClassNum, mv.toReal(0))
+    let realApoapsis = await instance.getPlanetApoapsis.call(planetSeed, planetClassNum, realPeriapsis)
+    let realClearance = await instance.getPlanetClearance.call(planetSeed, planetClassNum, realApoapsis)
     
     assert.isAbove(mv.fromReal(realPeriapsis) / mv.AU, 0.32)
     assert.isBelow(mv.fromReal(realPeriapsis) / mv.AU, 0.33)
@@ -82,10 +86,11 @@ contract('MacroverseSystemGenerator', function(accounts) {
   it("should have a semimajor axis of 0.33 AU and an eccentricity of 0.04", async function() {
   
     let instance = await MacroverseSystemGenerator.deployed()
+    let planetSeed = await instance.getPlanetSeed.call('fred', 0)
     let planetClassNum = mv.planetClass['Terrestrial']
     
-    let realPeriapsis = await instance.getPlanetPeriapsis.call('fred', 0, planetClassNum, mv.toReal(0))
-    let realApoapsis = await instance.getPlanetApoapsis.call('fred', 0, planetClassNum, realPeriapsis)
+    let realPeriapsis = await instance.getPlanetPeriapsis.call(planetSeed, planetClassNum, mv.toReal(0))
+    let realApoapsis = await instance.getPlanetApoapsis.call(planetSeed, planetClassNum, realPeriapsis)
     
     let [realSemimajor, realEccentricity] = await instance.convertOrbitShape.call(realPeriapsis, realApoapsis)
     
@@ -107,30 +112,31 @@ contract('MacroverseSystemGenerator', function(accounts) {
     
     for (let i = 0; i < count; i++) {
         // Define the planet
-        let planetClassNum = (await instance.getPlanetClass.call('fred', i, count)).toNumber()
-        let realMass = await instance.getPlanetMass.call('fred', i, planetClassNum)
+        let planetSeed = await instance.getPlanetSeed.call('fred', i)
+        let planetClassNum = (await instance.getPlanetClass.call(planetSeed, i, count)).toNumber()
+        let realMass = await instance.getPlanetMass.call(planetSeed, planetClassNum)
         let planetMass = mv.fromReal(realMass)
         
         // Define the orbit shape
-        let realPeriapsis = await instance.getPlanetPeriapsis.call('fred', i, planetClassNum, lastClearance)
+        let realPeriapsis = await instance.getPlanetPeriapsis.call(planetSeed, planetClassNum, lastClearance)
         let planetPeriapsis = mv.fromReal(realPeriapsis) / mv.AU;
-        let realApoapsis = await instance.getPlanetApoapsis.call('fred', i, planetClassNum, realPeriapsis)
+        let realApoapsis = await instance.getPlanetApoapsis.call(planetSeed, planetClassNum, realPeriapsis)
         let planetApoapsis = mv.fromReal(realApoapsis) / mv.AU;
-        lastClearance = await instance.getPlanetClearance.call('fred', i, planetClassNum, realApoapsis)
+        lastClearance = await instance.getPlanetClearance.call(planetSeed, planetClassNum, realApoapsis)
         
         let [realSemimajor, realEccentricity] = await instance.convertOrbitShape.call(realPeriapsis, realApoapsis)
         let planetEccentricity = mv.fromReal(realEccentricity);
         
         // Define the orbital plane. Make sure to convert everything to degrees for display.
-        let realLan = await instance.getPlanetLan.call('fred', i, planetClassNum)
+        let realLan = await instance.getPlanetLan.call(planetSeed)
         let planetLan = mv.degrees(mv.fromReal(realLan))
-        let realInclination = await instance.getPlanetInclination.call('fred', i, planetClassNum)
+        let realInclination = await instance.getPlanetInclination.call(planetSeed, planetClassNum)
         let planetInclination = mv.degrees(mv.fromReal(realInclination))
         
         // Define the position in the orbital plane
-        let realAop = await instance.getPlanetAop.call('fred', i, planetClassNum)
+        let realAop = await instance.getPlanetAop.call(planetSeed)
         let planetAop = mv.degrees(mv.fromReal(realAop))
-        let realTrueAnomaly = await instance.getPlanetTrueAnomaly.call('fred', i, planetClassNum)
+        let realTrueAnomaly = await instance.getPlanetTrueAnomaly.call(planetSeed)
         let planetTrueAnomaly = mv.degrees(mv.fromReal(realTrueAnomaly))
         
         console.log('Planet ' + i + ': ' + mv.planetClasses[planetClassNum] + ' with mass ' +
