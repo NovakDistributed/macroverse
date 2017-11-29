@@ -22,12 +22,7 @@ contract('RealMath', function(accounts) {
   it("should compute logarithms", async function() {
     let instance = await RealMath.deployed()
     
-    for (let i = 0; i < 20; i++) {
-        console.log("Iteration " + i + ": " + mv.fromReal(await instance.lnLimited.call(mv.toReal(4.28374782E25), i)))
-    }
-    
     for(let val of [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.5, 2.0, 3.0, 3.67, Math.PI, Math.E, 1000, 1E10, 4.28374782E25]) {
-        console.log("Compute ln(" + val + ")")
         let result = mv.fromReal(await instance.ln.call(mv.toReal(val)))
 
         // Make sure we get the right answer        
