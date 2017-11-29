@@ -17,8 +17,16 @@ mv.fromReal = function(real) {
 }
 
 mv.toReal = function(float) {
-  // Convert to 40 bit fixed point
-  return mv.REAL_ONE.times(float)
+  // Convert to 40 bit fixed point, with 88 integral bits, one of which is sign.
+  
+  if (Math.log2(Math.abs(float)) >= 87) {
+    throw new Error("Magnitude of " + float + " is too large for 88 bit signed int!")
+  }
+  
+  // Make sure to convert to a string because the bignumber library gets upset
+  // when you use more than 15 digits and are an actual number. See
+  // <https://github.com/MikeMcl/bignumber.js/issues/11>
+  return mv.REAL_ONE.times(float.toString())
 }
 
 // Convert from float radians to float degrees.
