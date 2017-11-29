@@ -308,6 +308,50 @@ library RealMath {
     function ln(int128 real_arg) public pure returns (int128) {
         return lnLimited(real_arg, 100);
     }
+    
+    /**
+     * Calculate e^x. Uses the series given at
+     * <http://pages.mtu.edu/~shene/COURSES/cs201/NOTES/chap04/exp.html>.
+     *
+     * Lets you artificially limit the number of iterations.
+     *
+     * Note that it is potentially possible to get an un-converged value; lack
+     * of convergence does not throw.
+     */
+    function expLimited(int128 real_arg, int max_iterations) public pure returns (int128) {
+        // We will accumulate the result here
+        int128 real_result = 0;
+        
+        // We use this to save work computing terms
+        int128 real_term = REAL_ONE;
+        
+        for (int88 n = 0; n < max_iterations; n++) {
+            // Add in the term
+            real_result += real_term;
+            
+            // Compute the next term
+            real_term = mul(real_term, div(real_arg, toReal(n + 1)));
+            
+            if (real_term == 0) {
+                // We must have converged. Next term is too small to represent.
+                break;
+            }
+            // If we somehow never converge I guess we will run out of gas
+        }
+        
+        // Return the result
+        return real_result;
+        
+    }
+    
+    /**
+     * Calculate e^x with a sensible maximum iteration count to wait until
+     * convergence. Note that it is potentially possible to get an un-converged
+     * value; lack of convergence does not throw.
+     */
+    function exp(int128 real_arg) public pure returns (int128) {
+        return expLimited(real_arg, 100);
+    }
 }
 
 
