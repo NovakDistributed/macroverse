@@ -138,10 +138,15 @@ library RealMath {
     // deployment, so it needs to be linked into your contract statically.
     
     /**
-     * Raise a number to an integer power in O(log power) time.
+     * Raise a number to a positive integer power in O(log power) time.
      * See <https://stackoverflow.com/a/101613>
      */
     function ipow(int128 real_base, int88 exponent) public pure returns (int128) {
+        if (exponent < 0) {
+            // Negative powers are not allowed here.
+            revert();
+        }
+        
         // Start with the 0th power
         int128 real_result = REAL_ONE;
         while (exponent != 0) {
@@ -351,6 +356,54 @@ library RealMath {
      */
     function exp(int128 real_arg) public pure returns (int128) {
         return expLimited(real_arg, 100);
+    }
+    
+    /**
+     * Raise any number to any power, except for negative bases to fractional powers.
+     */
+    function pow(int128 real_base, int128 real_exponent) public pure returns (int128) {
+        if (real_exponent == 0) {
+            // Anything to the 0 is 1
+            return REAL_ONE;
+        }
+        
+        if (real_base == 0) {
+            if (real_exponent < 0) {
+                // Outside of domain!
+                revert();
+            }
+            // Otherwise it's 0
+            return 0;
+        }
+        
+        if (fpart(real_exponent) == 0) {
+            // Anything (even a negative base) is super easy to do to an integer power.
+            
+            if (real_exponent > 0) {
+                // Positive integer power is easy
+                return ipow(real_base, fromReal(real_exponent));
+            } else {
+                // Negative integer power is harder
+                return div(REAL_ONE, ipow(real_base, fromReal(-real_exponent)));
+            }
+        }
+        
+        if (real_base < 0) {
+            // It's a negative base to a non-integer power.
+            // In general pow(-x^y) is undefined, unless y is an int or some
+            // weird rational-number-based relationship holds.
+            revert();
+        }
+        
+        // If it's not a special case, actually do it.
+        return exp(mul(real_exponent, ln(real_base)));
+    }
+    
+    /**
+     * Compute the square root of a number.
+     */
+    function sqrt(int128 real_arg) public pure returns (int128) {
+        return pow(real_arg, REAL_HALF);
     }
 }
 

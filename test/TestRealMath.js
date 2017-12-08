@@ -49,4 +49,59 @@ contract('RealMath', function(accounts) {
     // TODO: Make more accurate?
     
   })
+  
+  it("should compute pow", async function() {
+    let instance = await RealMath.deployed()
+    
+    for (let base of [0, 1, -1, 0.5, 15.7, 1000, 36]) {
+      for (let exponent of [0, 1, -1, 0.5, 1.9999, 2, 2.0001, 15.7]) {
+          // For every base-exponent combination to test
+          
+          if (base == 0 && exponent < 0) {
+            // Disallow division by 0
+            continue
+          }
+          
+          if (base < 0 && exponent != Math.trunc(exponent)) {
+            // Negative numbers to fractional powers is not allowed
+            continue
+          }
+          
+          let truth = Math.pow(base, exponent)
+          
+          if (truth > Math.pow(2, 87)) {
+            // Would be out of range
+            continue
+          }
+          
+          let result = mv.fromReal(await instance.pow.call(mv.toReal(base), mv.toReal(exponent)))
+
+          // Make sure we get the right answer.
+          // Make sure to give more slack for really big numbers.
+          // TODO: Make this more accurate too somehow?       
+          assert.approximately(result, truth,
+            Math.max(Math.abs(truth / 10000), 1E-8),
+            "pow of " + base + "^" + exponent + " should be approximately right")
+      }
+    }
+  })
+    
+  it("should compute sqrt", async function() {
+    let instance = await RealMath.deployed()
+    
+    for (let arg of [0, 0.5, 1, 1.61234, 25, 36, 458344 * 458344]) {
+        // For every base-exponent combination to test
+        
+        let truth = Math.sqrt(arg)
+        
+        let result = mv.fromReal(await instance.sqrt.call(mv.toReal(arg)))
+
+        // Make sure we get the right answer.
+        // Make sure to give more slack for really big numbers.
+        // TODO: Make this more accurate too somehow?       
+        assert.approximately(result, truth,
+          Math.max(Math.abs(truth / 10000), 1E-8),
+          "square root of " + arg + " should be approximately right")
+    }
+  })
 })
