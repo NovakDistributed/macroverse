@@ -6,6 +6,9 @@ pragma solidity ^0.4.18;
  * 40 fractional bits gets us down to 1E-12 precision, while still letting us
  * go up to galaxy scale counting in meters.
  * Internally uses the wider int256 for some math.
+ *
+ * Note that for addition, subtraction, and mod (%), you should just use the
+ * built-in Solidity operators. Functions for these operations are not provided.
  */
 
 library RealMath {
@@ -44,6 +47,16 @@ library RealMath {
      * And our logarithms are based on ln(2).
      */
     int128 constant REAL_LN_TWO = 762123384786;
+    
+    /**
+     * It is also useful to have Pi around.
+     */
+    int128 constant REAL_PI = 3454217652358;
+    
+    /**
+     * And two pi, to save on multiplies.
+     */
+    int128 constant REAL_TWO_PI = 6908435304715;
     
     /**
      * What's the sign bit?
@@ -102,10 +115,25 @@ library RealMath {
     }
     
     /**
-     * Get the fractional part of a real, as a real. Ignores sign (so fpart(-0.5) is 0.5).
+     * Get the fractional part of a real, as a real. Respects sign (so fpart(-0.5) is -0.5).
      */
     function fpart(int128 real_value) public pure returns (int128) {
-        return abs(real_value) % REAL_ONE;
+        // This gets the fractional part but strips the sign
+        int128 fractional = abs(real_value) % REAL_ONE;
+        if (real_value < 0) {
+            // Add the negative sign back in.
+            return -fractional;
+        } else {
+            return fractional;
+        }
+    }
+    
+    /**
+     * Get the integer part of a fixed point value.
+     */
+    function ipart(int128 real_value) public pure returns (int128) {
+        // Subtract out the fractional part to get the real part.
+        return real_value - fpart(real_value);
     }
     
     /**
@@ -183,7 +211,7 @@ library RealMath {
     }
     
     /**
-     * Given a number with one bit set, foinds the index of that bit.
+     * Given a number with one bit set, finds the index of that bit.
      */
     function findbit(uint256 val) internal pure returns (uint8 index) {
         index = 0;
@@ -404,6 +432,34 @@ library RealMath {
      */
     function sqrt(int128 real_arg) public pure returns (int128) {
         return pow(real_arg, REAL_HALF);
+    }
+    
+    /**
+     * Compute the sin of a number to a certain number of Taylor series terms.
+     */
+    function sinLimited(int128 real_arg, int88 max_iterations) public pure returns (int128) {
+        // First bring the number into 0 to 2 pi
+        // TODO: This will introduce an error for very large numbers, because the error in our Pi will compound.
+        // But for actual reasonable angle values we should be fine.
+        real_arg = real_arg % REAL_TWO_PI;
+        
+        int128 accumulator = REAL_ONE;
+        
+        // We sum from large to small iteration so that we can have higher powers in later terms
+        for (int88 iteration = max_iterations - 1; iteration >= 0; iteration--) {
+            accumulator = REAL_ONE - mul(div(mul(real_arg, real_arg), toReal((2 * iteration + 2) * (2 * iteration + 3))), accumulator);
+            // We can't stop early; we need to make it to the first term.
+        }
+        
+        return mul(real_arg, accumulator);
+    }
+    
+    /**
+     * Calculate sin(x) with a sensible maximum iteration count to wait until
+     * convergence.
+     */
+    function sin(int128 real_arg) public pure returns (int128) {
+        return sinLimited(real_arg, 15);
     }
 }
 

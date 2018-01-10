@@ -55,33 +55,33 @@ contract('RealMath', function(accounts) {
     
     for (let base of [0, 1, -1, 0.5, 15.7, 1000, 36]) {
       for (let exponent of [0, 1, -1, 0.5, 1.9999, 2, 2.0001, 15.7]) {
-          // For every base-exponent combination to test
-          
-          if (base == 0 && exponent < 0) {
-            // Disallow division by 0
-            continue
-          }
-          
-          if (base < 0 && exponent != Math.trunc(exponent)) {
-            // Negative numbers to fractional powers is not allowed
-            continue
-          }
-          
-          let truth = Math.pow(base, exponent)
-          
-          if (truth > Math.pow(2, 87)) {
-            // Would be out of range
-            continue
-          }
-          
-          let result = mv.fromReal(await instance.pow.call(mv.toReal(base), mv.toReal(exponent)))
+        // For every base-exponent combination to test
+        
+        if (base == 0 && exponent < 0) {
+          // Disallow division by 0
+          continue
+        }
+        
+        if (base < 0 && exponent != Math.trunc(exponent)) {
+          // Negative numbers to fractional powers is not allowed
+          continue
+        }
+        
+        let truth = Math.pow(base, exponent)
+        
+        if (truth > Math.pow(2, 87)) {
+          // Would be out of range
+          continue
+        }
+        
+        let result = mv.fromReal(await instance.pow.call(mv.toReal(base), mv.toReal(exponent)))
 
-          // Make sure we get the right answer.
-          // Make sure to give more slack for really big numbers.
-          // TODO: Make this more accurate too somehow?       
-          assert.approximately(result, truth,
-            Math.max(Math.abs(truth / 10000), 1E-8),
-            "pow of " + base + "^" + exponent + " should be approximately right")
+        // Make sure we get the right answer.
+        // Make sure to give more slack for really big numbers.
+        // TODO: Make this more accurate too somehow?       
+        assert.approximately(result, truth,
+          Math.max(Math.abs(truth / 10000), 1E-8),
+          "pow of " + base + "^" + exponent + " should be approximately right")
       }
     }
   })
@@ -90,18 +90,29 @@ contract('RealMath', function(accounts) {
     let instance = await RealMath.deployed()
     
     for (let arg of [0, 0.5, 1, 1.61234, 25, 36, 458344 * 458344]) {
-        // For every base-exponent combination to test
-        
-        let truth = Math.sqrt(arg)
-        
-        let result = mv.fromReal(await instance.sqrt.call(mv.toReal(arg)))
+      let truth = Math.sqrt(arg)
+      
+      let result = mv.fromReal(await instance.sqrt.call(mv.toReal(arg)))
 
-        // Make sure we get the right answer.
-        // Make sure to give more slack for really big numbers.
-        // TODO: Make this more accurate too somehow?       
-        assert.approximately(result, truth,
-          Math.max(Math.abs(truth / 10000), 1E-8),
-          "square root of " + arg + " should be approximately right")
+      // Make sure we get the right answer.
+      // Make sure to give more slack for really big numbers.
+      // TODO: Make this more accurate too somehow?       
+      assert.approximately(result, truth,
+        Math.max(Math.abs(truth / 10000), 1E-8),
+        "square root of " + arg + " should be approximately right")
+    }
+  })
+  
+  it("should compute sin", async function() {
+    let instance = await RealMath.deployed()
+    
+    for (let arg of [0.5, 0, -0.5, Math.PI, 2 * Math.PI, -2 * Math.PI, -1 * Math.PI, 1000, -999.3]) {
+      let truth = Math.sin(arg)
+      let result = mv.fromReal(await instance.sin.call(mv.toReal(arg)))
+
+      // Make sure we get the right answer.
+      assert.approximately(result, truth, 4E-11,
+        "sin of " + arg + " should be approximately right")
     }
   })
 })

@@ -19,6 +19,10 @@ mv.fromReal = function(real) {
 mv.toReal = function(float) {
   // Convert to 40 bit fixed point, with 88 integral bits, one of which is sign.
   
+  if (isNaN(float)) {
+    throw new Error("NaN cannot be represented in fixed-point!")
+  }
+  
   if (Math.log2(Math.abs(float)) >= 87) {
     throw new Error("Magnitude of " + float + " is too large for 88 bit signed int!")
   }
