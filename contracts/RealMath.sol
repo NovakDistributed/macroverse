@@ -485,15 +485,15 @@ library RealMath {
     /**
      * Calculate atan(x) for x in [-1, 1].
      * Uses the Chebyshev polynomials given at
-     * https://www.mathworks.com/help/fixedpoint/examples/calculate-fixed-point-arctangent.html
+     * http://ddmf.msr-inria.inria.fr/1.9.1/ddmf?service=Chebyshev&rendering=jsMath&location=9&mac=&def=%7B(x%5E2%2B1)*diff(diff(y(x)%2Cx)%2Cx)%2B2*x*diff(y(x)%2Cx)%2C+y(0)+%3D+0%2C+D(y)(0)+%3D+1%7D&yofz=y(x)&rep=arctan(x)&notation=%5Carctan+%5Cleft(+x+%5Cright)+&proc=x+-%3E+arctan(x)
      */
     function atanSmall(int128 real_arg) public pure returns (int128) {
         int128 real_arg_squared = mul(real_arg, real_arg);
         return mul(mul(mul(mul(
-            -42061229049, real_arg_squared) // -0.038254464970299 x^7
-            + 159409933738, real_arg_squared) // 0.144982490144465 x^5
-            - 352430082063, real_arg_squared) // -0.320533292381664 x^3
-            + 1098558844021, real_arg); // 0.999133448222780 x
+            -85989901698, real_arg_squared) // -0.078207360 x^7
+            + 223916053170, real_arg_squared) // 0.203650464 x^5
+            - 378753564291, real_arg_squared) // −0.344474360 x^3
+            + 1101138003386, real_arg); // 1.001479180 x
     }
     
     /**
