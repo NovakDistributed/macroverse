@@ -115,4 +115,30 @@ contract('RealMath', function(accounts) {
         "sin of " + arg + " should be approximately right")
     }
   })
+  
+  it("should compute cos", async function() {
+    let instance = await RealMath.deployed()
+    
+    for (let arg of [0.5, 0, -0.5, Math.PI, 2 * Math.PI, -2 * Math.PI, -1 * Math.PI, 1000, -999.3]) {
+      let truth = Math.cos(arg)
+      let result = mv.fromReal(await instance.cos.call(mv.toReal(arg)))
+
+      // Make sure we get the right answer.
+      assert.approximately(result, truth, 4E-11,
+        "cos of " + arg + " should be approximately right")
+    }
+  })
+  
+  it("should compute tan", async function() {
+    let instance = await RealMath.deployed()
+    
+    for (let arg of [0.5, 0.0001, -0.5, Math.PI, 2 * Math.PI + 1E-5, -2 * Math.PI - 1E-6, -1 * Math.PI, 1000, -999.3]) {
+      let truth = Math.tan(arg)
+      let result = mv.fromReal(await instance.tan.call(mv.toReal(arg)))
+
+      // Make sure we get the right answer.
+      assert.approximately(result, truth, 2E-10,
+        "tan of " + arg + " should be approximately right")
+    }
+  })
 })

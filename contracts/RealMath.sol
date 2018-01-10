@@ -54,6 +54,11 @@ library RealMath {
     int128 constant REAL_PI = 3454217652358;
     
     /**
+     * And half Pi, to save on divides.
+     */
+    int128 constant REAL_HALF_PI = 1727108826179;
+    
+    /**
      * And two pi, to save on multiplies.
      */
     int128 constant REAL_TWO_PI = 6908435304715;
@@ -460,6 +465,21 @@ library RealMath {
      */
     function sin(int128 real_arg) public pure returns (int128) {
         return sinLimited(real_arg, 15);
+    }
+    
+    /**
+     * Calculate cos(x).
+     */
+    function cos(int128 real_arg) public pure returns (int128) {
+        return sin(real_arg + REAL_HALF_PI);
+    }
+    
+    /**
+     * Calculate tan(x). May overflow for large results. May throw if tan(x)
+     * would be infinite, or return an approximation, or overflow.
+     */
+    function tan(int128 real_arg) public pure returns (int128) {
+        return div(sin(real_arg), cos(real_arg));
     }
 }
 
