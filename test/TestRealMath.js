@@ -141,4 +141,34 @@ contract('RealMath', function(accounts) {
         "tan of " + arg + " should be approximately right")
     }
   })
+  
+  it("should compute atan for small numbers", async function() {
+    let instance = await RealMath.deployed()
+    let truth = Math.atan(0.5)
+    let result = mv.fromReal(await instance.atanSmall.call(mv.toReal(0.5)))
+    assert.approximately(result, truth, 0.001,
+      "atan of 0.5 should be approximately right")
+    // TODO: this needs to be WAY more accurate!
+  })
+  
+  it("should compute atan2", async function() {
+    let instance = await RealMath.deployed()
+    
+    for (let y of [0, 5, 0.01, 1, 10, -1, -10]) {
+      for (let x of [0, 2, 0.01, 1, 10, -1, -10]) {
+      
+        if (x == 0 && y == 0) {
+          // Not valid inputs
+          continue;
+        }
+      
+        let truth = Math.atan2(y, x)
+        let result = mv.fromReal(await instance.atan2.call(mv.toReal(y), mv.toReal(x)))
+
+        // Make sure we get the right answer.
+        assert.approximately(result, truth, 0.001,
+          "atan2 of " + y + " and " + x + " should be approximately right")
+      }
+    }
+  })
 })

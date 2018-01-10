@@ -481,6 +481,59 @@ library RealMath {
     function tan(int128 real_arg) public pure returns (int128) {
         return div(sin(real_arg), cos(real_arg));
     }
+    
+    /**
+     * Calculate atan(x) for x in [-1, 1].
+     * Uses the Chebyshev polynomials given at
+     * https://www.mathworks.com/help/fixedpoint/examples/calculate-fixed-point-arctangent.html
+     */
+    function atanSmall(int128 real_arg) public pure returns (int128) {
+        int128 real_arg_squared = mul(real_arg, real_arg);
+        return mul(mul(mul(mul(
+            -42061229049, real_arg_squared) // -0.038254464970299 x^7
+            + 159409933738, real_arg_squared) // 0.144982490144465 x^5
+            - 352430082063, real_arg_squared) // -0.320533292381664 x^3
+            + 1098558844021, real_arg); // 0.999133448222780 x
+    }
+    
+    /**
+     * Compute the nice two-component arctangent of y/x.
+     */
+    function atan2(int128 real_y, int128 real_x) public pure returns (int128) {
+        int128 atan_result;
+        
+        // Do the angle correction shown at
+        // https://www.mathworks.com/help/fixedpoint/examples/calculate-fixed-point-arctangent.html
+        
+        // We will re-use these absolute values
+        int128 real_abs_x = abs(real_x);
+        int128 real_abs_y = abs(real_y);
+        
+        if (real_abs_x > real_abs_y) {
+            // We are in the (0, pi/4] region
+            // abs(y)/abs(x) will be in 0 to 1.
+            atan_result = atanSmall(div(real_abs_y, real_abs_x));
+        } else {
+            // We are in the (pi/4, pi/2) region
+            // abs(x) / abs(y) will be in 0 to 1; we swap the arguments
+            atan_result = REAL_HALF_PI - atanSmall(div(real_abs_x, real_abs_y));
+        }
+        
+        // Now we correct the result for other regions
+        if (real_x < 0) {
+            if (real_y < 0) {
+                atan_result -= REAL_PI;
+            } else {
+                atan_result = REAL_PI - atan_result;
+            }
+        } else {
+            if (real_y < 0) {
+                atan_result = -atan_result;
+            }
+        }
+        
+        return atan_result;
+    }
 }
 
 
