@@ -146,7 +146,7 @@ contract('RealMath', function(accounts) {
     let instance = await RealMath.deployed()
     let truth = Math.atan(0.5)
     let result = mv.fromReal(await instance.atanSmall.call(mv.toReal(0.5)))
-    assert.approximately(result, truth, 0.001,
+    assert.approximately(result, truth, 2E-6,
       "atan of 0.5 should be approximately right")
     // TODO: this needs to be WAY more accurate!
   })
@@ -166,7 +166,7 @@ contract('RealMath', function(accounts) {
         let result = mv.fromReal(await instance.atan2.call(mv.toReal(y), mv.toReal(x)))
 
         // Make sure we get the right answer.
-        assert.approximately(result, truth, 0.001,
+        assert.approximately(result, truth, 2E-6,
           "atan2 of " + y + " and " + x + " should be approximately right")
       }
     }

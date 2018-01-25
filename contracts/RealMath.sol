@@ -492,16 +492,20 @@ library RealMath {
     
     /**
      * Calculate atan(x) for x in [-1, 1].
-     * Uses the Chebyshev polynomials given at
+     * Uses the Chebyshev polynomial approach presented at
      * https://www.mathworks.com/help/fixedpoint/examples/calculate-fixed-point-arctangent.html
+     * Uses polynomials received by personal communication.
+     * 0.999974x-0.332568x^3+0.193235x^5-0.115729x^7+0.0519505x^9-0.0114658x^11
      */
     function atanSmall(int128 real_arg) public pure returns (int128) {
         int128 real_arg_squared = mul(real_arg, real_arg);
-        return mul(mul(mul(mul(
-            -42061229049, real_arg_squared) // -0.038254464970299 x^7
-            + 159409933738, real_arg_squared) // 0.144982490144465 x^5
-            - 352430082063, real_arg_squared) // -0.320533292381664 x^3
-            + 1098558844021, real_arg); // 0.999133448222780 x
+        return mul(mul(mul(mul(mul(mul(
+            - 12606780422,  real_arg_squared) // x^11
+            + 57120178819,  real_arg_squared) // x^9
+            - 127245381171, real_arg_squared) // x^7
+            + 212464129393, real_arg_squared) // x^5
+            - 365662383026, real_arg_squared) // x^3
+            + 1099483040474, real_arg);       // x^1
     }
     
     /**
