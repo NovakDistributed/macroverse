@@ -136,16 +136,32 @@ contract('MacroverseSystemGenerator', function(accounts) {
         // Define the position in the orbital plane
         let realAop = await instance.getPlanetAop.call(planetSeed)
         let planetAop = mv.degrees(mv.fromReal(realAop))
-        let realTrueAnomaly = await instance.getPlanetTrueAnomaly.call(planetSeed)
-        let planetTrueAnomaly = mv.degrees(mv.fromReal(realTrueAnomaly))
+        let realMeanAnomalyAtEpoch = await instance.getPlanetMeanAnomalyAtEpoch.call(planetSeed)
+        let planetMeanAnomalyAtEpoch = mv.degrees(mv.fromReal(realMeanAnomalyAtEpoch))
         
         console.log('Planet ' + i + ': ' + mv.planetClasses[planetClassNum] + ' with mass ' +
             planetMass + ' Earths between ' + planetPeriapsis + ' and ' + planetApoapsis + ' AU')
         console.log('\tEccentricity: ' + planetEccentricity + ' LAN: ' + planetLan + '° Inclination: ' + planetInclination + '°')
-        console.log('\tAOP: ' + planetAop + '° True Anomaly: ' + planetTrueAnomaly + '°')
+        console.log('\tAOP: ' + planetAop + '° Mean Anomaly at Epoch: ' + planetMeanAnomalyAtEpoch + '°')
     }
         
   
   })
+  
+  // Now we test the compute functions
+  // TODO: factor them out!
+  
+  it("should compute correct mean angular motions", async function() {
+    let instance = await MacroverseSystemGenerator.deployed()
+
+    let meanAngularMotion = mv.fromReal(await instance.computeMeanAngularMotion.call(mv.toReal(1), mv.toReal(149598023 * 1000)))
+
+    // TODO: this needs to be *way* more accurate!
+    assert.approximately(meanAngularMotion, 2 * Math.PI, 0.02,
+      "mean angular motion of Earth should be 2 pi radians per year")
+
+
+  })
+
   
 })
