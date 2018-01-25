@@ -120,11 +120,19 @@ library RealMath {
     }
     
     /**
-     * Get the fractional part of a real, as a real. Respects sign (so fpart(-0.5) is -0.5).
+     * Get the fractional part of a real, as a real. Ignores sign (so fpart(-0.5) is 0.5).
      */
     function fpart(int128 real_value) public pure returns (int128) {
         // This gets the fractional part but strips the sign
-        int128 fractional = abs(real_value) % REAL_ONE;
+        return abs(real_value) % REAL_ONE;
+    }
+
+    /**
+     * Get the fractional part of a real, as a real. Respects sign (so fpartSigned(-0.5) is -0.5).
+     */
+    function fpartSigned(int128 real_value) public pure returns (int128) {
+        // This gets the fractional part but strips the sign
+        int128 fractional = fpart(real_value);
         if (real_value < 0) {
             // Add the negative sign back in.
             return -fractional;
@@ -138,7 +146,7 @@ library RealMath {
      */
     function ipart(int128 real_value) public pure returns (int128) {
         // Subtract out the fractional part to get the real part.
-        return real_value - fpart(real_value);
+        return real_value - fpartSigned(real_value);
     }
     
     /**
