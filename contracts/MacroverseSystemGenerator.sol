@@ -29,11 +29,6 @@ contract MacroverseSystemGenerator is ControlledAccess {
     using RealMath for *;
     // No SafeMath or it might confuse RealMath
 
-    // We need the gravitational constant
-    // G = 1.32754125 * 10^20 m^3 / s^2 / solar mass
-    // We can't really measure G that accurately but we need a number for any orbiting to happen.
-    int128 constant REAL_G_PER_SOL = 145964704072728570000000000000000;
-
     /**
      * It is also useful to have Pi around.
      * We can't pull it in from the library.

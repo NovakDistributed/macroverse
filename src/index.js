@@ -39,6 +39,11 @@ mv.degrees = require('radians-degrees');
 // Useful astronomical constants
 // 1 Astronomical Unit in meters
 mv.AU = 149597870700
+// A Julian year is exactly 365.25 days and is our basic time unit.
+// We think about orbits in terms of radians per Julian year.
+mv.JULIAN_YEAR = 365.25 * 24 * 60 * 60;
+// A siderial year is about 365.25636 seconds and is Earth's orbital period
+mv.SIDERIAL_YEAR = 365.25636 * 24 * 60 * 60
 
 mv.objectClasses = ['Supergiant', 'Giant', 'MainSequence', 'WhiteDwarf', 'NeutronStar', 'BlackHole']
 mv.objectClass = {
