@@ -9,7 +9,8 @@ import "./ControlledAccess.sol";
 import "./MacroverseStarGenerator.sol";
 
 /**
- * Represents a prorotype Macroverse Generator for a galaxy.
+ * Represents a Macroverse generator for planetary systems around stars and
+ * other stellar objects.
  *
  * Permission to call methods on this contract is regulated by a configurable
  * AccessControl contract. One such set of terms might be to require that the
@@ -369,37 +370,6 @@ contract MacroverseSystemGenerator is ControlledAccess {
         var node = RNG.RandNode(seed).derive("MAE");
         // Angles should be uniform from 0 to 2 PI.
         return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
-    } 
-    
-    // Functions for orbital mechanics. Maybe should be a library?
-    // Are NOT controlled access, since they don't talk to the RNG.
-    // Please don't do these in Solidity unless you have to; you can do orbital mechanics in JS just fine with actual floats.
-    // The steps to compute an orbit are:
-    // 
-    // 1. Compute the mean angular motion, n = sqrt(central mass * gravitational constant / semimajor axis^3)
-    // 2. Compute the Mean Anomaly, as n * time since epoch, and wrap to an angle 0 to 2 pi
-    // 3. Compute the Eccentric Anomaly numerically to solve MA = EA - eccentricity * sin(ea)
-    // 4. Compute the True Anomaly as 2 * atan2(sqrt((1 + eccentricity) / (1 - eccentricity)) * tan(EA/2))
-    // 5. Compute the current radius as r = semimajor * (1 - eccentricity^2) / (1 + eccentricity * cos(TA))
-    // 6. Compute Cartesian X (toward longitude 0) = radius * (cos(LAN) * cos(AOP + TA) - sin(LAN) * sin(AOP + TA) * cos(inclination))
-    // 7. Compute Cartesian Y (in plane) = radius * (sin(LAN) * cos(AOP + TA) + cos(LAN) * sin(AOP + TA) * cos(inclination))
-    // 8. Compute Cartesian Z (above plane) = radius * sin(inclination) * sin(AOP + TA)
-
-
-    /**
-     * Compute the mean angular motion, in radians per year, given a star mass in sols and a semimajor axis in meters.
-     */
-    function computeMeanAngularMotion(int128 real_central_mass_in_sols, int128 real_semimajor_axis) public view returns (int128) {
-        // REAL_G_PER_SOL is big, but nothing masses more than 100s of sols, so we can do the multiply.
-        // But the semimajor axis in meters may be very big so we can't really do the cube for the denominator.
-        // And since values in radians per second are tiny, their squares are even tinier and probably out of range.
-        // So we scale up to radians per year by mixing in multiplies by 31536000
-        return real_central_mass_in_sols.mul(REAL_G_PER_SOL).div(real_semimajor_axis)
-            .mul(RealMath.toReal(31536000)).div(real_semimajor_axis)
-            .mul(RealMath.toReal(31536000)).div(real_semimajor_axis).sqrt();
-    }
-    
-    
-
+    }  
 }
  

@@ -1,5 +1,5 @@
-let MacroverseSystemGenerator = artifacts.require("MacroverseSystemGenerator");
-let UnrestrictedAccessControl = artifacts.require("UnrestrictedAccessControl");
+let MacroverseSystemGenerator = artifacts.require('MacroverseSystemGenerator')
+let UnrestrictedAccessControl = artifacts.require('UnrestrictedAccessControl')
 
 // Load the Macroverse module JavaScript
 let mv = require('../src')
@@ -147,21 +147,5 @@ contract('MacroverseSystemGenerator', function(accounts) {
         
   
   })
-  
-  // Now we test the compute functions
-  // TODO: factor them out!
-  
-  it("should compute correct mean angular motions", async function() {
-    let instance = await MacroverseSystemGenerator.deployed()
-
-    let meanAngularMotion = mv.fromReal(await instance.computeMeanAngularMotion.call(mv.toReal(1), mv.toReal(149598023 * 1000)))
-
-    // TODO: this needs to be *way* more accurate!
-    assert.approximately(meanAngularMotion, 2 * Math.PI, 0.02,
-      "mean angular motion of Earth should be 2 pi radians per year")
-
-
-  })
-
   
 })
