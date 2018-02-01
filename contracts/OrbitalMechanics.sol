@@ -23,6 +23,11 @@ contract OrbitalMechanics {
     int128 constant REAL_PI = 3454217652358;
 
     /**
+     * And two pi, which happens to be odd in its most accurate representation.
+     */
+    int128 constant REAL_TWO_PI = 6908435304715;
+
+    /**
      * A "year" is 365.25 days. We use Julian years.
      */
     int128 constant REAL_SECONDS_PER_YEAR = 34697948144703898000;
@@ -33,9 +38,9 @@ contract OrbitalMechanics {
     // Please don't do these in Solidity unless you have to; you can do orbital mechanics in JS just fine with actual floats.
     // The steps to compute an orbit are:
     // 
-    // 1. Compute the semimajor axis as (apoapsis + periapsis) / 2
+    // 1. Compute the semimajor axis as (apoapsis + periapsis) / 2 (do this yourself)
     // 2. Compute the mean angular motion, n = sqrt(central mass * gravitational constant / semimajor axis^3)
-    // 3. Compute the Mean Anomaly, as n * time since epoch, and wrap to an angle 0 to 2 pi
+    // 3. Compute the Mean Anomaly, as n * time since epoch + MA at epoch, and wrap to an angle 0 to 2 pi
     // 4. Compute the Eccentric Anomaly numerically to solve MA = EA - eccentricity * sin(ea)
     // 5. Compute the True Anomaly as 2 * atan2(sqrt((1 + eccentricity) / (1 - eccentricity)) * tan(EA/2))
     // 6. Compute the current radius as r = semimajor * (1 - eccentricity^2) / (1 + eccentricity * cos(TA))
@@ -58,6 +63,15 @@ contract OrbitalMechanics {
             .mul(REAL_SECONDS_PER_YEAR)
             .div(real_semimajor_axis)
             .mul(REAL_SECONDS_PER_YEAR).div(real_semimajor_axis).sqrt();
+    }
+
+    /**
+     * Compute the mean anomaly, from 0 to 2 PI, given the mean anomaly at
+     * epoch, mean angular motion (in radians per Julian year) and the time (in
+     * Julian years) since epoch.
+     */
+    function computeMeanAnomaly(int128 real_mean_anomaly_at_epoch, int128 real_mean_angular_motion, int128 real_years_since_epoch) public pure returns (int128) {
+        return (real_mean_anomaly_at_epoch + real_mean_angular_motion.mul(real_years_since_epoch)) % REAL_TWO_PI;
     }
     
 }

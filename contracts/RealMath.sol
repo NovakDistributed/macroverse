@@ -55,11 +55,12 @@ library RealMath {
     
     /**
      * And half Pi, to save on divides.
+     * TODO: That might not be how the compiler handles constants.
      */
     int128 constant REAL_HALF_PI = 1727108826179;
     
     /**
-     * And two pi, to save on multiplies.
+     * And two pi, which happens to be odd in its most accurate representation.
      */
     int128 constant REAL_TWO_PI = 6908435304715;
     
