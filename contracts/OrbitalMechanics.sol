@@ -114,7 +114,7 @@ contract OrbitalMechanics {
         // x_n = x_n-1 - f(x_n) / f'(x_n)
 
         // Start with the 3rd-order approximation from http://alpheratz.net/dynamics/twobody/KeplerIterations_summary.pdf
-
+        // "A Practical Method for Solving the Kepler Equation"
         int128 e2 = real_eccentricity.mul(real_eccentricity);
         int128 e3 = e2.mul(real_eccentricity);
         int128 cosMA = real_mean_anomaly.cos();
