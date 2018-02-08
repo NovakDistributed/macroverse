@@ -124,8 +124,9 @@ contract OrbitalMechanics {
         for (int88 i = 0; i < max_iterations; i++) {
             int128 real_value = real_guess - real_eccentricity.mul(real_guess.sin()) - real_mean_anomaly;
             
-            if (real_value == 0) {
-                // We found the root
+            if (real_value.abs() <= 5) {
+                // We found the root within epsilon.
+                // Note that we are implicitly turning this random small number into a tiny real.
                 break;
             }
             

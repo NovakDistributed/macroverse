@@ -71,7 +71,7 @@ contract('OrbitalMechanics', function(accounts) {
         let computed_ea = mv.fromReal(real_computed_ea)
 
         // Make sure we got it right (within looser bounds for high and hard to generate eccentricities)
-        assert.approximately(computed_ea, true_ea, eccentricity < 0.9 ? 1E-10 : 1E-5,
+        assert.approximately(computed_ea, true_ea, eccentricity < 0.9 ? 1E-8 : 1E-5,
           "EA of " + true_ea + " computed from MA of " + ma + " at eccentricity " + eccentricity)
 
       }
