@@ -53,4 +53,30 @@ contract('OrbitalMechanics', function(accounts) {
 
   })
 
+  it("should compute correct eccentric anomalies", async function() {
+    let instance = await OrbitalMechanics.deployed()
+
+    for (let eccentricity of [0, 0.99999, 0.0001, 0.1, 0.5, 0.8]) {
+      let real_eccentricity = mv.toReal(eccentricity)
+
+      for (let true_ea of [0, 1, Math.PI/2, 4/3 * Math.PI, 2 * Math.PI - 0.0001]) {
+        // For each eccentric anomaly we want
+
+        // Compute the corresponding mean anomaly
+        let ma = true_ea - eccentricity * Math.sin(true_ea)
+        let real_ma = mv.toReal(ma)
+
+        // Back-compute the eccentric anomaly
+        let real_computed_ea = await instance.computeEccentricAnomalyLimited.call(real_ma, real_eccentricity, 10)
+        let computed_ea = mv.fromReal(real_computed_ea)
+
+        // Make sure we got it right
+        assert.approximately(computed_ea, true_ea, 1E-5,
+          "EA of " + true_ea + " computed from MA of " + ma + " at eccentricity " + eccentricity)
+
+      }
+    }
+
+  })
+
 })
