@@ -70,7 +70,7 @@ contract OrbitalMechanics {
     // 2. Compute the mean angular motion, n = sqrt(central mass * gravitational constant / semimajor axis^3)
     // 3. Compute the Mean Anomaly, as n * time since epoch + MA at epoch, and wrap to an angle 0 to 2 pi
     // 4. Compute the Eccentric Anomaly numerically to solve MA = EA - eccentricity * sin(EA)
-    // 5. Compute the True Anomaly as 2 * atan2(sqrt((1 + eccentricity) / (1 - eccentricity)) * tan(EA/2))
+    // 5. Compute the True Anomaly as 2 * atan2(sqrt(1 - eccentricity) * cos(EA / 2), sqrt(1 + eccentricity) * sin(EA / 2))
     // 6. Compute the current radius as r = semimajor * (1 - eccentricity^2) / (1 + eccentricity * cos(TA))
     // 7. Compute Cartesian X (toward longitude 0) = radius * (cos(LAN) * cos(AOP + TA) - sin(LAN) * sin(AOP + TA) * cos(inclination))
     // 8. Compute Cartesian Y (in plane) = radius * (sin(LAN) * cos(AOP + TA) + cos(LAN) * sin(AOP + TA) * cos(inclination))
@@ -148,6 +148,14 @@ contract OrbitalMechanics {
      */
     function computeEccentricAnomaly(int128 real_mean_anomaly, int128 real_eccentricity) public pure returns (int128) {
         return computeEccentricAnomalyLimited(real_mean_anomaly, real_eccentricity, 10);
+    }
+
+    /**
+     * Compute the True Anomaly from the eccentric anomaly and the eccentricity.
+     */
+    function computeTrueAnomaly(int128 real_eccentric_anomaly, int128 real_eccentricity) public pure returns (int128) {
+        int128 real_half_ea = real_eccentric_anomaly.div(REAL_TWO);
+        return RealMath.atan2((REAL_ONE - real_eccentricity).sqrt().mul(real_half_ea.cos()), (REAL_ONE + real_eccentricity).sqrt().mul(real_half_ea.sin())).mul(REAL_TWO);
     }
     
 }

@@ -59,11 +59,11 @@ contract('OrbitalMechanics', function(accounts) {
     for (let eccentricity of [0, 0.0001, 0.1, 0.5, 0.8, 0.9, 0.967, 0.99999]) {
       let real_eccentricity = mv.toReal(eccentricity)
 
-      for (let true_ea of [0, 1, Math.PI/2, 4/3 * Math.PI, 2 * Math.PI - 0.0001]) {
+      for (let correct_ea of [0, 1, Math.PI/2, 4/3 * Math.PI, 2 * Math.PI - 0.0001]) {
         // For each eccentric anomaly we want
 
         // Compute the corresponding mean anomaly
-        let ma = true_ea - eccentricity * Math.sin(true_ea)
+        let ma = correct_ea - eccentricity * Math.sin(correct_ea)
         let real_ma = mv.toReal(ma)
 
         // Back-compute the eccentric anomaly
@@ -71,12 +71,38 @@ contract('OrbitalMechanics', function(accounts) {
         let computed_ea = mv.fromReal(real_computed_ea)
 
         // Make sure we got it right (within looser bounds for high and hard to generate eccentricities)
-        assert.approximately(computed_ea, true_ea, eccentricity < 0.9 ? 1E-8 : 1E-5,
-          "EA of " + true_ea + " computed from MA of " + ma + " at eccentricity " + eccentricity)
+        assert.approximately(computed_ea, correct_ea, eccentricity < 0.9 ? 1E-8 : 1E-5,
+          "EA of " + correct_ea + " should be computed from MA of " + ma + " at eccentricity " + eccentricity)
 
       }
     }
 
+  })
+
+  it("should compute correct true anomalies", async function() {
+    let instance = await OrbitalMechanics.deployed()
+
+    for (let eccentricity of [0, 0.0001, 0.1, 0.5, 0.8, 0.9, 0.967, 0.99999]) {
+      let real_eccentricity = mv.toReal(eccentricity)
+
+      for (let ea of [0, 1, Math.PI/2, 4/3 * Math.PI, 2 * Math.PI - 0.0001]) {
+        // For each eccentric anomaly
+        let real_ea = mv.toReal(ea)
+
+        // Compute the target true anomaly
+        let correct_ta = 2 * Math.atan2(Math.sqrt(1 - eccentricity) * Math.cos(ea / 2), Math.sqrt(1 + eccentricity) * Math.sin(ea / 2))
+
+        // Compute the true anomaly in Solidity
+        let real_computed_ta = await instance.computeTrueAnomaly.call(real_ea, real_eccentricity)
+        let computed_ta = mv.fromReal(real_computed_ta)
+
+        // Make sure we got it right
+        // TODO: Make this more accurate by improving atan2 and sqrt
+        assert.approximately(computed_ta, correct_ta, 1E-5,
+          "TA of " + correct_ta + " should be computed from EA of " + ea + " at eccentricity " + eccentricity)
+
+      }
+    }
   })
 
 })
