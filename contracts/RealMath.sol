@@ -9,6 +9,11 @@ pragma solidity ^0.4.18;
  *
  * Note that for addition, subtraction, and mod (%), you should just use the
  * built-in Solidity operators. Functions for these operations are not provided.
+ *
+ * Note that the fancy functions like sqrt, atan2, etc. aren't as accurate as
+ * they should be. They are (hopefully) Good Enough for doing orbital mechanics
+ * on block timescales in a game context, but they may not be good enough for
+ * other applications.
  */
 
 library RealMath {

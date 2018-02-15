@@ -105,4 +105,34 @@ contract('OrbitalMechanics', function(accounts) {
     }
   })
 
+  it("should compute correct radius", async function() {
+    let instance = await OrbitalMechanics.deployed()
+
+    for (let eccentricity of [0, 0.0001, 0.1, 0.5, 0.8, 0.9, 0.967, 0.99999]) {
+      let real_eccentricity = mv.toReal(eccentricity)
+
+      for (let ta of [0, 1, Math.PI/2, 4/3 * Math.PI, 2 * Math.PI - 0.0001]) {
+        let real_ta = mv.toReal(ta)
+
+        for (let semimajor_meters of [0.001, 1, 10, 1.00000011 * mv.AU, 10 * mv.AU, 100 * mv.AU]) {
+          let real_semimajor_meters = mv.toReal(semimajor_meters)
+
+          let correct_radius = semimajor_meters * (1 - Math.pow(eccentricity, 2)) / (1 + eccentricity * Math.cos(ta))
+          
+          let real_computed_radius = await instance.computeRadius.call(real_ta, real_semimajor_meters, real_eccentricity)
+          let computed_radius = mv.fromReal(real_computed_radius)
+
+          assert.approximately(computed_radius, correct_radius, real_semimajor_meters/1E10,
+            "Radius of " + correct_radius + " should be computed from TA of " + ta + " at semimajor " + semimajor_meters + " and eccentricity " + eccentricity)
+
+
+        }
+
+      }
+    }
+
+
+    
+  })
+
 })

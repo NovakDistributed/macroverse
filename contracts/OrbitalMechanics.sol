@@ -3,7 +3,12 @@ pragma solidity ^0.4.18;
 import "./RealMath.sol";
 
 /**
- * Provides methods for doing orbital mechanics calculations, based on RealMath.
+ * Provides methods for doing orbital mechanics calculations, based on
+ * RealMath.
+ * 
+ * DON'T use these functions for computing positions for things every frame;
+ * the RealMath library isn't really accurate enough for that. Use these in
+ * smart contract game logic, on a time scale of one or more blocks.
  */
 contract OrbitalMechanics {
     using RealMath for *;
@@ -151,11 +156,19 @@ contract OrbitalMechanics {
     }
 
     /**
-     * Compute the True Anomaly from the eccentric anomaly and the eccentricity.
+     * Compute the true anomaly from the eccentric anomaly and the eccentricity.
      */
     function computeTrueAnomaly(int128 real_eccentric_anomaly, int128 real_eccentricity) public pure returns (int128) {
         int128 real_half_ea = real_eccentric_anomaly.div(REAL_TWO);
         return RealMath.atan2((REAL_ONE - real_eccentricity).sqrt().mul(real_half_ea.cos()), (REAL_ONE + real_eccentricity).sqrt().mul(real_half_ea.sin())).mul(REAL_TWO);
+    }
+
+    /**
+     * Compute the current orbit radius (distance from parent body) from the true anomaly, semimajor axis, and eccentricity.
+     * Operates on distances in meters.
+     */
+    function computeRadius(int128 real_true_anomaly, int128 real_semimajor_axis, int128 real_eccentricity) public pure returns (int128) {
+         return real_semimajor_axis.mul(REAL_ONE - real_eccentricity.mul(real_eccentricity)).div(REAL_ONE + real_eccentricity.mul(real_true_anomaly.cos()));
     }
     
 }
