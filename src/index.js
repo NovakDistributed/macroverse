@@ -35,6 +35,8 @@ mv.toReal = function(float) {
 
 // Convert from float radians to float degrees.
 mv.degrees = require('radians-degrees');
+// And back again
+mv.radians = require('degrees-radians');
 
 // Useful astronomical constants
 // 1 Astronomical Unit in meters
@@ -44,6 +46,15 @@ mv.AU = 149597870700
 mv.JULIAN_YEAR = 365.25 * 24 * 60 * 60;
 // A siderial year is about 365.25636 seconds and is Earth's orbital period
 mv.SIDERIAL_YEAR = 365.25636 * 24 * 60 * 60
+
+// When did the Macroverse world start, in Unix time?
+// Subtract from block timestamp to get seconds since epoch for block.
+mv.EPOCH = 1518671883
+
+// Convert a Unix-time block timestamp to Julian years since Macroverse epoch
+mv.yearsSinceEpoch = function(unixTime) {
+  return (unixTime - mv.EPOCH) / mv.JULIAN_YEAR;
+}
 
 mv.objectClasses = ['Supergiant', 'Giant', 'MainSequence', 'WhiteDwarf', 'NeutronStar', 'BlackHole']
 mv.objectClass = {

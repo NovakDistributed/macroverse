@@ -130,9 +130,53 @@ contract('OrbitalMechanics', function(accounts) {
 
       }
     }
-
-
-    
   })
 
+  it("should compute a current orbital position", async function() {
+    let instance = await OrbitalMechanics.deployed()
+
+    /**
+     * I got this from the system generator test
+     *
+     * Terrestrial with mass 5.250290167260573 Earths between 1.0983088145299555 and 1.1140059916272032 AU
+     *   Eccentricity: 0.007095363215739781 LAN: 107.55660144903162° Inclination: 0.17810602784688181°
+     *   AOP: 265.32128537763356° Mean Anomaly at Epoch: 70.03141466547464°
+     */
+    
+    // Define orbital parameters
+    let semimajor_meters = (1.0983088145299555 + 1.1140059916272032) / 2 * mv.AU
+    let eccentricity = 0.007095363215739781
+    let lan = mv.radians(107.55660144903162)
+    let inclination = mv.radians(0.17810602784688181)
+    let aop = mv.radians(265.32128537763356)
+    let ma0 = mv.radians(70.03141466547464)
+
+    // Pretend it's around the sun
+    let central_mass = 1.0
+
+    // Decide what time it is
+    let mv_time = mv.yearsSinceEpoch(web3.eth.getBlock(web3.eth.blockNumber).timestamp)
+    console.log("The time is " + mv_time + " years since Macroverse epoch")
+
+    // Convert to real
+    let real_semimajor_meters = mv.toReal(semimajor_meters)
+    let real_eccentricity = mv.toReal(eccentricity)
+    let real_lan = mv.toReal(lan)
+    let real_inclination = mv.toReal(inclination)
+    let real_aop = mv.toReal(aop)
+    let real_ma0 = mv.toReal(ma0)
+    let real_central_mass = mv.toReal(central_mass)
+    let real_time = mv.toReal(mv_time)
+
+    // Do all the orbit steps
+    let real_mean_angular_motion = await instance.computeMeanAngularMotion.call(real_central_mass, real_semimajor_meters)
+    let real_mean_anomaly = await instance.computeMeanAnomaly.call(real_ma0, real_mean_angular_motion, real_time)
+    let real_eccentric_anomaly = await instance.computeEccentricAnomaly.call(real_mean_anomaly, real_eccentricity)
+    let real_true_anomaly = await instance.computeTrueAnomaly.call(real_eccentric_anomaly, real_eccentricity)
+    let real_radius = await instance.computeRadius.call(real_true_anomaly, real_semimajor_meters, real_eccentricity)
+    let [real_x, real_y, real_z] = await instance.computeCartesianOffset.call(real_radius, real_true_anomaly, real_lan, real_inclination, real_aop)
+
+    console.log("Planet currently at <" + mv.fromReal(real_x) + "," + mv.fromReal(real_y) + "," + mv.fromReal(real_z) + ">")
+
+  })
 })

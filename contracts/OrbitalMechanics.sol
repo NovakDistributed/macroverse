@@ -170,5 +170,29 @@ contract OrbitalMechanics {
     function computeRadius(int128 real_true_anomaly, int128 real_semimajor_axis, int128 real_eccentricity) public pure returns (int128) {
          return real_semimajor_axis.mul(REAL_ONE - real_eccentricity.mul(real_eccentricity)).div(REAL_ONE + real_eccentricity.mul(real_true_anomaly.cos()));
     }
-    
+
+    /**
+     * Compute Cartesian X, Y, and Z offset from center of parent body to orbiting body.
+     * Operates on distances in meters.
+     * X is toward longitude 0 of the parent body.
+     * Y is the other in-plane direction.
+     * Z is up out of the plane.
+     */
+    function computeCartesianOffset(int128 real_radius, int128 real_true_anomaly, int128 real_lan, int128 real_inclination,
+        int128 real_aop) public pure returns (int128 real_x, int128 real_y, int128 real_z) {
+        
+        // Compute some intermediates
+        int128 cos_lan = real_lan.cos();
+        int128 sin_lan = real_lan.sin();
+        int128 aop_ta_cos = (real_aop + real_true_anomaly).cos();
+        int128 aop_ta_sin = (real_aop + real_true_anomaly).sin();
+        int128 inclination_cos = real_inclination.cos();
+        int128 inclination_sin = real_inclination.sin();
+
+        // Compute the actual coordinates
+        real_x = real_radius.mul(cos_lan.mul(aop_ta_cos) - sin_lan.mul(aop_ta_sin).mul(inclination_cos));
+        real_y = real_radius.mul(sin_lan.mul(aop_ta_cos) + cos_lan.mul(aop_ta_sin).mul(inclination_cos));
+        real_z = real_radius.mul(inclination_sin).mul(aop_ta_sin);
+
+    }
 }
