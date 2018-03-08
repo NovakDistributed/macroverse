@@ -1,4 +1,4 @@
 *~
-build/contracts/*.json
 *.swp
+build/contracts/*.json
 
