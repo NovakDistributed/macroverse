@@ -1,7 +1,7 @@
 {
     "name": "macroverse",
-    "version": "2.0.0-alpha.1",
-    "descrioption": "An entire universe on the Ethereum blockchain",
+    "version": "2.0.0-alpha.2",
+    "description": "An entire universe on the Ethereum blockchain",
     "keywords": [
         "macroverse",
         "Ethereum",
@@ -16,6 +16,7 @@
         "type": "git",
         "url": "https://github.com/NovakDistributed/macroverse.git"
     },
+    "main": "src/index.js",
     "dependencies": {
         "degrees-radians": "^1.0.3",
         "radians-degrees": "^1.0.0",
