@@ -4,12 +4,12 @@
 // defining JS equivalents or counterparts to some of the on-chain Solidity
 // code.
 
-// TODO: load web3 somehow if not already available
+const BigNumber = require('bignumber.js')
 
 var mv = module.exports
 
 mv.REAL_FBITS = 40
-mv.REAL_ONE = web3.toBigNumber(2).toPower(mv.REAL_FBITS)
+mv.REAL_ONE = (new BigNumber(2)).pow(mv.REAL_FBITS)
 
 mv.fromReal = function(real) {
   // Convert from 40 bit fixed point
