@@ -41,6 +41,9 @@ mv.radians = require('degrees-radians');
 // Useful astronomical constants
 // 1 Astronomical Unit in meters
 mv.AU = 149597870700
+// G in per-solar-mass units, as used in Macroverse orbital mechanics.
+// This value of G is very precise, but the uncertainty comes in converting solar mass units to kilograms
+mv.G_PER_SOL = 132712875029098577920 // m^3 s^-2 sols^-1
 // A Julian year is exactly 365.25 days and is our basic time unit.
 // We think about orbits in terms of radians per Julian year.
 mv.JULIAN_YEAR = 365.25 * 24 * 60 * 60;

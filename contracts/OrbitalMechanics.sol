@@ -18,6 +18,8 @@ contract OrbitalMechanics {
      * motion equation for Earth. We can be mostly precise here, because we
      * know the semimajor axis and year length (in Julian years) to a few
      * places.
+     *
+     * This is 132712875029098577920 m^3 s^-2 sols^-1
      */
     int128 constant REAL_G_PER_SOL = 145919349250077040774785972305920;
 
