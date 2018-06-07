@@ -231,19 +231,19 @@ contract MacroverseSystemGenerator is ControlledAccess {
         int88 maximum;
         if (class == PlanetClass.Lunar) {
             minimum = 0;
-            maximum = 3;
+            maximum = 6;
         } else if (class == PlanetClass.Terrestrial) {
             minimum = 0;
-            maximum = 5;
+            maximum = 10;
         } else if (class == PlanetClass.Uranian) {
             minimum = 20;
-            maximum = 500;
+            maximum = 1000;
         } else if (class == PlanetClass.Jovian) {
             minimum = 10;
-            maximum = 100;
+            maximum = 200;
         } else if (class == PlanetClass.AsteroidBelt) {
             minimum = 10;
-            maximum = 50;
+            maximum = 100;
         } else {
             // Not real!
             revert();
@@ -343,7 +343,14 @@ contract MacroverseSystemGenerator is ControlledAccess {
             revert();
         }
         
-        return RealMath.div(node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum)), RealMath.toReal(1000));    
+        // Decide if we should be retrograde (PI-ish inclination)
+        int128 real_retrograde_offset = 0;
+        if (node.derive("retrograde").d(1, 100, 0) < 2) {
+            // This planet ought to move retrograde
+            real_retrograde_offset = REAL_PI;
+        }
+
+        return real_retrograde_offset + RealMath.div(node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum)), RealMath.toReal(1000));    
     }
     
     // Define the orbit's embedding in the plane (and in time)
