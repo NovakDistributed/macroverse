@@ -44,6 +44,16 @@ mv.AU = 149597870700
 // G in per-solar-mass units, as used in Macroverse orbital mechanics.
 // This value of G is very precise, but the uncertainty comes in converting solar mass units to kilograms
 mv.G_PER_SOL = 132712875029098577920 // m^3 s^-2 sols^-1
+// The luminosity of the sun, in watts
+mv.SOLAR_LUMINOSITY = 3.828E26
+
+// Function to compute lumionosity of a star, in solar luminosities, given mass in sols.
+// TODO: This will need to be moved on chain in some form for atmospheres.
+mv.luminosity = function(solarMasses) {
+  // We just use an exact relationship since the star generator doesn't cover this.
+  return Math.pow(solarMasses, 3.5)
+}
+
 // A Julian year is exactly 365.25 days and is our basic time unit.
 // We think about orbits in terms of radians per Julian year.
 mv.JULIAN_YEAR = 365.25 * 24 * 60 * 60;
