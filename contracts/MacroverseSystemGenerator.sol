@@ -177,8 +177,6 @@ contract MacroverseSystemGenerator is ControlledAccess {
     
     // Define the orbit shape
 
-    event Explode(int88 data);
-
     /**
      * Given the parent star class and type, the planet seed, the planet class
      * to be generated, and the "clearance" radius around the previous planet
