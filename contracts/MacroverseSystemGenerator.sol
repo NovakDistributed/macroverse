@@ -176,7 +176,81 @@ contract MacroverseSystemGenerator is ControlledAccess {
     }
     
     // Define the orbit shape
-    
+
+    event Explode(int88 data);
+
+    /**
+     * Given the parent star class and type, the planet seed, the planet class
+     * to be generated, and the "clearance" radius around the previous planet
+     * in meters, produces orbit statistics (periapsis, apoapsis, and
+     * clearance) in meters.
+     *
+     * The first planet uses a previous clearance of 0.
+     */
+    function getPlanetOrbitDimensions(MacroverseStarGenerator.ObjectClass objectClass,
+        MacroverseStarGenerator.SpectralType spectralType, bytes32 seed, PlanetClass class, int128 realPrevClearance)
+        public view onlyControlledAccess returns (int128 realPeriapsis, int128 realApoapsis, int128 realClearance) {
+
+        // Each object class and spectral type combo has a characteristic base length (in km).
+        // For sun-sized TypeG MainSequence stars, that is 1,000,000
+        int88 baseLength;
+        if (objectClass == MacroverseStarGenerator.ObjectClass.BlackHole) {
+            // Black hole systems should be about twice our size
+            baseLength = 2000000;
+        } else if (objectClass == MacroverseStarGenerator.ObjectClass.NeutronStar) {
+            // Neutron star systems should be about our size
+            baseLength = 1100000;
+        } else if (objectClass == MacroverseStarGenerator.ObjectClass.WhiteDwarf) {
+            // White dwarf systems can be smaller
+            baseLength = 800000;
+        } else if (objectClass == MacroverseStarGenerator.ObjectClass.MainSequence) {
+            if (spectralType == MacroverseStarGenerator.SpectralType.TypeO) {
+                // Type O systems should be big (10x)
+                baseLength = 10000000;
+            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeB) {
+                // Type B should be smaller (5x)
+                baseLength = 5000000;
+            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeA) {
+                // Type A should be just a bit bigger
+                baseLength = 1500000;
+            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeF) {
+                // Type F should be just a hair bigger
+                baseLength = 1200000;
+            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeG) {
+                // Type G should be on average our size
+                baseLength = 1000000;
+            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeK) {
+                // Type K should be smaller (1/3)
+                baseLength = 333333;
+            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeM) {
+                // Type M should be even smaller (1/10)
+                baseLength = 100000;
+            } else {
+                // Not real!
+                revert();
+            }
+        } else if (objectClass == MacroverseStarGenerator.ObjectClass.Giant) {
+            // Giants are giant (20x)
+            baseLength = 20000000;
+        } else if (objectClass == MacroverseStarGenerator.ObjectClass.Supergiant) {
+            // Supergiants are gianter (50x)
+            baseLength = 50000000;
+        } else {
+            // Not real!
+            revert();
+        }
+
+        int128 realBaseLengthMeters = RealMath.toReal(1000 * baseLength);
+
+        // Make the planet RNG node to use for all the computations
+        var node = RNG.RandNode(seed);
+        
+        // Compute the statistics with their own functions
+        realPeriapsis = getPlanetPeriapsis(node, class, realBaseLengthMeters, realPrevClearance);
+        realApoapsis = getPlanetApoapsis(node, class, realBaseLengthMeters, realPeriapsis);
+        realClearance = getPlanetClearance(node, class, realBaseLengthMeters, realApoapsis);
+    }
+
     /**
      * Decide what the planet's orbit's periapsis is, in meters.
      * This is the first statistic about the orbit to be generated.
@@ -185,9 +259,9 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * clearance (i.e. distance from star that the planet has cleared out) of
      * the previous planet.
      */
-    function getPlanetPeriapsis(bytes32 seed, PlanetClass class, int128 realPrevClearance) public view onlyControlledAccess returns (int128) {
+    function getPlanetPeriapsis(RNG.RandNode planetNode, PlanetClass class, int128 realBaseLength, int128 realPrevClearance) internal view returns (int128) {
         
-        var node = RNG.RandNode(seed).derive("periapsis");
+        var node = planetNode.derive("periapsis");
         
         // Define minimum and maximum periapsis distance above previous planet's
         // cleared band in millions of km
@@ -214,16 +288,16 @@ contract MacroverseSystemGenerator is ControlledAccess {
         }
         
         int128 realSeparation = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
-        return realPrevClearance + RealMath.mul(realSeparation, RealMath.toReal(1000000000)); 
+        return realPrevClearance + RealMath.mul(realSeparation, realBaseLength); 
     }
     
     /**
      * Decide what the planet's orbit's apoapsis is, in meters.
      * This is the second statistic about the orbit to be generated.
      */
-    function getPlanetApoapsis(bytes32 seed, PlanetClass class, int128 realPeriapsis) public view onlyControlledAccess returns (int128) {
+    function getPlanetApoapsis(RNG.RandNode planetNode, PlanetClass class, int128 realBaseLength, int128 realPeriapsis) internal view returns (int128) {
         
-        var node = RNG.RandNode(seed).derive("apoapsis");
+        var node = planetNode.derive("apoapsis");
         
         // Define minimum and maximum apoapsis distance above planet's periapsis
         // Think in gigameters (millions of km)
@@ -250,15 +324,15 @@ contract MacroverseSystemGenerator is ControlledAccess {
         }
         
         int128 realWidth = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
-        return realPeriapsis + RealMath.mul(realWidth, RealMath.toReal(1000000000)); 
+        return realPeriapsis + RealMath.mul(realWidth, realBaseLength); 
     }
     
     /**
      * Decide how far out the cleared band after the planet's orbit is.
      */
-    function getPlanetClearance(bytes32 seed, PlanetClass class, int128 realApoapsis) public view onlyControlledAccess returns (int128) {
+    function getPlanetClearance(RNG.RandNode planetNode, PlanetClass class, int128 realBaseLength, int128 realApoapsis) internal view returns (int128) {
         
-        var node = RNG.RandNode(seed).derive("cleared");
+        var node = planetNode.derive("cleared");
         
         // Define minimum and maximum clearance in millions of km.
         // TODO: Constants should be sort of like the periapsis constants I think? But maybe not identical.
@@ -286,7 +360,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
         }
         
         int128 realSeparation = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
-        return realApoapsis + RealMath.mul(realSeparation, RealMath.toReal(1000000000)); 
+        return realApoapsis + RealMath.mul(realSeparation, realBaseLength); 
     }
     
     /**
