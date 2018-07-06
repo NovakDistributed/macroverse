@@ -36,6 +36,25 @@ contract MacroverseSystemGenerator is ControlledAccess {
     int128 constant REAL_PI = 3454217652358;
 
     /**
+     * How many fractional bits are there?
+     */
+    int256 constant REAL_FBITS = 40;
+    
+    /**
+     * What's the first non-fractional bit
+     */
+    int128 constant REAL_ONE = int128(1) << REAL_FBITS;
+    
+    /**
+     * What's the last fractional bit?
+     */
+    int128 constant REAL_HALF = REAL_ONE >> 1;
+    
+    /**
+     * What's two? Two is pretty useful.
+     */
+    int128 constant REAL_TWO = REAL_ONE << 1;
+    /**
      * Define different types of planet.
      */
     enum PlanetClass {Lunar, Terrestrial, Uranian, Jovian, AsteroidBelt}
@@ -84,10 +103,62 @@ contract MacroverseSystemGenerator is ControlledAccess {
            limit = 2;
         }
         
-        var roll = int16(node.getIntBetween(1, limit));
+        var roll = int16(node.getIntBetween(1, limit + 1));
         
         return roll;
     }
+
+    /**
+     * Compute the luminosity of a stellar object given its mass and class.
+     * We didn't define this in the star generator, but we need it for the planet generator.
+     *
+     * Returns luminosity in solar luminosities.
+     */
+    function getObjectLuminosity(bytes32 starSeed, MacroverseStarGenerator.ObjectClass objectClass, int128 realObjectMass) public view onlyControlledAccess returns (int128) {
+        
+        var node = RNG.RandNode(starSeed);
+
+        int128 realBaseLuminosity;
+        if (objectClass == MacroverseStarGenerator.ObjectClass.BlackHole) {
+            // Black hole luminosity is going to be from the accretion disk.
+            // See <https://astronomy.stackexchange.com/q/12567>
+            // We'll return pretty much whatever and user code can back-fill the accretion disk if any.
+            if(node.derive("accretiondisk").getBool()) {
+                // These aren't absurd masses; they're on the order of world annual food production per second.
+                realBaseLuminosity = node.derive("luminosity").getRealBetween(RealMath.toReal(1), RealMath.toReal(5));
+            } else {
+                // No accretion disk
+                realBaseLuminosity = 0;
+            }
+        } else if (objectClass == MacroverseStarGenerator.ObjectClass.NeutronStar) {
+            // These will be dim and not really mass-related
+            realBaseLuminosity = node.derive("luminosity").getRealBetween(RealMath.fraction(1, 20), RealMath.fraction(2, 10));
+        } else if (objectClass == MacroverseStarGenerator.ObjectClass.WhiteDwarf) {
+            // These are also dim
+            realBaseLuminosity = RealMath.pow(realObjectMass.mul(REAL_HALF), RealMath.fraction(35, 10));
+        } else {
+            // Normal stars follow a normal mass-lumoinosity relationship
+            realBaseLuminosity = RealMath.pow(realObjectMass, RealMath.fraction(35, 10));
+        }
+        
+        // Perturb the generated luminosity for fun
+        return realBaseLuminosity.mul(node.derive("luminosityScale").getRealBetween(RealMath.fraction(95, 100), RealMath.fraction(105, 100)));
+    }
+
+    /**
+     * Get the inner and outer boundaries of the habitable zone for a star, in meters, based on its luminosity in solar luminosities.
+     * This is just a rule-of-thumb; actual habitability is going to depend on atmosphere (see Venus, Mars)
+     */
+    function getObjectHabitableZone(int128 realLuminosity) public view onlyControlledAccess returns (int128 realInnerRadius, int128 realOuterRadius) {
+        // Light per unit area scales with the square of the distance, so if we move twice as far out we get 1/4 the light.
+        // So if our star is half as bright as the sun, the habitable zone radius is 1/sqrt(2) = sqrt(1/2) as big
+        // So we scale this by the square root of the luminosity.
+        int128 realScale = RealMath.sqrt(realLuminosity);
+        // Wikipedia says nobody knows the bounds for Sol, but let's say 0.75 to 2.0 AU to be nice and round and also sort of average
+        realInnerRadius = RealMath.toReal(112198400000).mul(realScale);
+        realOuterRadius = RealMath.toReal(299195700000).mul(realScale);
+    }
+
     
     /**
      * Get the seed for a planet from the seed for the star and its number.
@@ -105,7 +176,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
         // TODO: do something based on metallicity?
         var node = RNG.RandNode(seed).derive("class");
         
-        var roll = node.getIntBetween(1, 100);
+        var roll = node.getIntBetween(0, 100);
         
         // Inner planets should be more planet-y, ideally smaller
         // Asteroid belts shouldn't be first that often
@@ -178,75 +249,25 @@ contract MacroverseSystemGenerator is ControlledAccess {
     // Define the orbit shape
 
     /**
-     * Given the parent star class and type, the planet seed, the planet class
+     * Given the parent star's habitable zone bounds, the planet seed, the planet class
      * to be generated, and the "clearance" radius around the previous planet
      * in meters, produces orbit statistics (periapsis, apoapsis, and
      * clearance) in meters.
      *
      * The first planet uses a previous clearance of 0.
      */
-    function getPlanetOrbitDimensions(MacroverseStarGenerator.ObjectClass objectClass,
-        MacroverseStarGenerator.SpectralType spectralType, bytes32 seed, PlanetClass class, int128 realPrevClearance)
+    function getPlanetOrbitDimensions(int128 realInnerRadius, int128 realOuterRadius, bytes32 seed, PlanetClass class, int128 realPrevClearance)
         public view onlyControlledAccess returns (int128 realPeriapsis, int128 realApoapsis, int128 realClearance) {
 
-        // Each object class and spectral type combo has a characteristic base length (in km).
-        // For sun-sized TypeG MainSequence stars, that is 1,000,000
-        int88 baseLength;
-        if (objectClass == MacroverseStarGenerator.ObjectClass.BlackHole) {
-            // Black hole systems should be about twice our size
-            baseLength = 2000000;
-        } else if (objectClass == MacroverseStarGenerator.ObjectClass.NeutronStar) {
-            // Neutron star systems should be about our size
-            baseLength = 1100000;
-        } else if (objectClass == MacroverseStarGenerator.ObjectClass.WhiteDwarf) {
-            // White dwarf systems can be smaller
-            baseLength = 800000;
-        } else if (objectClass == MacroverseStarGenerator.ObjectClass.MainSequence) {
-            if (spectralType == MacroverseStarGenerator.SpectralType.TypeO) {
-                // Type O systems should be big (10x)
-                baseLength = 10000000;
-            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeB) {
-                // Type B should be smaller (5x)
-                baseLength = 5000000;
-            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeA) {
-                // Type A should be just a bit bigger
-                baseLength = 1500000;
-            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeF) {
-                // Type F should be just a hair bigger
-                baseLength = 1200000;
-            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeG) {
-                // Type G should be on average our size
-                baseLength = 1000000;
-            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeK) {
-                // Type K should be smaller (1/3)
-                baseLength = 333333;
-            } else if (spectralType == MacroverseStarGenerator.SpectralType.TypeM) {
-                // Type M should be even smaller (1/10)
-                baseLength = 100000;
-            } else {
-                // Not real!
-                revert();
-            }
-        } else if (objectClass == MacroverseStarGenerator.ObjectClass.Giant) {
-            // Giants are giant (20x)
-            baseLength = 20000000;
-        } else if (objectClass == MacroverseStarGenerator.ObjectClass.Supergiant) {
-            // Supergiants are gianter (50x)
-            baseLength = 50000000;
-        } else {
-            // Not real!
-            revert();
-        }
-
-        int128 realBaseLengthMeters = RealMath.toReal(1000 * baseLength);
+        // We scale all the random generation around the habitable zone distance.
 
         // Make the planet RNG node to use for all the computations
         var node = RNG.RandNode(seed);
         
         // Compute the statistics with their own functions
-        realPeriapsis = getPlanetPeriapsis(node, class, realBaseLengthMeters, realPrevClearance);
-        realApoapsis = getPlanetApoapsis(node, class, realBaseLengthMeters, realPeriapsis);
-        realClearance = getPlanetClearance(node, class, realBaseLengthMeters, realApoapsis);
+        realPeriapsis = getPlanetPeriapsis(realInnerRadius, realOuterRadius, node, class, realPrevClearance);
+        realApoapsis = getPlanetApoapsis(realInnerRadius, realOuterRadius, node, class, realPeriapsis);
+        realClearance = getPlanetClearance(realInnerRadius, realOuterRadius, node, class, realApoapsis);
     }
 
     /**
@@ -257,22 +278,23 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * clearance (i.e. distance from star that the planet has cleared out) of
      * the previous planet.
      */
-    function getPlanetPeriapsis(RNG.RandNode planetNode, PlanetClass class, int128 realBaseLength, int128 realPrevClearance) internal view returns (int128) {
+    function getPlanetPeriapsis(int128 realInnerRadius, int128 realOuterRadius, RNG.RandNode planetNode, PlanetClass class, int128 realPrevClearance)
+        internal view returns (int128) {
         
         var node = planetNode.derive("periapsis");
         
         // Define minimum and maximum periapsis distance above previous planet's
-        // cleared band in millions of km
+        // cleared band. Work in % of the habitable zone inner radius.
         int88 minimum;
         int88 maximum;
         if (class == PlanetClass.Lunar) {
             minimum = 20;
             maximum = 60;
         } else if (class == PlanetClass.Terrestrial) {
-            minimum = 40;
+            minimum = 20;
             maximum = 70;
         } else if (class == PlanetClass.Uranian) {
-            minimum = 1000;
+            minimum = 100;
             maximum = 2000;
         } else if (class == PlanetClass.Jovian) {
             minimum = 300;
@@ -286,19 +308,20 @@ contract MacroverseSystemGenerator is ControlledAccess {
         }
         
         int128 realSeparation = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
-        return realPrevClearance + RealMath.mul(realSeparation, realBaseLength); 
+        return realPrevClearance + RealMath.mul(realSeparation, realInnerRadius).div(RealMath.toReal(100)); 
     }
     
     /**
      * Decide what the planet's orbit's apoapsis is, in meters.
      * This is the second statistic about the orbit to be generated.
      */
-    function getPlanetApoapsis(RNG.RandNode planetNode, PlanetClass class, int128 realBaseLength, int128 realPeriapsis) internal view returns (int128) {
+    function getPlanetApoapsis(int128 realInnerRadius, int128 realOuterRadius, RNG.RandNode planetNode, PlanetClass class, int128 realPeriapsis)
+        internal view returns (int128) {
         
         var node = planetNode.derive("apoapsis");
         
-        // Define minimum and maximum apoapsis distance above planet's periapsis
-        // Think in gigameters (millions of km)
+        // Define minimum and maximum apoapsis distance above planet's periapsis.
+        // Work in % of the habitable zone inner radius.
         int88 minimum;
         int88 maximum;
         if (class == PlanetClass.Lunar) {
@@ -322,19 +345,19 @@ contract MacroverseSystemGenerator is ControlledAccess {
         }
         
         int128 realWidth = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
-        return realPeriapsis + RealMath.mul(realWidth, realBaseLength); 
+        return realPeriapsis + RealMath.mul(realWidth, realInnerRadius).div(RealMath.toReal(100)); 
     }
     
     /**
      * Decide how far out the cleared band after the planet's orbit is.
      */
-    function getPlanetClearance(RNG.RandNode planetNode, PlanetClass class, int128 realBaseLength, int128 realApoapsis) internal view returns (int128) {
+    function getPlanetClearance(int128 realInnerRadius, int128 realOuterRadius, RNG.RandNode planetNode, PlanetClass class, int128 realApoapsis)
+        internal view returns (int128) {
         
         var node = planetNode.derive("cleared");
         
-        // Define minimum and maximum clearance in millions of km.
-        // TODO: Constants should be sort of like the periapsis constants I think? But maybe not identical.
-        // Think in gigameters (millions of km)
+        // Define minimum and maximum clearance.
+        // Work in % of the habitable zone inner radius.
         int88 minimum;
         int88 maximum;
         if (class == PlanetClass.Lunar) {
@@ -358,7 +381,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
         }
         
         int128 realSeparation = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
-        return realApoapsis + RealMath.mul(realSeparation, realBaseLength); 
+        return realApoapsis + RealMath.mul(realSeparation, realInnerRadius).div(RealMath.toReal(100)); 
     }
     
     /**
