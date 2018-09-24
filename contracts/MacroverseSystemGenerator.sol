@@ -30,7 +30,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
     // No SafeMath or it might confuse RealMath
 
     /**
-     * It is also useful to have Pi around.
+     * It is useful to have Pi around.
      * We can't pull it in from the library.
      */
     int128 constant REAL_PI = 3454217652358;
@@ -54,10 +54,40 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * What's two? Two is pretty useful.
      */
     int128 constant REAL_TWO = REAL_ONE << 1;
+
     /**
-     * Define different types of planet.
+     * For having moons, we need to be able to run the orbit calculations (all
+     * specified in solar masses for the central mass) on
+     * Earth-mass-denominated planet masses.
+     * See the "Equivalent Planetary masses" table at https://en.wikipedia.org/wiki/Astronomical_system_of_units
      */
-    enum PlanetClass {Lunar, Terrestrial, Uranian, Jovian, AsteroidBelt}
+    int256 constant EARTH_MASSES_PER_SOLAR_MASS = 332950;
+
+    /**
+     * We define the number of earth masses per solar mass as a real, so we don't have to convert it always.
+     */
+    int128 constant REAL_EARTH_MASSES_PER_SOLAR_MASS = int128(EARTH_MASSES_PER_SOLAR_MASS) * REAL_ONE; 
+
+    /**
+     * We also keep a "stowage factor" for planetary material in m^3 per earth mass, at water density, for
+     * faking planetary radii during moon orbit calculations.
+     */
+    int128 constant REAL_M3_PER_EARTH = 6566501804087548000000000000000000; // 6.566501804087548E33
+
+    /**
+     * Define different types of planet or moon.
+     * 
+     * There are two main progressions:
+     * Asteroidal, Lunar, Terrestrial, Jovian are rocky things.
+     * Cometary, Europan, Panthalassic, Neptunian are icy/watery things, depending on temperature.
+     * The last thing in each series is the gas/ice giant.
+     *
+     * Asteroidal and Cometary are only valid for moons; we don't track such tiny bodies at system scale.
+     *
+     * We also have rings and asteroid belts. Rings can only be around planets, and we fake the Roche limit math we really should do.
+     * 
+     */
+    enum PlanetClass {Asteroidal, Lunar, Terrestrial, Jovian, Cometary, Europan, Panthalassic, Neptunian, Ring, AsteroidBelt}
 
     /**
      * Deploy a new copy of the MacroverseSystemGenerator.
@@ -72,12 +102,12 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Star Generator.
      */
     function getObjectPlanetCount(bytes32 starSeed, MacroverseStarGenerator.ObjectClass objectClass,
-        MacroverseStarGenerator.SpectralType spectralType) public view onlyControlledAccess returns (int16) {
+        MacroverseStarGenerator.SpectralType spectralType) public view onlyControlledAccess returns (uint) {
         
         var node = RNG.RandNode(starSeed).derive("planetcount");
         
         
-        int16 limit;
+        uint limit;
 
         if (objectClass == MacroverseStarGenerator.ObjectClass.MainSequence) {
             if (spectralType == MacroverseStarGenerator.SpectralType.TypeO ||
@@ -103,7 +133,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
            limit = 2;
         }
         
-        var roll = int16(node.getIntBetween(1, limit + 1));
+        var roll = uint(node.getIntBetween(1, int88(limit + 1)));
         
         return roll;
     }
@@ -163,7 +193,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Get the seed for a planet from the seed for the star and its number.
      */
-    function getPlanetSeed(bytes32 starSeed, int16 planetNumber) public view onlyControlledAccess returns (bytes32) {
+    function getPlanetSeed(bytes32 starSeed, uint planetNumber) public view onlyControlledAccess returns (bytes32) {
         return RNG.RandNode(starSeed).derive(planetNumber)._hash;
     }
     
@@ -172,7 +202,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * It depends on its place in the order.
      * Takes the *planet*'s seed, its number, and the total planets in the system.
      */
-    function getPlanetClass(bytes32 seed, int16 planetNumber, int16 totalPlanets) public view onlyControlledAccess returns (PlanetClass) {
+    function getPlanetClass(bytes32 seed, uint planetNumber, uint totalPlanets) public view onlyControlledAccess returns (PlanetClass) {
         // TODO: do something based on metallicity?
         var node = RNG.RandNode(seed).derive("class");
         
@@ -184,23 +214,32 @@ contract MacroverseSystemGenerator is ControlledAccess {
         if (planetNumber == 0 && totalPlanets != 1) {
             // Innermost planet of a multi-planet system
             // No asteroid belts allowed!
-            if (roll < 70) {
+            // Also avoid too much watery stuff here because we don't want to deal with the water having been supposed to boil off.
+            if (roll < 69) {
                 return PlanetClass.Lunar;
-            } else if (roll < 80) {
+            } else if (roll < 70) {
+                return PlanetClass.Europan;
+            } else if (roll < 79) {
                 return PlanetClass.Terrestrial;
+            } else if (roll < 80) {
+                return PlanetClass.Panthalassic;
             } else if (roll < 90) {
-                return PlanetClass.Uranian;
+                return PlanetClass.Neptunian;
             } else {
                 return PlanetClass.Jovian;
             }
         } else if (planetNumber < totalPlanets / 2) {
             // Inner system
-            if (roll < 20) {
+            if (roll < 15) {
                 return PlanetClass.Lunar;
-            } else if (roll < 40) {
+            } else if (roll < 20) {
+                return PlanetClass.Europan;
+            } else if (roll < 35) {
                 return PlanetClass.Terrestrial;
+            } else if (roll < 40) {
+                return PlanetClass.Panthalassic;
             } else if (roll < 70) {
-                return PlanetClass.Uranian;
+                return PlanetClass.Neptunian;
             } else if (roll < 80) {
                 return PlanetClass.Jovian;
             } else {
@@ -208,12 +247,16 @@ contract MacroverseSystemGenerator is ControlledAccess {
             }
         } else {
             // Outer system
-            if (roll < 20) {
+            if (roll < 5) {
                 return PlanetClass.Lunar;
-            } else if (roll < 30) {
+            } else if (roll < 20) {
+                return PlanetClass.Europan;
+            } else if (roll < 22) {
                 return PlanetClass.Terrestrial;
+            } else if (roll < 30) {
+                return PlanetClass.Panthalassic;
             } else if (roll < 60) {
-                return PlanetClass.Uranian;
+                return PlanetClass.Neptunian;
             } else if (roll < 90) {
                 return PlanetClass.Jovian;
             } else {
@@ -232,10 +275,14 @@ contract MacroverseSystemGenerator is ControlledAccess {
         
         if (class == PlanetClass.Lunar) {
             return node.getRealBetween(RealMath.fraction(1, 100), RealMath.fraction(9, 100));
+        } else if (class == PlanetClass.Europan) {
+            return node.getRealBetween(RealMath.fraction(8, 1000), RealMath.fraction(80, 1000));
         } else if (class == PlanetClass.Terrestrial) {
             return node.getRealBetween(RealMath.fraction(10, 100), RealMath.toReal(9));
-        } else if (class == PlanetClass.Uranian) {
-            return node.getRealBetween(RealMath.toReal(9), RealMath.toReal(20));
+        } else if (class == PlanetClass.Panthalassic) {
+            return node.getRealBetween(RealMath.fraction(80, 1000), RealMath.toReal(9));
+        } else if (class == PlanetClass.Neptunian) {
+            return node.getRealBetween(RealMath.toReal(7), RealMath.toReal(20));
         } else if (class == PlanetClass.Jovian) {
             return node.getRealBetween(RealMath.toReal(50), RealMath.toReal(400));
         } else if (class == PlanetClass.AsteroidBelt) {
@@ -279,23 +326,26 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * the previous planet.
      */
     function getPlanetPeriapsis(int128 realInnerRadius, int128 realOuterRadius, RNG.RandNode planetNode, PlanetClass class, int128 realPrevClearance)
-        internal view returns (int128) {
+        internal pure returns (int128) {
         
-        var node = planetNode.derive("periapsis");
+        // We're going to sample 2 values and take the minimum, to get a nicer distribution than uniform.
+        // We really kind of want a log scale but that's expensive.
+        var node1 = planetNode.derive("periapsis");
+        var node2 = planetNode.derive("periapsis2");
         
         // Define minimum and maximum periapsis distance above previous planet's
         // cleared band. Work in % of the habitable zone inner radius.
         int88 minimum;
         int88 maximum;
-        if (class == PlanetClass.Lunar) {
+        if (class == PlanetClass.Lunar || class == PlanetClass.Europan) {
             minimum = 20;
             maximum = 60;
-        } else if (class == PlanetClass.Terrestrial) {
+        } else if (class == PlanetClass.Terrestrial || class == PlanetClass.Panthalassic) {
             minimum = 20;
             maximum = 70;
-        } else if (class == PlanetClass.Uranian) {
-            minimum = 100;
-            maximum = 2000;
+        } else if (class == PlanetClass.Neptunian) {
+            minimum = 50;
+            maximum = 1000;
         } else if (class == PlanetClass.Jovian) {
             minimum = 300;
             maximum = 500;
@@ -307,7 +357,9 @@ contract MacroverseSystemGenerator is ControlledAccess {
             revert();
         }
         
-        int128 realSeparation = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        int128 realSeparation1 = node1.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        int128 realSeparation2 = node2.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        int128 realSeparation = realSeparation1 < realSeparation2 ? realSeparation1 : realSeparation2;
         return realPrevClearance + RealMath.mul(realSeparation, realInnerRadius).div(RealMath.toReal(100)); 
     }
     
@@ -316,23 +368,24 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * This is the second statistic about the orbit to be generated.
      */
     function getPlanetApoapsis(int128 realInnerRadius, int128 realOuterRadius, RNG.RandNode planetNode, PlanetClass class, int128 realPeriapsis)
-        internal view returns (int128) {
+        internal pure returns (int128) {
         
-        var node = planetNode.derive("apoapsis");
+        var node1 = planetNode.derive("apoapsis");
+        var node2 = planetNode.derive("apoapsis2");
         
         // Define minimum and maximum apoapsis distance above planet's periapsis.
         // Work in % of the habitable zone inner radius.
         int88 minimum;
         int88 maximum;
-        if (class == PlanetClass.Lunar) {
+        if (class == PlanetClass.Lunar || class == PlanetClass.Europan) {
             minimum = 0;
             maximum = 6;
-        } else if (class == PlanetClass.Terrestrial) {
+        } else if (class == PlanetClass.Terrestrial || class == PlanetClass.Panthalassic) {
             minimum = 0;
             maximum = 10;
-        } else if (class == PlanetClass.Uranian) {
+        } else if (class == PlanetClass.Neptunian) {
             minimum = 20;
-            maximum = 1000;
+            maximum = 500;
         } else if (class == PlanetClass.Jovian) {
             minimum = 10;
             maximum = 200;
@@ -344,7 +397,9 @@ contract MacroverseSystemGenerator is ControlledAccess {
             revert();
         }
         
-        int128 realWidth = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        int128 realWidth1 = node1.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        int128 realWidth2 = node2.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        int128 realWidth = realWidth1 < realWidth2 ? realWidth1 : realWidth2; 
         return realPeriapsis + RealMath.mul(realWidth, realInnerRadius).div(RealMath.toReal(100)); 
     }
     
@@ -352,23 +407,24 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Decide how far out the cleared band after the planet's orbit is.
      */
     function getPlanetClearance(int128 realInnerRadius, int128 realOuterRadius, RNG.RandNode planetNode, PlanetClass class, int128 realApoapsis)
-        internal view returns (int128) {
+        internal pure returns (int128) {
         
-        var node = planetNode.derive("cleared");
+        var node1 = planetNode.derive("cleared");
+        var node2 = planetNode.derive("cleared2");
         
         // Define minimum and maximum clearance.
         // Work in % of the habitable zone inner radius.
         int88 minimum;
         int88 maximum;
-        if (class == PlanetClass.Lunar) {
+        if (class == PlanetClass.Lunar || class == PlanetClass.Europan) {
             minimum = 20;
             maximum = 60;
-        } else if (class == PlanetClass.Terrestrial) {
+        } else if (class == PlanetClass.Terrestrial || class == PlanetClass.Panthalassic) {
             minimum = 40;
             maximum = 70;
-        } else if (class == PlanetClass.Uranian) {
-            minimum = 1000;
-            maximum = 2000;
+        } else if (class == PlanetClass.Neptunian) {
+            minimum = 300;
+            maximum = 700;
         } else if (class == PlanetClass.Jovian) {
             minimum = 300;
             maximum = 500;
@@ -380,7 +436,9 @@ contract MacroverseSystemGenerator is ControlledAccess {
             revert();
         }
         
-        int128 realSeparation = node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        int128 realSeparation1 = node1.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        int128 realSeparation2 = node2.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum));
+        int128 realSeparation = realSeparation1 < realSeparation2 ? realSeparation1 : realSeparation2;
         return realApoapsis + RealMath.mul(realSeparation, realInnerRadius).div(RealMath.toReal(100)); 
     }
     
@@ -418,13 +476,13 @@ contract MacroverseSystemGenerator is ControlledAccess {
         // 175 milliradians = ~ 10 degrees
         int88 minimum;
         int88 maximum;
-        if (class == PlanetClass.Lunar) {
+        if (class == PlanetClass.Lunar || class == PlanetClass.Europan) {
             minimum = 0;
             maximum = 175;
-        } else if (class == PlanetClass.Terrestrial) {
+        } else if (class == PlanetClass.Terrestrial || class == PlanetClass.Panthalassic) {
             minimum = 0;
             maximum = 87;
-        } else if (class == PlanetClass.Uranian) {
+        } else if (class == PlanetClass.Neptunian) {
             minimum = 0;
             maximum = 35;
         } else if (class == PlanetClass.Jovian) {
@@ -440,7 +498,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
         
         // Decide if we should be retrograde (PI-ish inclination)
         int128 real_retrograde_offset = 0;
-        if (node.derive("retrograde").d(1, 100, 0) < 2) {
+        if (node.derive("retrograde").d(1, 100, 0) < 3) {
             // This planet ought to move retrograde
             real_retrograde_offset = REAL_PI;
         }
@@ -467,6 +525,125 @@ contract MacroverseSystemGenerator is ControlledAccess {
         var node = RNG.RandNode(seed).derive("MAE");
         // Angles should be uniform from 0 to 2 PI.
         return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
-    }  
+    }
+
+    /**
+     * Get the number of moons a planet has, using its class.
+     */
+    function getPlanetMoonCount(bytes32 planetSeed, PlanetClass class) public view onlyControlledAccess returns (uint) {
+        var node = RNG.RandNode(planetSeed).derive("mooncount");
+        
+        uint limit;
+
+        if (class == PlanetClass.Lunar || class == PlanetClass.Europan) {
+            limit = 3;
+        } else if (class == PlanetClass.Terrestrial || class == PlanetClass.Panthalassic) {
+            limit = 4;
+        } else if (class == PlanetClass.Neptunian) {
+            limit = 6;
+        } else if (class == PlanetClass.Jovian) {
+            limit = 8;
+        } else if (class == PlanetClass.AsteroidBelt) {
+            limit = 0;
+        } else {
+            // Not real!
+            revert();
+        }
+        
+        var roll = uint(node.getIntBetween(0, int88(limit + 1)));
+        
+        return roll;
+    }
+
+    /**
+     * Get the seed for a moon from the seed for the planet and its number.
+     */
+    function getMoonSeed(bytes32 planetSeed, uint moonNumber) public view onlyControlledAccess returns (bytes32) {
+        return RNG.RandNode(planetSeed).derive(moonNumber)._hash;
+    }
+
+    /**
+     * Get the class of a moon, given the moon's seed and the class of its parent planet.
+     */
+    function getMoonClass(PlanetClass parent, bytes32 moonSeed, uint moonNumber) public view onlyControlledAccess returns (PlanetClass) {
+        // We can have moons of smaller classes than us only.
+        // Classes are Asteroidal, Lunar, Terrestrial, Jovian, Cometary, Europan, Panthalassic, Neptunian, Ring, AsteroidBelt
+        // AsteroidBelts never have moons and never are moons.
+        // Asteroidal and Cometary planets only ever are moons.
+        // Moons of the same type (rocky or icy) should be more common than cross-type.
+        // Jovians can have Neptunian moons
+
+        var moonNode = RNG.RandNode(moonSeed);
+
+        if (moonNumber == 0 && moonNode.derive("ring").d(1, 100, 0) < 15) {
+            // This should be a ring
+            return PlanetClass.Ring;
+        }
+
+        // Should we be of the opposite ice/rock type to our parent?
+        bool crossType = moonNode.derive("crosstype").d(1, 100, 0) < 30;
+
+        // What type is our parent? 0=rock, 1=ice
+        uint parentType = uint(parent) / 4;
+
+        // What number is the parent in its type? 0=Asteroidal/Cometary, 3=Jovian/Neptunian
+        // The types happen to be arranged so this works.
+        uint rankInType = uint(parent) % 4;
+
+        if (parent == PlanetClass.Jovian && crossType) {
+            // Say we can have the gas giant type (Neptunian)
+            rankInType++;
+        }
+
+        // Roll a lower rank. Bias towards the center.
+        uint lowerRank = uint(moonNode.derive("rank").d(2, int8(rankInType), -2) / 2);
+
+        // Determine the type of the moon (0=rock, 1=ice)
+        uint moonType = crossType ? parentType : (parentType + 1) % 2;
+
+        return PlanetClass(moonType * 4 + lowerRank);
+
+    }
+
+    /**
+     * Use the mass of a planet to compute its moon scale distance in AU. This is sort of like the Roche limit and must be bigger than the planet's radius.
+     */
+    function getPlanetMoonScale(int128 realMass) public view onlyControlledAccess returns (int128) {
+        // We assume a fictional inverse density of 1 cm^3/g = 5.9721986E21 cubic meters per earth mass
+        // Then we take cube root of volume / (4/3 pi) to get the radius of such a body
+        // Then we derive the scale factor from a few times that.
+
+        // Get the volume. We can definitely hold Jupiter's volume in m^3
+        int128 realVolume = realMass.mul(REAL_M3_PER_EARTH);
+        
+        // Get the radius in meters
+        int128 realRadius = realVolume.div(REAL_PI.mul(RealMath.fraction(4, 3))).pow(RealMath.fraction(1, 3));
+
+        // Return some useful multiple of it.
+        return realRadius.mul(RealMath.toReal(3));
+    }
+
+    /**
+     * Given the parent planet's scale radius, a moon's seed, the moon's class, and the previous moon's outer clearance (or 0), return the orbit shape of the moon.
+     */
+    function getPlanetOrbitDimensions(int128 planetMoonScale, bytes32 seed, PlanetClass class, int128 realPrevClearance)
+        public view onlyControlledAccess returns (int128 realPeriapsis, int128 realApoapsis, int128 realClearance) {
+
+        var moonNode = RNG.RandNode(seed);
+
+        if (class == PlanetClass.Ring) {
+            // Rings are special
+            realPeriapsis = realPrevClearance + planetMoonScale.mul(REAL_HALF).mul(moonNode.derive("ringstart").getRealBetween(REAL_ONE, REAL_TWO));
+            realApoapsis = realPeriapsis + realPeriapsis.mul(moonNode.derive("ringwidth").getRealBetween(REAL_HALF, REAL_TWO));
+            realClearance = realApoapsis + planetMoonScale.mul(REAL_HALF).mul(moonNode.derive("ringclear").getRealBetween(REAL_HALF, REAL_TWO));
+            return;
+        }
+
+        // Otherwise just roll some stuff
+        realPeriapsis = realPrevClearance + planetMoonScale.mul(moonNode.derive("periapsis").getRealBetween(REAL_HALF, REAL_TWO));
+        realApoapsis = realPeriapsis.mul(moonNode.derive("apoapsis").getRealBetween(REAL_ONE, RealMath.fraction(120, 100)));
+        realClearance = realApoapsis.mul(moonNode.derive("clearance").getRealBetween(RealMath.fraction(110, 100), RealMath.fraction(160, 100)));
+    }
+
 }
  
