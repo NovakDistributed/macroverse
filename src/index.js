@@ -44,6 +44,8 @@ mv.AU = 149597870700
 // G in per-solar-mass units, as used in Macroverse orbital mechanics.
 // This value of G is very precise, but the uncertainty comes in converting solar mass units to kilograms
 mv.G_PER_SOL = 132712875029098577920 // m^3 s^-2 sols^-1
+// How many earth masses in a solar mass?
+mv.EARTH_MASSES_PER_SOLAR_MASS = 332950
 // The luminosity of the sun, in watts
 mv.SOLAR_LUMINOSITY = 3.828E26
 
@@ -63,34 +65,24 @@ mv.yearsSinceEpoch = function(unixTime) {
 }
 
 mv.objectClasses = ['Supergiant', 'Giant', 'MainSequence', 'WhiteDwarf', 'NeutronStar', 'BlackHole']
-mv.objectClass = {
-  'Supergiant': 0,
-  'Giant': 1,
-  'MainSequence': 2,
-  'WhiteDwarf': 3,
-  'NeutronStar': 4,
-  'BlackHole': 5
+mv.objectClass = {}
+for (let i = 0; i < mv.objectClasses.length; i++) {
+  // Make the map from name to index
+  mv.objectClass[mv.objectClasses[i]] = i
 }
 
 mv.spectralTypes = ['TypeO', 'TypeB', 'TypeA', 'TypeF', 'TypeG', 'TypeK', 'TypeM', 'NotApplicable'],
-mv.spectralType = {
-  'TypeO': 0,
-  'TypeB': 1,
-  'TypeA': 2,
-  'TypeF': 3,
-  'TypeG': 4,
-  'TypeK': 5,
-  'TypeM': 6,
-  'NotApplicable': 7
+mv.spectralType = {}
+for (let i = 0; i < mv.spectralTypes.length; i++) {
+  // Make the map from name to index
+  mv.spectralType[mv.spectralTypes[i]] = i
 }
 
-mv.planetClasses = ['Lunar', 'Terrestrial', 'Uranian', 'Jovian', 'AsteroidBelt'],
-mv.planetClass = {
-  'Lunar': 0,
-  'Terrestrial': 1,
-  'Uranian': 2,
-  'Jovian': 3,
-  'AsteroidBelt': 4
+mv.planetClasses = ['Asteroidal', 'Lunar', 'Terrestrial', 'Jovian', 'Cometary', 'Europan', 'Panthalassic', 'Neptunian', 'Ring', 'AsteroidBelt'],
+mv.planetClass = {}
+for (let i = 0; i < mv.planetClasses.length; i++) {
+  // Make the map from name to index
+  mv.planetClass[mv.planetClasses[i]] = i
 }
 
 
