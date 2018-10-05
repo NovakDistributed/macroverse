@@ -85,7 +85,7 @@ contract('MacroverseSystemGenerator', function(accounts) {
     assert.isBelow(planetMass, 6.29)
   })
   
-  it("should have an orbit from about 0.24 to 0.30 AU", async function() {
+  it("should have an orbit from about 0.24 to 0.29 AU", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
     let planetSeed = await instance.getPlanetSeed.call('fred', 0)
     let planetClassNum = mv.planetClass['Terrestrial']
@@ -102,15 +102,15 @@ contract('MacroverseSystemGenerator', function(accounts) {
     assert.isAbove(mv.fromReal(realPeriapsis) / mv.AU, 0.24)
     assert.isBelow(mv.fromReal(realPeriapsis) / mv.AU, 0.25)
     
-    assert.isAbove(mv.fromReal(realApoapsis) / mv.AU, 0.30)
-    assert.isBelow(mv.fromReal(realApoapsis) / mv.AU, 0.31)
+    assert.isAbove(mv.fromReal(realApoapsis) / mv.AU, 0.29)
+    assert.isBelow(mv.fromReal(realApoapsis) / mv.AU, 0.30)
 
     // We sould also have reasonably symmetric-ish clearance    
     assert.isAbove(mv.fromReal(realClearance) / mv.AU, 0.60)
     assert.isBelow(mv.fromReal(realPeriapsis) / mv.AU, 0.70)
   })
   
-  it("should have a semimajor axis of 0.27 AU and an eccentricity of 0.11", async function() {
+  it("should have a semimajor axis of 0.27 AU and an eccentricity of about 0.08", async function() {
   
     let instance = await MacroverseSystemGenerator.deployed()
     let planetSeed = await instance.getPlanetSeed.call('fred', 0)
@@ -130,8 +130,8 @@ contract('MacroverseSystemGenerator', function(accounts) {
     assert.isAbove(mv.fromReal(realSemimajor) / mv.AU, 0.27)
     assert.isBelow(mv.fromReal(realSemimajor) / mv.AU, 0.28)
     
-    assert.isAbove(mv.fromReal(realEccentricity), 0.11)
-    assert.isBelow(mv.fromReal(realEccentricity), 0.12)
+    assert.isAbove(mv.fromReal(realEccentricity), 0.08)
+    assert.isBelow(mv.fromReal(realEccentricity), 0.09)
   
   })
   
