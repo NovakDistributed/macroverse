@@ -250,11 +250,18 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Decide what the mass of the planet is. We can't do even the mass of
      * Jupiter in the ~88 bits we have in a real (should we have used int256 as
      * the backing type?) so we work in Earth masses.
+     *
+     * Also produces the masses for moons.
      */
     function getPlanetMass(bytes32 seed, PlanetClass class) public view onlyControlledAccess returns (int128) {
         var node = RNG.RandNode(seed).derive("mass");
         
-        if (class == PlanetClass.Lunar) {
+        if (class == PlanetClass.Asteroidal) {
+            // For tiny bodies like this we work in nano-earths
+            return node.getRealBetween(RealMath.fraction(1, 1000000000), RealMath.fraction(10, 1000000000));
+        } else if (class == PlanetClass.Cometary) {
+            return node.getRealBetween(RealMath.fraction(1, 1000000000), RealMath.fraction(10, 1000000000));
+        } else if (class == PlanetClass.Lunar) {
             return node.getRealBetween(RealMath.fraction(1, 100), RealMath.fraction(9, 100));
         } else if (class == PlanetClass.Europan) {
             return node.getRealBetween(RealMath.fraction(8, 1000), RealMath.fraction(80, 1000));
@@ -438,6 +445,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
     
     /**
      * Get the longitude of the ascending node (angle from galactic +X to ascending node) for a planet.
+     * For moons, we use galactic +X transformed into the planet's equatorial plane by the equatorial plane angles.
      */ 
     function getPlanetLan(bytes32 seed) public view onlyControlledAccess returns (int128) {
         var node = RNG.RandNode(seed).derive("LAN");
@@ -447,6 +455,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
     
     /**
      * Get the inclination (angle from galactic XZ plane to orbital plane at the ascending node) for a planet.
+     * For a moon, this is done in the moon generator instead.
      * Inclination is always positive. If it were negative, the ascending node would really be the descending node.
      * Result is a real in radians.
      */ 
