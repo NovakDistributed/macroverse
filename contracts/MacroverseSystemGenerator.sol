@@ -275,6 +275,9 @@ contract MacroverseSystemGenerator is ControlledAccess {
             return node.getRealBetween(RealMath.toReal(50), RealMath.toReal(400));
         } else if (class == PlanetClass.AsteroidBelt) {
             return node.getRealBetween(RealMath.fraction(1, 100), RealMath.fraction(20, 100));
+        } else if (class == PlanetClass.Ring) {
+            // Saturn's rings are maybe about 5-15 micro-earths
+            return node.getRealBetween(RealMath.fraction(1, 1000000), RealMath.fraction(20, 1000000));
         } else {
             // Not real!
             revert();

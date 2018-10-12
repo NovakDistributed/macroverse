@@ -48,6 +48,10 @@ mv.LD = 384402000
 mv.G_PER_SOL = 132712875029098577920 // m^3 s^-2 sols^-1
 // How many earth masses in a solar mass?
 mv.EARTH_MASSES_PER_SOLAR_MASS = 332950
+// How many lunar masses are in an Earth mass?
+mv.LUNAR_MASSES_PER_EARTH_MASS = 81.3
+// How heavy is the Earth, for display purposes, in kg?
+mv.EARTH_MASS = 5.9721986E24
 // The luminosity of the sun, in watts
 mv.SOLAR_LUMINOSITY = 3.828E26
 
