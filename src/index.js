@@ -56,6 +56,8 @@ mv.SOLAR_LUMINOSITY = 3.828E26
 mv.JULIAN_YEAR = 365.25 * 24 * 60 * 60;
 // A siderial year is about 365.25636 seconds and is Earth's orbital period
 mv.SIDERIAL_YEAR = 365.25636 * 24 * 60 * 60
+// A day is a day (24 hours of 60 minutes of 60 seconds)
+mv.DAY = 24 * 60 * 60
 
 // When did the Macroverse world start, in Unix time?
 // Subtract from block timestamp to get seconds since epoch for block.

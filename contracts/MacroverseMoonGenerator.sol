@@ -247,8 +247,8 @@ contract MacroverseMoonGenerator is ControlledAccess {
         
         // Decide if we should be retrograde (PI-ish inclination)
         int128 real_retrograde_offset = 0;
-        if (node.derive("retrograde").d(1, 100, 0) < 3) {
-            // This planet ought to move retrograde
+        if (node.derive("retrograde").d(1, 100, 0) < 5) {
+            // This moon ought to move retrograde
             real_retrograde_offset = REAL_PI;
         }
 
