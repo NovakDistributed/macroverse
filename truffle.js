@@ -16,5 +16,11 @@ module.exports = {
       gas: 4700000, // Knock down because it has to be les than block gas limit
       gasPrice: 4000000000 // Defaults to 100 gwei = 100 shannon = 100 billion, which is extremely high.
     }
+  },
+  mocha: {
+    reporter: 'eth-gas-reporter',
+    reporterOptions : {
+      currency: 'USD'
+    }
   }
 };

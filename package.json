@@ -26,5 +26,8 @@
     "license": "SEE LICENSE IN LICENSE",
     "scripts": {
         "prepack": "rm -f build/contracts/* && git checkout build/contracts"
+    },
+    "devDependencies": {
+        "eth-gas-reporter": "^0.1.12"
     }
 }
