@@ -167,16 +167,27 @@ contract('OrbitalMechanics', function(accounts) {
     let real_ma0 = mv.toReal(ma0)
     let real_central_mass = mv.toReal(central_mass)
     let real_time = mv.toReal(mv_time)
+    
+    // Track gas
+    let totalGas = 0
 
     // Do all the orbit steps
     let real_mean_angular_motion = await instance.computeMeanAngularMotion.call(real_central_mass, real_semimajor_meters)
+    totalGas += await instance.computeMeanAngularMotion.estimateGas(real_central_mass, real_semimajor_meters)
     let real_mean_anomaly = await instance.computeMeanAnomaly.call(real_ma0, real_mean_angular_motion, real_time)
+    totalGas += await instance.computeMeanAnomaly.estimateGas(real_ma0, real_mean_angular_motion, real_time)
     let real_eccentric_anomaly = await instance.computeEccentricAnomaly.call(real_mean_anomaly, real_eccentricity)
+    totalGas += await instance.computeEccentricAnomaly.estimateGas(real_mean_anomaly, real_eccentricity)
     let real_true_anomaly = await instance.computeTrueAnomaly.call(real_eccentric_anomaly, real_eccentricity)
+    totalGas += await instance.computeTrueAnomaly.estimateGas(real_eccentric_anomaly, real_eccentricity)
     let real_radius = await instance.computeRadius.call(real_true_anomaly, real_semimajor_meters, real_eccentricity)
+    totalGas += await instance.computeRadius.estimateGas(real_true_anomaly, real_semimajor_meters, real_eccentricity)
     let [real_x, real_y, real_z] = await instance.computeCartesianOffset.call(real_radius, real_true_anomaly, real_lan, real_inclination, real_aop)
+    totalGas += await instance.computeCartesianOffset.estimateGas(real_radius, real_true_anomaly, real_lan, real_inclination, real_aop)
 
-    console.log("Planet currently at <" + mv.fromReal(real_x) + "," + mv.fromReal(real_y) + "," + mv.fromReal(real_z) + ">")
+    console.log("Planet currently at <" + mv.fromReal(real_x) + "," + mv.fromReal(real_y) + "," + mv.fromReal(real_z) + "> computed for " + totalGas + " gas")
+
+    assert.isBelow(totalGas, 6721975)
 
   })
 })

@@ -135,29 +135,39 @@ contract('MacroverseSystemGenerator', function(accounts) {
   
   })
   
-  it("should let us dump the whole system", async function() {
+  it("should let us dump the whole system for not too much gas", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
     let parentClassNum = mv.objectClass['MainSequence']
     let parentTypeNum = mv.spectralType['TypeG']
 
+    let totalGas = 0
+
     let parentRealMass = mv.toReal(1.0)
     let parentRealLuminosity = await instance.getObjectLuminosity.call('fred', parentClassNum, parentRealMass)
+    totalGas += await instance.getObjectLuminosity.estimateGas('fred', parentClassNum, parentRealMass)
 
     let [realHabStart, realHabEnd] = await instance.getObjectHabitableZone.call(parentRealLuminosity)
+    totalGas += await instance.getObjectHabitableZone.estimateGas(parentRealLuminosity)
 
     let count = (await instance.getObjectPlanetCount.call('fred', parentClassNum, parentTypeNum)).toNumber()
+    totalGas += await instance.getObjectPlanetCount.estimateGas('fred', parentClassNum, parentTypeNum)
     
     var prevClearance = mv.toReal(0)
     
     for (let i = 0; i < count; i++) {
       // Define the planet
       let planetSeed = await instance.getWorldSeed.call('fred', i)
+      totalGas += await instance.getWorldSeed.estimateGas('fred', i)
       let planetClassNum = (await instance.getPlanetClass.call(planetSeed, i, count)).toNumber()
+      totalGas += await instance.getPlanetClass.estimateGas(planetSeed, i, count)
       let realMass = await instance.getWorldMass.call(planetSeed, planetClassNum)
+      totalGas += await instance.getWorldMass.estimateGas(planetSeed, planetClassNum)
       let planetMass = mv.fromReal(realMass)
       
       // Define the orbit shape
       let [realPeriapsis, realApoapsis, newClearance] = await instance.getPlanetOrbitDimensions.call(realHabStart, realHabEnd,
+        planetSeed, planetClassNum, prevClearance)
+      totalGas += await instance.getPlanetOrbitDimensions.estimateGas(realHabStart, realHabEnd,
         planetSeed, planetClassNum, prevClearance)
       prevClearance = newClearance
 
@@ -165,18 +175,23 @@ contract('MacroverseSystemGenerator', function(accounts) {
       let planetApoapsis = mv.fromReal(realApoapsis) / mv.AU;
       
       let [realSemimajor, realEccentricity] = await instance.convertOrbitShape.call(realPeriapsis, realApoapsis)
+      totalGas += await instance.convertOrbitShape.estimateGas(realPeriapsis, realApoapsis)
       let planetEccentricity = mv.fromReal(realEccentricity);
       
       // Define the orbital plane. Make sure to convert everything to degrees for display.
       let realLan = await instance.getWorldLan.call(planetSeed)
+      totalGas += await instance.getWorldLan.estimateGas(planetSeed)
       let planetLan = mv.degrees(mv.fromReal(realLan))
       let realInclination = await instance.getPlanetInclination.call(planetSeed, planetClassNum)
+      totalGas += await instance.getPlanetInclination.estimateGas(planetSeed, planetClassNum)
       let planetInclination = mv.degrees(mv.fromReal(realInclination))
       
       // Define the position in the orbital plane
       let realAop = await instance.getWorldAop.call(planetSeed)
+      totalGas += await instance.getWorldAop.estimateGas(planetSeed)
       let planetAop = mv.degrees(mv.fromReal(realAop))
       let realMeanAnomalyAtEpoch = await instance.getWorldMeanAnomalyAtEpoch.call(planetSeed)
+      totalGas += await instance.getWorldMeanAnomalyAtEpoch.estimateGas(planetSeed)
       let planetMeanAnomalyAtEpoch = mv.degrees(mv.fromReal(realMeanAnomalyAtEpoch))
       
       console.log('Planet ' + i + ': ' + mv.worldClasses[planetClassNum] + ' with mass ' +
@@ -184,6 +199,9 @@ contract('MacroverseSystemGenerator', function(accounts) {
       console.log('\tEccentricity: ' + planetEccentricity + ' LAN: ' + planetLan + '° Inclination: ' + planetInclination + '°')
       console.log('\tAOP: ' + planetAop + '° Mean Anomaly at Epoch: ' + planetMeanAnomalyAtEpoch + '°')
     }
+
+    console.log('Gas to generate system: ' + totalGas)
+    assert.isBelow(totalGas, 6721975)
         
   
   })
