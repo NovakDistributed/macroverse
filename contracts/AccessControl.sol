@@ -1,3 +1,5 @@
+pragma solidity ^0.4.18;
+
 /**
  * Interface for an access control strategy for Macrtoverse contracts.
  * Can be asked if a certain query should be allowed, and will return true or false.

@@ -7,7 +7,7 @@ let mv = require('../src')
 
 // Define the parameters of our test planet
 const TEST_SEED = 'natasha'
-const TEST_CLASS = mv.planetClass['Terrestrial']
+const TEST_CLASS = mv.worldClass['Terrestrial']
 
 contract('MacroverseMoonGenerator', function(accounts) {
   it("should initially reject queries", async function() {
@@ -68,9 +68,9 @@ contract('MacroverseMoonGenerator', function(accounts) {
     
     for (let i = 0; i < count; i++) {
       // Define the moon
-      let moonSeed = await instance.getMoonSeed.call(TEST_SEED, i)
+      let moonSeed = await sysgen.getWorldSeed.call(TEST_SEED, i)
       let moonClassNum = (await instance.getMoonClass.call(TEST_CLASS, moonSeed, i)).toNumber()
-      let realMass = await sysgen.getPlanetMass.call(moonSeed, moonClassNum)
+      let realMass = await sysgen.getWorldMass.call(moonSeed, moonClassNum)
       let moonMass = mv.fromReal(realMass)
       
       // Define the orbit shape
@@ -86,19 +86,19 @@ contract('MacroverseMoonGenerator', function(accounts) {
       let moonEccentricity = mv.fromReal(realEccentricity);
       
       // Define the orbital plane. Make sure to convert everything to degrees for display.
-      let realLan = await sysgen.getPlanetLan.call(moonSeed)
+      let realLan = await sysgen.getWorldLan.call(moonSeed)
       let moonLan = mv.degrees(mv.fromReal(realLan))
       // TODO: Inclination and LAN ought to group for moons, for a common orbital plane out of the elliptic
       let realInclination = await instance.getMoonInclination.call(moonSeed, moonClassNum)
       let moonInclination = mv.degrees(mv.fromReal(realInclination))
       
       // Define the position in the orbital plane
-      let realAop = await sysgen.getPlanetAop.call(moonSeed)
+      let realAop = await sysgen.getWorldAop.call(moonSeed)
       let moonAop = mv.degrees(mv.fromReal(realAop))
-      let realMeanAnomalyAtEpoch = await sysgen.getPlanetMeanAnomalyAtEpoch.call(moonSeed)
+      let realMeanAnomalyAtEpoch = await sysgen.getWorldMeanAnomalyAtEpoch.call(moonSeed)
       let moonMeanAnomalyAtEpoch = mv.degrees(mv.fromReal(realMeanAnomalyAtEpoch))
       
-      console.log('Moon ' + i + ': ' + mv.planetClasses[moonClassNum] + ' with mass ' +
+      console.log('Moon ' + i + ': ' + mv.worldClasses[moonClassNum] + ' with mass ' +
         moonMass + ' Earths between ' + moonPeriapsis + ' and ' + moonApoapsis + ' LD')
       console.log('\tEccentricity: ' + moonEccentricity + ' LAN: ' + moonLan + '° Inclination: ' + moonInclination + '°')
       console.log('\tAOP: ' + moonAop + '° Mean Anomaly at Epoch: ' + moonMeanAnomalyAtEpoch + '°')

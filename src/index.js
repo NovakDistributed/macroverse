@@ -86,11 +86,11 @@ for (let i = 0; i < mv.spectralTypes.length; i++) {
   mv.spectralType[mv.spectralTypes[i]] = i
 }
 
-mv.planetClasses = ['Asteroidal', 'Lunar', 'Terrestrial', 'Jovian', 'Cometary', 'Europan', 'Panthalassic', 'Neptunian', 'Ring', 'AsteroidBelt'],
-mv.planetClass = {}
-for (let i = 0; i < mv.planetClasses.length; i++) {
+mv.worldClasses = ['Asteroidal', 'Lunar', 'Terrestrial', 'Jovian', 'Cometary', 'Europan', 'Panthalassic', 'Neptunian', 'Ring', 'AsteroidBelt'],
+mv.worldClass = {}
+for (let i = 0; i < mv.worldClasses.length; i++) {
   // Make the map from name to index
-  mv.planetClass[mv.planetClasses[i]] = i
+  mv.worldClass[mv.worldClasses[i]] = i
 }
 
 

@@ -85,20 +85,20 @@ contract MacroverseMoonGenerator is ControlledAccess {
     /**
      * Get the number of moons a planet has, using its class. Will sometimes return 0; there is no hasMoons boolean flag to check.
      */
-    function getPlanetMoonCount(bytes32 planetSeed, MacroverseSystemGenerator.PlanetClass class) public view onlyControlledAccess returns (uint) {
+    function getPlanetMoonCount(bytes32 planetSeed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (uint) {
         var node = RNG.RandNode(planetSeed).derive("mooncount");
         
         uint limit;
 
-        if (class == MacroverseSystemGenerator.PlanetClass.Lunar || class == MacroverseSystemGenerator.PlanetClass.Europan) {
+        if (class == MacroverseSystemGenerator.WorldClass.Lunar || class == MacroverseSystemGenerator.WorldClass.Europan) {
             limit = 3;
-        } else if (class == MacroverseSystemGenerator.PlanetClass.Terrestrial || class == MacroverseSystemGenerator.PlanetClass.Panthalassic) {
+        } else if (class == MacroverseSystemGenerator.WorldClass.Terrestrial || class == MacroverseSystemGenerator.WorldClass.Panthalassic) {
             limit = 4;
-        } else if (class == MacroverseSystemGenerator.PlanetClass.Neptunian) {
+        } else if (class == MacroverseSystemGenerator.WorldClass.Neptunian) {
             limit = 6;
-        } else if (class == MacroverseSystemGenerator.PlanetClass.Jovian) {
+        } else if (class == MacroverseSystemGenerator.WorldClass.Jovian) {
             limit = 8;
-        } else if (class == MacroverseSystemGenerator.PlanetClass.AsteroidBelt) {
+        } else if (class == MacroverseSystemGenerator.WorldClass.AsteroidBelt) {
             limit = 0;
         } else {
             // Not real!
@@ -111,18 +111,11 @@ contract MacroverseMoonGenerator is ControlledAccess {
     }
 
     /**
-     * Get the seed for a moon from the seed for the planet and its number.
-     */
-    function getMoonSeed(bytes32 planetSeed, uint moonNumber) public view onlyControlledAccess returns (bytes32) {
-        return RNG.RandNode(planetSeed).derive(moonNumber)._hash;
-    }
-
-    /**
      * Get the class of a moon, given the moon's seed and the class of its parent planet.
      * The actual moon body properties (i.e. mass) are generated with the MacroverseSystemGenerator as if it were a planet.
      */
-    function getMoonClass(MacroverseSystemGenerator.PlanetClass parent, bytes32 moonSeed, uint moonNumber) public view onlyControlledAccess
-        returns (MacroverseSystemGenerator.PlanetClass) {
+    function getMoonClass(MacroverseSystemGenerator.WorldClass parent, bytes32 moonSeed, uint moonNumber) public view onlyControlledAccess
+        returns (MacroverseSystemGenerator.WorldClass) {
         
         // We can have moons of smaller classes than us only.
         // Classes are Asteroidal, Lunar, Terrestrial, Jovian, Cometary, Europan, Panthalassic, Neptunian, Ring, AsteroidBelt
@@ -135,7 +128,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
 
         if (moonNumber == 0 && moonNode.derive("ring").d(1, 100, 0) < 15) {
             // This should be a ring
-            return MacroverseSystemGenerator.PlanetClass.Ring;
+            return MacroverseSystemGenerator.WorldClass.Ring;
         }
 
         // Should we be of the opposite ice/rock type to our parent?
@@ -148,7 +141,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
         // The types happen to be arranged so this works.
         uint rankInType = uint(parent) % 4;
 
-        if (parent == MacroverseSystemGenerator.PlanetClass.Jovian && crossType) {
+        if (parent == MacroverseSystemGenerator.WorldClass.Jovian && crossType) {
             // Say we can have the gas giant type (Neptunian)
             rankInType++;
         }
@@ -159,7 +152,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
         // Determine the type of the moon (0=rock, 1=ice)
         uint moonType = crossType ? parentType : (parentType + 1) % 2;
 
-        return MacroverseSystemGenerator.PlanetClass(moonType * 4 + lowerRank);
+        return MacroverseSystemGenerator.WorldClass(moonType * 4 + lowerRank);
 
     }
 
@@ -187,12 +180,12 @@ contract MacroverseMoonGenerator is ControlledAccess {
      * Given the parent planet's scale radius, a moon's seed, the moon's class, and the previous moon's outer clearance (or 0), return the orbit shape of the moon.
      * Other orbit properties come from the system generator.
      */
-    function getMoonOrbitDimensions(int128 planetMoonScale, bytes32 seed, MacroverseSystemGenerator.PlanetClass class, int128 realPrevClearance)
+    function getMoonOrbitDimensions(int128 planetMoonScale, bytes32 seed, MacroverseSystemGenerator.WorldClass class, int128 realPrevClearance)
         public view onlyControlledAccess returns (int128 realPeriapsis, int128 realApoapsis, int128 realClearance) {
 
         var moonNode = RNG.RandNode(seed);
 
-        if (class == MacroverseSystemGenerator.PlanetClass.Ring) {
+        if (class == MacroverseSystemGenerator.WorldClass.Ring) {
             // Rings are special
             realPeriapsis = realPrevClearance + planetMoonScale.mul(REAL_HALF).mul(moonNode.derive("ringstart").getRealBetween(REAL_ONE, REAL_TWO));
             realApoapsis = realPeriapsis + realPeriapsis.mul(moonNode.derive("ringwidth").getRealBetween(REAL_HALF, REAL_TWO));
@@ -204,7 +197,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
         realPeriapsis = realPrevClearance + planetMoonScale.mul(moonNode.derive("periapsis").getRealBetween(REAL_HALF, REAL_TWO));
         realApoapsis = realPeriapsis.mul(moonNode.derive("apoapsis").getRealBetween(REAL_ONE, RealMath.fraction(120, 100)));
 
-        if (class == MacroverseSystemGenerator.PlanetClass.Asteroidal || class == MacroverseSystemGenerator.PlanetClass.Cometary) {
+        if (class == MacroverseSystemGenerator.WorldClass.Asteroidal || class == MacroverseSystemGenerator.WorldClass.Cometary) {
             // Captured tiny things should be more eccentric
             realApoapsis = realApoapsis + (realApoapsis - realPeriapsis).mul(REAL_TWO);
         }
@@ -217,7 +210,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
      * Inclination is always positive. If it were negative, the ascending node would really be the descending node.
      * Result is a real in radians.
      */ 
-    function getMoonInclination(bytes32 seed, MacroverseSystemGenerator.PlanetClass class) public view onlyControlledAccess returns (int128) {
+    function getMoonInclination(bytes32 seed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (int128) {
         
         var node = RNG.RandNode(seed).derive("inclination");
     
@@ -225,19 +218,19 @@ contract MacroverseMoonGenerator is ControlledAccess {
         // 175 milliradians = ~ 10 degrees
         int88 minimum;
         int88 maximum;
-        if (class == MacroverseSystemGenerator.PlanetClass.Asteroidal || class == MacroverseSystemGenerator.PlanetClass.Cometary) {
+        if (class == MacroverseSystemGenerator.WorldClass.Asteroidal || class == MacroverseSystemGenerator.WorldClass.Cometary) {
             minimum = 0;
             maximum = 1000;
-        } else if (class == MacroverseSystemGenerator.PlanetClass.Lunar || class == MacroverseSystemGenerator.PlanetClass.Europan) {
+        } else if (class == MacroverseSystemGenerator.WorldClass.Lunar || class == MacroverseSystemGenerator.WorldClass.Europan) {
             minimum = 0;
             maximum = 275;
-        } else if (class == MacroverseSystemGenerator.PlanetClass.Terrestrial || class == MacroverseSystemGenerator.PlanetClass.Panthalassic) {
+        } else if (class == MacroverseSystemGenerator.WorldClass.Terrestrial || class == MacroverseSystemGenerator.WorldClass.Panthalassic) {
             minimum = 0;
             maximum = 187;
-        } else if (class == MacroverseSystemGenerator.PlanetClass.Neptunian) {
+        } else if (class == MacroverseSystemGenerator.WorldClass.Neptunian) {
             minimum = 0;
             maximum = 135;
-        } else if (class == MacroverseSystemGenerator.PlanetClass.Ring) {
+        } else if (class == MacroverseSystemGenerator.WorldClass.Ring) {
             minimum = 0;
             maximum = 362;
         } else {

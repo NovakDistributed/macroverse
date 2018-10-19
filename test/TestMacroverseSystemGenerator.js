@@ -70,16 +70,16 @@ contract('MacroverseSystemGenerator', function(accounts) {
   it("should have a Terrestrial planet first", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
     
-    let planetSeed = await instance.getPlanetSeed.call('fred', 0)
-    let planetClass = mv.planetClasses[(await instance.getPlanetClass.call(planetSeed, 0, 8)).toNumber()]
+    let planetSeed = await instance.getWorldSeed.call('fred', 0)
+    let planetClass = mv.worldClasses[(await instance.getPlanetClass.call(planetSeed, 0, 8)).toNumber()]
     assert.equal(planetClass, 'Terrestrial')
   })
   
   it("should be a super-earth", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
-    let planetSeed = await instance.getPlanetSeed.call('fred', 0)
-    let planetClassNum = mv.planetClass['Terrestrial']
-    let planetMass = mv.fromReal(await instance.getPlanetMass.call(planetSeed, planetClassNum))
+    let planetSeed = await instance.getWorldSeed.call('fred', 0)
+    let planetClassNum = mv.worldClass['Terrestrial']
+    let planetMass = mv.fromReal(await instance.getWorldMass.call(planetSeed, planetClassNum))
     
     assert.isAbove(planetMass, 6.27)
     assert.isBelow(planetMass, 6.29)
@@ -87,8 +87,8 @@ contract('MacroverseSystemGenerator', function(accounts) {
   
   it("should have an orbit from about 0.24 to 0.29 AU", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
-    let planetSeed = await instance.getPlanetSeed.call('fred', 0)
-    let planetClassNum = mv.planetClass['Terrestrial']
+    let planetSeed = await instance.getWorldSeed.call('fred', 0)
+    let planetClassNum = mv.worldClass['Terrestrial']
     let parentClassNum = mv.objectClass['MainSequence']
     let parentTypeNum = mv.spectralType['TypeG']
     let parentRealMass = mv.toReal(1.0)
@@ -113,8 +113,8 @@ contract('MacroverseSystemGenerator', function(accounts) {
   it("should have a semimajor axis of 0.27 AU and an eccentricity of about 0.08", async function() {
   
     let instance = await MacroverseSystemGenerator.deployed()
-    let planetSeed = await instance.getPlanetSeed.call('fred', 0)
-    let planetClassNum = mv.planetClass['Terrestrial']
+    let planetSeed = await instance.getWorldSeed.call('fred', 0)
+    let planetClassNum = mv.worldClass['Terrestrial']
     let parentClassNum = mv.objectClass['MainSequence']
     let parentTypeNum = mv.spectralType['TypeG']
     let parentRealMass = mv.toReal(1.0)
@@ -151,9 +151,9 @@ contract('MacroverseSystemGenerator', function(accounts) {
     
     for (let i = 0; i < count; i++) {
       // Define the planet
-      let planetSeed = await instance.getPlanetSeed.call('fred', i)
+      let planetSeed = await instance.getWorldSeed.call('fred', i)
       let planetClassNum = (await instance.getPlanetClass.call(planetSeed, i, count)).toNumber()
-      let realMass = await instance.getPlanetMass.call(planetSeed, planetClassNum)
+      let realMass = await instance.getWorldMass.call(planetSeed, planetClassNum)
       let planetMass = mv.fromReal(realMass)
       
       // Define the orbit shape
@@ -168,18 +168,18 @@ contract('MacroverseSystemGenerator', function(accounts) {
       let planetEccentricity = mv.fromReal(realEccentricity);
       
       // Define the orbital plane. Make sure to convert everything to degrees for display.
-      let realLan = await instance.getPlanetLan.call(planetSeed)
+      let realLan = await instance.getWorldLan.call(planetSeed)
       let planetLan = mv.degrees(mv.fromReal(realLan))
       let realInclination = await instance.getPlanetInclination.call(planetSeed, planetClassNum)
       let planetInclination = mv.degrees(mv.fromReal(realInclination))
       
       // Define the position in the orbital plane
-      let realAop = await instance.getPlanetAop.call(planetSeed)
+      let realAop = await instance.getWorldAop.call(planetSeed)
       let planetAop = mv.degrees(mv.fromReal(realAop))
-      let realMeanAnomalyAtEpoch = await instance.getPlanetMeanAnomalyAtEpoch.call(planetSeed)
+      let realMeanAnomalyAtEpoch = await instance.getWorldMeanAnomalyAtEpoch.call(planetSeed)
       let planetMeanAnomalyAtEpoch = mv.degrees(mv.fromReal(realMeanAnomalyAtEpoch))
       
-      console.log('Planet ' + i + ': ' + mv.planetClasses[planetClassNum] + ' with mass ' +
+      console.log('Planet ' + i + ': ' + mv.worldClasses[planetClassNum] + ' with mass ' +
         planetMass + ' Earths between ' + planetPeriapsis + ' and ' + planetApoapsis + ' AU')
       console.log('\tEccentricity: ' + planetEccentricity + ' LAN: ' + planetLan + '° Inclination: ' + planetInclination + '°')
       console.log('\tAOP: ' + planetAop + '° Mean Anomaly at Epoch: ' + planetMeanAnomalyAtEpoch + '°')
