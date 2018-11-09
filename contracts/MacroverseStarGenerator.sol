@@ -7,7 +7,7 @@ import "./AccessControl.sol";
 import "./ControlledAccess.sol";
 
 /**
- * Represents a prorotype Macroverse Generator for a galaxy.
+ * Represents a Macroverse Generator for a galaxy.
  *
  * Permission to call methods on this contract is regulated by a configurable
  * AccessControl contract. One such set of terms might be to require that the
@@ -50,7 +50,7 @@ contract MacroverseStarGenerator is ControlledAccess {
     RNG.RandNode root;
     
     /**
-     * Deploy a new copy of the Macroverse prototype contract. Use the given seed to generate a galaxy, down to the star level.
+     * Deploy a new copy of the Macroverse generator contract. Use the given seed to generate a galaxy, down to the star level.
      * Use the contract at the given address to regulate access.
      */
     function MacroverseStarGenerator(bytes32 baseSeed, address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
@@ -62,7 +62,7 @@ contract MacroverseStarGenerator is ControlledAccess {
      * +Y is upwards.
      */
     function getGalaxyDensity(int16 sectorX, int16 sectorY, int16 sectorZ) public view onlyControlledAccess returns (int128 realDensity) {
-        // For the prototype, we have a central sphere and a surrounding disk.
+        // We have a central sphere and a surrounding disk.
         
         // Enforce absolute bounds.
         if (sectorX > MAX_SECTOR) return 0;
