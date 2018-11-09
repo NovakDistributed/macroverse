@@ -38,6 +38,11 @@ contract MacroverseSystemGenerator is ControlledAccess {
     int128 constant REAL_PI = 3454217652358;
 
     /**
+     * Also perpare pi/2
+     */
+    int128 constant REAL_HALF_PI = REAL_PI >> 1;
+
+    /**
      * How many fractional bits are there?
      */
     int256 constant REAL_FBITS = 40;
@@ -445,10 +450,21 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * For a tidally locked world, ignore these values and use 0 for both angles.
      */
     function getWorldZXAxisAngles(bytes32 seed) public view onlyControlledAccess returns (int128 realZRadians, int128 realXRadians) {
+        // We need to decide an angle in each axis up to this in each direction off of vertical.
+        
+        // Start with low tilt, right side up
+        // Earth is like 0.38 radians overall
+        int128 real_tilt_limit = REAL_HALF;
+        var tilt_die = RNG.RandNode(seed).derive("tilt").d(1, 6, 0);
+        if (tilt_die >= 4) {
+            // Be high tilt, maybe retrograde or maybe not if we roll two high numbers
+            real_tilt_limit = REAL_HALF_PI;
+        }
+
         var z_node = RNG.RandNode(seed).derive("axisz");
-        realZRadians = z_node.getRealBetween(-REAL_PI, REAL_PI);
+        realZRadians = z_node.getRealBetween(-real_tilt_limit, real_tilt_limit);
         var x_node = RNG.RandNode(seed).derive("axisx");
-        realXRadians = x_node.getRealBetween(-REAL_PI, REAL_PI);
+        realXRadians = x_node.getRealBetween(-real_tilt_limit, real_tilt_limit);
     }
 
     /**
