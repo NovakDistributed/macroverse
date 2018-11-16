@@ -441,30 +441,51 @@ contract MacroverseSystemGenerator is ControlledAccess {
     }
 
     /**
-     * Get the Z and X axis angles for a world, in radians.
-     * The world's rotation axis starts straight up in its orbital plane, and
-     * is then rotated in by the Z angle and then forward around the
-     * transformed X axis by the X angle.
+     * Determine if the world is tidally locked, given its seed and its number
+     * out from the parent, starting with 0.
+     * Overrides getWorldZXAxisAngles and getWorldSpinRate. 
+     * Not used for asteroid belts or rings.
+     */
+    function isTidallyLocked(bytes32 seed, uint worldNumber) public view onlyControlledAccess returns (bool) {
+        // Tidal lock should be common near the parent and less common further out.
+        return RNG.RandNode(seed).derive("tidal_lock").getReal() < RealMath.fraction(1, int88(worldNumber + 1));
+    }
+
+    /**
+     * Get the Y and X axis angles for a world, in radians.
+     * The world's rotation axis starts straight up in its orbital plane.
+     * Then the planet is rotated in Y, around the axis by the Y angle.
+     * Then it is rotated forward (what would be toward the viewer) in the
+     * world's transformed X by the X axis angle.
      * Both angles are in radians.
      * Not used for asteroid belts or rings.
      * For a tidally locked world, ignore these values and use 0 for both angles.
      */
-    function getWorldZXAxisAngles(bytes32 seed) public view onlyControlledAccess returns (int128 realZRadians, int128 realXRadians) {
-        // We need to decide an angle in each axis up to this in each direction off of vertical.
+    function getWorldYXAxisAngles(bytes32 seed) public view onlyControlledAccess returns (int128 realYRadians, int128 realXRadians) {
+       
+        // The Y angle should be uniform over all angles.
+        realYRadians = RNG.RandNode(seed).derive("axisy").getRealBetween(-REAL_PI, REAL_PI);
+
+        // The Z angle will be mostly small positive or negative, with some sideways and some near Pi/2 (meaning retrograde rotation)
+        var tilt_die = RNG.RandNode(seed).derive("tilt").d(1, 6, 0);
         
         // Start with low tilt, right side up
         // Earth is like 0.38 radians overall
         int128 real_tilt_limit = REAL_HALF;
-        var tilt_die = RNG.RandNode(seed).derive("tilt").d(1, 6, 0);
-        if (tilt_die >= 4) {
-            // Be high tilt, maybe retrograde or maybe not if we roll two high numbers
+        if (tilt_die >= 5) {
+            // Be high tilt
             real_tilt_limit = REAL_HALF_PI;
         }
-
-        var z_node = RNG.RandNode(seed).derive("axisz");
-        realZRadians = z_node.getRealBetween(-real_tilt_limit, real_tilt_limit);
+    
         var x_node = RNG.RandNode(seed).derive("axisx");
         realXRadians = x_node.getRealBetween(-real_tilt_limit, real_tilt_limit);
+
+        if (tilt_die == 4 || tilt_die == 5) {
+            // Flip so the tilt we have is relative to upside_down
+            realXRadians += REAL_PI;
+        }
+
+        // So we should have 1/2 low tilt prograde, 1/6 low tilt retrograde, 1/6 high tilt retrograde, and 1/6 high tilt prograde
     }
 
     /**
@@ -478,18 +499,6 @@ contract MacroverseSystemGenerator is ControlledAccess {
         // Earth is something like 2k radians per Julian year.
         return RNG.RandNode(seed).derive("spin").getRealBetween(REAL_ZERO, RealMath.toReal(8000)); 
     }
-
-    /**
-     * Determine if the world is tidally locked, given its seed and its number
-     * out from the parent, starting with 0.
-     * Overrides getWorldZXAxisAngles and getWorldSpinRate. 
-     * Not used for asteroid belts or rings.
-     */
-    function isTidallyLocked(bytes32 seed, uint worldNumber) public view onlyControlledAccess returns (bool) {
-        // Tidal lock should be common near the parent and less common further out.
-        return RNG.RandNode(seed).derive("tidal_lock").getReal() < RealMath.fraction(1, int88(worldNumber + 1));
-    }
-
 
 }
  

@@ -199,11 +199,37 @@ contract('MacroverseSystemGenerator', function(accounts) {
       let realMeanAnomalyAtEpoch = await instance.getWorldMeanAnomalyAtEpoch.call(planetSeed)
       totalGas += await instance.getWorldMeanAnomalyAtEpoch.estimateGas(planetSeed)
       let planetMeanAnomalyAtEpoch = mv.degrees(mv.fromReal(realMeanAnomalyAtEpoch))
+
+      let isTidallyLocked = await instance.isTidallyLocked(planetSeed, i)
+      totalGas += await instance.isTidallyLocked.estimateGas(planetSeed, i)
+
+      let xAngle = 0
+      let yAngle = 0
+      let spinRate = 0
+
+      if (!isTidallyLocked) {
+        // Define the spin parameters
+        let [realYAngle, realXAngle] = await instance.getWorldYXAxisAngles(planetSeed)
+        totalGas += await instance.getWorldYXAxisAngles.estimateGas(planetSeed) 
+        yAngle = mv.fromReal(realYAngle)
+        xAngle = mv.fromReal(realXAngle)
+
+        let realSpinRate = await instance.getWorldSpinRate(planetSeed)
+        totalGas += await instance.getWorldSpinRate.estimateGas(planetSeed) 
+        // Spin rate is in radians per Julian year to match mean motion units
+        spinRate = mv.fromReal(realSpinRate)
+      }
       
       console.log('Planet ' + i + ': ' + mv.worldClasses[planetClassNum] + ' with mass ' +
         planetMass + ' Earths between ' + planetPeriapsis + ' and ' + planetApoapsis + ' AU')
       console.log('\tEccentricity: ' + planetEccentricity + ' LAN: ' + planetLan + '° Inclination: ' + planetInclination + '°')
       console.log('\tAOP: ' + planetAop + '° Mean Anomaly at Epoch: ' + planetMeanAnomalyAtEpoch + '°')
+      if (isTidallyLocked) {
+        console.log('\tTidally Locked')
+      } else {
+        console.log('\tObliquity: ' + mv.degrees(xAngle) + '° Ecliptic Equator Angle: ' + mv.degrees(yAngle) +
+          '° Spin rate: ' + spinRate/(Math.PI * 2) + ' rev/Julian year')
+      }
     }
 
     console.log('Gas to generate system: ' + totalGas)
