@@ -194,7 +194,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
         }
 
         // Otherwise just roll some stuff
-        realPeriapsis = realPrevClearance + planetMoonScale.mul(moonNode.derive("periapsis").getRealBetween(REAL_HALF, REAL_TWO));
+        realPeriapsis = realPrevClearance + planetMoonScale.mul(moonNode.derive("periapsis").getRealBetween(REAL_HALF, REAL_ONE));
         realApoapsis = realPeriapsis.mul(moonNode.derive("apoapsis").getRealBetween(REAL_ONE, RealMath.fraction(120, 100)));
 
         if (class == MacroverseSystemGenerator.WorldClass.Asteroidal || class == MacroverseSystemGenerator.WorldClass.Cometary) {
@@ -202,7 +202,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
             realApoapsis = realApoapsis + (realApoapsis - realPeriapsis).mul(REAL_TWO);
         }
 
-        realClearance = realApoapsis.mul(moonNode.derive("clearance").getRealBetween(RealMath.fraction(110, 100), RealMath.fraction(160, 100)));
+        realClearance = realApoapsis.mul(moonNode.derive("clearance").getRealBetween(RealMath.fraction(110, 100), RealMath.fraction(130, 100)));
     }
 
     /**
@@ -210,29 +210,24 @@ contract MacroverseMoonGenerator is ControlledAccess {
      * Inclination is always positive. If it were negative, the ascending node would really be the descending node.
      * Result is a real in radians.
      */ 
-    function getMoonInclination(bytes32 seed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (int128) {
+    function getMoonInclination(bytes32 seed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (int128 real_inclination) {
         
         var node = RNG.RandNode(seed).derive("inclination");
     
-        // Define minimum and maximum inclinations in milliradians
-        // 175 milliradians = ~ 10 degrees
-        int88 minimum;
-        int88 maximum;
+        // Inclination is freer for moons than for planets
+        // We are going to sample several times to determine inclination from 0 to REAL_PI
+        // Fewer dists at constant max = more extreme values
+        int256 dist_count;
         if (class == MacroverseSystemGenerator.WorldClass.Asteroidal || class == MacroverseSystemGenerator.WorldClass.Cometary) {
-            minimum = 0;
-            maximum = 1000;
+            dist_count = 1;
         } else if (class == MacroverseSystemGenerator.WorldClass.Lunar || class == MacroverseSystemGenerator.WorldClass.Europan) {
-            minimum = 0;
-            maximum = 275;
+            dist_count = 3;
         } else if (class == MacroverseSystemGenerator.WorldClass.Terrestrial || class == MacroverseSystemGenerator.WorldClass.Panthalassic) {
-            minimum = 0;
-            maximum = 187;
+            dist_count = 4;
         } else if (class == MacroverseSystemGenerator.WorldClass.Neptunian) {
-            minimum = 0;
-            maximum = 135;
+            dist_count = 5;
         } else if (class == MacroverseSystemGenerator.WorldClass.Ring) {
-            minimum = 0;
-            maximum = 362;
+            dist_count = 2;
         } else {
             // Not real!
             revert();
@@ -245,6 +240,18 @@ contract MacroverseMoonGenerator is ControlledAccess {
             real_retrograde_offset = REAL_PI;
         }
 
-        return real_retrograde_offset + RealMath.div(node.getRealBetween(RealMath.toReal(minimum), RealMath.toReal(maximum)), RealMath.toReal(1000));    
+        // The inclination will start at the offset
+        real_inclination = real_retrograde_offset;
+
+        // Just divide the real by the integer here.
+        int128 real_per_dist = REAL_PI / int128(dist_count);
+
+        for (int256 i = 0; i < dist_count; i++) {
+            // For each distribution we are supposed to sample from, sample.
+            real_inclination += node.derive(i).getRealBetween(0, real_per_dist); 
+        }
+
+        // Make sure to subtract out the minimum die values
+        return real_inclination;  
     }
 }
