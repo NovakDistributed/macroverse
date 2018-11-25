@@ -458,6 +458,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Then it is rotated forward (what would be toward the viewer) in the
      * world's transformed X by the X axis angle.
      * Both angles are in radians.
+     * The X angle is never negative, because the Y angle would just be the opposite direction.
+     * It is also never greater than Pi, because otherwise we would just measure around the other way.
      * Not used for asteroid belts or rings.
      * For a tidally locked world, ignore these values and use 0 for both angles.
      */
@@ -478,11 +480,11 @@ contract MacroverseSystemGenerator is ControlledAccess {
         }
     
         var x_node = RNG.RandNode(seed).derive("axisx");
-        realXRadians = x_node.getRealBetween(-real_tilt_limit, real_tilt_limit);
+        realXRadians = x_node.getRealBetween(0, real_tilt_limit);
 
         if (tilt_die == 4 || tilt_die == 5) {
-            // Flip so the tilt we have is relative to upside_down
-            realXRadians += REAL_PI;
+            // Flip so the tilt we have is relative to upside-down
+            realXRadians = REAL_PI - realXRadians;
         }
 
         // So we should have 1/2 low tilt prograde, 1/6 low tilt retrograde, 1/6 high tilt retrograde, and 1/6 high tilt prograde
