@@ -213,45 +213,36 @@ contract MacroverseMoonGenerator is ControlledAccess {
     function getMoonInclination(bytes32 seed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (int128 real_inclination) {
         
         var node = RNG.RandNode(seed).derive("inclination");
-    
+
+        // Define maximum inclination in milliradians
+        // 175 milliradians = ~ 10 degrees
+        int88 maximum;
         // Inclination is freer for moons than for planets
-        // We are going to sample several times to determine inclination from 0 to REAL_PI
-        // Fewer dists at constant max = more extreme values
-        int256 dist_count;
         if (class == MacroverseSystemGenerator.WorldClass.Asteroidal || class == MacroverseSystemGenerator.WorldClass.Cometary) {
-            dist_count = 1;
+            // Tiny captured things can be pretty free
+            maximum = 850;
         } else if (class == MacroverseSystemGenerator.WorldClass.Lunar || class == MacroverseSystemGenerator.WorldClass.Europan) {
-            dist_count = 3;
+            maximum = 200;
         } else if (class == MacroverseSystemGenerator.WorldClass.Terrestrial || class == MacroverseSystemGenerator.WorldClass.Panthalassic) {
-            dist_count = 4;
+            maximum = 180;
         } else if (class == MacroverseSystemGenerator.WorldClass.Neptunian) {
-            dist_count = 5;
+            maximum = 150;
         } else if (class == MacroverseSystemGenerator.WorldClass.Ring) {
-            dist_count = 2;
+            // Rings can do almost anything they want (up to like 1.5 radians).
+            maximum = 1500;
         } else {
             // Not real!
             revert();
         }
         
-        // Decide if we should be retrograde (PI-ish inclination)
-        int128 real_retrograde_offset = 0;
-        if (node.derive("retrograde").d(1, 100, 0) < 5) {
-            // This moon ought to move retrograde
-            real_retrograde_offset = REAL_PI;
+        // Compute the inclination
+        real_inclination = node.getRealBetween(0, RealMath.toReal(maximum)).div(RealMath.toReal(1000));
+
+        if (node.derive("retrograde").d(1, 100, 0) < 10) {
+            // This moon ought to move retrograde (subtract inclination from pi instead of adding it to 0)
+            real_inclination = REAL_PI - real_inclination;
         }
 
-        // The inclination will start at the offset
-        real_inclination = real_retrograde_offset;
-
-        // Just divide the real by the integer here.
-        int128 real_per_dist = REAL_PI / int128(dist_count);
-
-        for (int256 i = 0; i < dist_count; i++) {
-            // For each distribution we are supposed to sample from, sample.
-            real_inclination += node.derive(i).getRealBetween(0, real_per_dist); 
-        }
-
-        // Make sure to subtract out the minimum die values
         return real_inclination;  
     }
 }

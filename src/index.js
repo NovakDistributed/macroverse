@@ -93,6 +93,17 @@ for (let i = 0; i < mv.worldClasses.length; i++) {
   mv.worldClass[mv.worldClasses[i]] = i
 }
 
+// Only some world classes have actual spherical bodies associated with them. Some are placeholders for diffuse things
+mv.hasBody = function(worldClassNum) {
+    if (worldClassNum == mv.worldClass['Ring'] || worldClassNum == mv.worldClass['AsteroidBelt']) {
+        // These are diffuse
+        return false
+    }
+
+    // Everybody else is a real world
+    return true
+}
+
 
 
 
