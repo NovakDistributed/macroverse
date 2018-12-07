@@ -1,10 +1,10 @@
 pragma solidity ^0.4.11;
 
 
-import "zeppelin-solidity/contracts/token/StandardToken.sol";
-import "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "zeppelin-solidity/contracts/ownership/HasNoTokens.sol";
-import "zeppelin-solidity/contracts/ownership/HasNoContracts.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./HasNoTokens.sol";
+import "./HasNoContracts.sol";
 
 
 /**
@@ -47,7 +47,7 @@ import "zeppelin-solidity/contracts/ownership/HasNoContracts.sol";
  *   the contract's account. During normal crowdsale operation, ETH is not stored in the contract's
  *   account, and is instead sent directly to the beneficiary.
  */
-contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
+contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
 
     // Token Parameters
 
@@ -101,8 +101,8 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
         decimals = 18;
         
         // Initially, the reserved tokens belong to the given address.
-        totalSupply = wholeTokensReserved * 10 ** 18;
-        balances[sendTokensTo] = totalSupply;
+        // TODO: This change for OZ 2.0 compatibility causes the code to differ from the behavior of the mainnet deployed contract!
+        _mint(sendTokensTo, wholeTokensReserved * 10 ** 18);
         
         // Initially the crowdsale has not yet started or ended.
         crowdsaleStarted = false;
@@ -307,7 +307,7 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
 
         uint tokens = msg.value.mul(wholeTokensPerEth); // Exploits the fact that we have 18 decimals, like ETH.
         
-        var newTotalSupply = totalSupply.add(tokens);
+        var newTotalSupply = totalSupply().add(tokens);
         
         if (newTotalSupply > (wholeTokensReserved + maxCrowdsaleSupplyInWholeTokens) * 10 ** 18) {
             // This would be too many tokens issued.
@@ -316,8 +316,9 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
         }
         
         // Otherwise, we can fill the order entirely, so make the tokens and put them in the specified account.
-        totalSupply = newTotalSupply;
-        balances[recipient] = balances[recipient].add(tokens);
+        // TODO: This has been updated for OZ 2.0; the deployed onctract on chain does NOT use the OZ minting logic.
+        // In particular, it did not emit transfer events for minted tokens, which confuses some blockchain viewers.
+        _mint(recipient, tokens);
         
         // Announce the purchase
         TokenPurchase(now, msg.value, recipient);
@@ -362,7 +363,27 @@ contract MRVToken is StandardToken, Ownable, HasNoTokens, HasNoContracts {
      */
     function reclaimEther() external onlyOwner {
         // Send the ETH. Make sure it worked.
-        assert(owner.send(this.balance));
+        assert(owner().send(address(this).balance));
+    }
+
+    // TODO: the following two functions do NOT exist in the on-chain mainnet
+    // version of the contract. They are here to allow the project to build
+    // with newer versions of OpenZeppelin.
+
+    /**
+     * Block the increaseAllowance method which is not in the mainned deployed
+     * contract, but which OZ added to their library after we deployed.
+     */
+    function increaseAllowance(address /* spender */, uint256 /* addedValue */) public returns (bool) {
+        revert();
+    }
+
+    /**
+     * Block the decreaseAllowance method which is not in the mainned deployed
+     * contract, but which OZ added to their library after we deployed.
+     */
+    function decreaseAllowance(address /* spender */, uint256 /* addedValue */) public returns (bool) {
+        revert();
     }
 
 }

@@ -1,6 +1,6 @@
 pragma solidity ^0.4.11;
 
-import "zeppelin-solidity/contracts/token/ERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 import "./AccessControl.sol";
 
@@ -9,14 +9,14 @@ import "./AccessControl.sol";
  * Represents an access control strategy where any end user (origin) with a minimum balance in an ERC20 token is allowed.
  */
 contract MinimumBalanceAccessControl {
-    ERC20 tokenAddress;
+    IERC20 tokenAddress;
     uint minBalanceInAtomicUnits;
     
     /**
      * Make a new MinimumBalanceAccessControl that requires the specified minimum balance of the specified token.
      */
     function MinimumBalanceAccessControl(address tokenAddress_, uint minBalanceInAtomicUnits_) {
-        tokenAddress = ERC20(tokenAddress_);
+        tokenAddress = IERC20(tokenAddress_);
         minBalanceInAtomicUnits = minBalanceInAtomicUnits_;
     }
     

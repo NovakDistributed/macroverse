@@ -1,11 +1,11 @@
 pragma solidity ^0.4.11;
 
 import "./MRVToken.sol";
-import "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "zeppelin-solidity/contracts/ownership/HasNoEther.sol";
-import "zeppelin-solidity/contracts/ownership/HasNoContracts.sol";
-import "zeppelin-solidity/contracts/token/ERC20Basic.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./HasNoEther.sol";
+import "./HasNoContracts.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
  * The Macroverse Star Registry keeps track of who currently owns virtual real estate in the
@@ -177,7 +177,7 @@ contract MacroverseStarRegistry is Ownable, HasNoEther, HasNoContracts {
      * Allow the owner to collect any non-MRV tokens, or any excess MRV, that ends up in this contract.
      */
     function reclaimToken(address otherToken) external onlyOwner {
-        ERC20Basic other = ERC20Basic(otherToken);
+        IERC20 other = IERC20(otherToken);
         
         // We will send our whole balance
         uint excessBalance = other.balanceOf(this);
@@ -189,6 +189,6 @@ contract MacroverseStarRegistry is Ownable, HasNoEther, HasNoContracts {
         }
         
         // Make the transfer. If it doesn't work, we can try again later.
-        other.transfer(owner, excessBalance);
+        other.transfer(owner(), excessBalance);
     }
 }
