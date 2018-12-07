@@ -14,8 +14,8 @@ contract HasNoTokens is Ownable {
  /** 
   * @dev Reject all ERC23 compatible tokens
   */
-  function tokenFallback(address /* from_ */, uint256 /* value_ */, bytes /* data_ */) external {
-    throw;
+  function tokenFallback(address /* from_ */, uint256 /* value_ */, bytes /* data_ */) external pure {
+    revert();
   }
 
   /**

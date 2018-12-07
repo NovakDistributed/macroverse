@@ -15,7 +15,7 @@ contract MinimumBalanceAccessControl {
     /**
      * Make a new MinimumBalanceAccessControl that requires the specified minimum balance of the specified token.
      */
-    function MinimumBalanceAccessControl(address tokenAddress_, uint minBalanceInAtomicUnits_) {
+    constructor(address tokenAddress_, uint minBalanceInAtomicUnits_) public {
         tokenAddress = IERC20(tokenAddress_);
         minBalanceInAtomicUnits = minBalanceInAtomicUnits_;
     }
@@ -25,7 +25,7 @@ contract MinimumBalanceAccessControl {
      * This means that any contract you use can make queries on your behalf, but that no contract with the minimum balance can proxy
      * queries for others.
      */
-    function allowQuery(address sender, address origin) public constant returns (bool) {
+    function allowQuery(address /* sender */, address origin) public constant returns (bool) {
         if (tokenAddress.balanceOf(origin) >= minBalanceInAtomicUnits) {
             return true;
         }

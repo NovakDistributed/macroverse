@@ -93,7 +93,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     * Deploy a new MRVToken contract, paying crowdsale proceeds to the given address,
     * and awarding reserved tokens to the other given address.
     */
-    function MRVToken(address sendProceedsTo, address sendTokensTo) {
+    constructor(address sendProceedsTo, address sendTokensTo) public {
         // Proceeds of the crowdsale go here.
         beneficiary = sendProceedsTo;
         
@@ -128,7 +128,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     * tokens remaining to be bought, your transaction will be rolled back and you will
     * get no tokens and waste your gas.
     */
-    function() payable onlyDuringCrowdsale {
+    function() public payable onlyDuringCrowdsale {
         createTokens(msg.sender);
     }
     
@@ -154,7 +154,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      */
     modifier onlyBeforeClosed {
         checkCloseTimer();
-        if (crowdsaleEnded) throw;
+        if (crowdsaleEnded) revert();
         _;
     }
     
@@ -164,7 +164,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      */
     modifier onlyAfterClosed {
         checkCloseTimer();
-        if (!crowdsaleEnded) throw;
+        if (!crowdsaleEnded) revert();
         _;
     }
     
@@ -173,7 +173,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      */
     modifier onlyBeforeOpened {
         checkOpenTimer();
-        if (crowdsaleStarted) throw;
+        if (crowdsaleStarted) revert();
         _;
     }
     
@@ -184,8 +184,8 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     modifier onlyDuringCrowdsale {
         checkOpenTimer();
         checkCloseTimer();
-        if (crowdsaleEnded) throw;
-        if (!crowdsaleStarted) throw;
+        if (crowdsaleEnded) revert();
+        if (!crowdsaleStarted) revert();
         _;
     }
 
@@ -196,14 +196,14 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     /**
      * Determine if the crowdsale should open by timer.
      */
-    function openTimerElapsed() constant returns (bool) {
+    function openTimerElapsed() public constant returns (bool) {
         return (openTimer != 0 && now > openTimer);
     }
     
     /**
      * Determine if the crowdsale should close by timer.
      */
-    function closeTimerElapsed() constant returns (bool) {
+    function closeTimerElapsed() public constant returns (bool) {
         return (closeTimer != 0 && now > closeTimer);
     }
     
@@ -211,29 +211,29 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      * If the open timer has elapsed, start the crowdsale.
      * Can be called by people, but also gets called when people try to contribute.
      */
-    function checkOpenTimer() {
+    function checkOpenTimer() public {
         if (openTimerElapsed()) {
             crowdsaleStarted = true;
             openTimer = 0;
-            CrowdsaleOpen(now);
+            emit CrowdsaleOpen(now);
         }
     }
     
     /**
      * If the close timer has elapsed, stop the crowdsale.
      */
-    function checkCloseTimer() {
+    function checkCloseTimer() public {
         if (closeTimerElapsed()) {
             crowdsaleEnded = true;
             closeTimer = 0;
-            CrowdsaleClose(now);
+            emit CrowdsaleClose(now);
         }
     }
     
     /**
      * Determine if the crowdsale is currently happening.
      */
-    function isCrowdsaleActive() constant returns (bool) {
+    function isCrowdsaleActive() public constant returns (bool) {
         // The crowdsale is happening if it is open or due to open, and it isn't closed or due to close.
         return ((crowdsaleStarted || openTimerElapsed()) && !(crowdsaleEnded || closeTimerElapsed()));
     }
@@ -245,17 +245,17 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     /**
      * Before the crowdsale opens, the max token count can be configured.
      */
-    function setMaxSupply(uint newMaxInWholeTokens) onlyOwner onlyBeforeOpened {
+    function setMaxSupply(uint newMaxInWholeTokens) public onlyOwner onlyBeforeOpened {
         maxCrowdsaleSupplyInWholeTokens = newMaxInWholeTokens;
     }
     
     /**
      * Allow the owner to start the crowdsale manually.
      */
-    function openCrowdsale() onlyOwner onlyBeforeOpened {
+    function openCrowdsale() public onlyOwner onlyBeforeOpened {
         crowdsaleStarted = true;
         openTimer = 0;
-        CrowdsaleOpen(now);
+        emit CrowdsaleOpen(now);
     }
     
     /**
@@ -264,14 +264,14 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      * Further calls will re-set the timer to count from the time the transaction is processed.
      * The timer can be re-set after it has tripped, unless someone has already opened the crowdsale.
      */
-    function setCrowdsaleOpenTimerFor(uint minutesFromNow) onlyOwner onlyBeforeOpened {
+    function setCrowdsaleOpenTimerFor(uint minutesFromNow) public onlyOwner onlyBeforeOpened {
         openTimer = now + minutesFromNow * 1 minutes;
     }
     
     /**
      * Let the owner stop the crowdsale open timer, as long as the crowdsale has not yet opened.
      */
-    function clearCrowdsaleOpenTimer() onlyOwner onlyBeforeOpened {
+    function clearCrowdsaleOpenTimer() public onlyOwner onlyBeforeOpened {
         openTimer = 0;
     }
     
@@ -280,14 +280,14 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      * *not* from the start of the crowdsale.
      * It is possible, but a bad idea, to set this before the open timer.
      */
-    function setCrowdsaleCloseTimerFor(uint minutesFromNow) onlyOwner onlyBeforeClosed {
+    function setCrowdsaleCloseTimerFor(uint minutesFromNow) public onlyOwner onlyBeforeClosed {
         closeTimer = now + minutesFromNow * 1 minutes;
     }
     
     /**
      * Let the owner stop the crowdsale close timer, as long as it has not yet expired.
      */
-    function clearCrowdsaleCloseTimer() onlyOwner onlyBeforeClosed {
+    function clearCrowdsaleCloseTimer() public onlyOwner onlyBeforeClosed {
         closeTimer = 0;
     }
     
@@ -302,17 +302,17 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      */
     function createTokens(address recipient) internal onlyDuringCrowdsale {
         if (msg.value == 0) {
-            throw;
+            revert();
         }
 
         uint tokens = msg.value.mul(wholeTokensPerEth); // Exploits the fact that we have 18 decimals, like ETH.
         
-        var newTotalSupply = totalSupply().add(tokens);
+        uint256 newTotalSupply = totalSupply().add(tokens);
         
         if (newTotalSupply > (wholeTokensReserved + maxCrowdsaleSupplyInWholeTokens) * 10 ** 18) {
             // This would be too many tokens issued.
             // Don't mess around with partial order fills.
-            throw;
+            revert();
         }
         
         // Otherwise, we can fill the order entirely, so make the tokens and put them in the specified account.
@@ -321,23 +321,23 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
         _mint(recipient, tokens);
         
         // Announce the purchase
-        TokenPurchase(now, msg.value, recipient);
+        emit TokenPurchase(now, msg.value, recipient);
 
         // Lastly (after all state changes), send the money to the crowdsale beneficiary.
         // This allows the crowdsale contract itself not to hold any ETH.
         // It also means that ALL SALES ARE FINAL!
         if (!beneficiary.send(msg.value)) {
-            throw;
+            revert();
         }
     }
     
     /**
      * Allow the owner to end the crowdsale manually.
      */
-    function closeCrowdsale() onlyOwner onlyDuringCrowdsale {
+    function closeCrowdsale() public onlyOwner onlyDuringCrowdsale {
         crowdsaleEnded = true;
         closeTimer = 0;
-        CrowdsaleClose(now);
+        emit CrowdsaleClose(now);
     }  
     
     ////////////
@@ -351,10 +351,10 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      * However, it relies on the contract owner taking the time to update the decimal place value.
      * Note that this changes the decimals IMMEDIATELY with NO NOTICE to users.
      */
-    function setDecimals(uint8 newDecimals) onlyOwner onlyAfterClosed {
+    function setDecimals(uint8 newDecimals) public onlyOwner onlyAfterClosed {
         decimals = newDecimals;
         // Announce the change
-        DecimalChange(decimals);
+        emit DecimalChange(decimals);
     }
     
     /**

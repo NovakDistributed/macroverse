@@ -59,7 +59,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * The given token will be used to pay deposits, and the given minimum
      * deposit size will be required.
      */
-    constructor(address depositTokenAddress, uint initialMinDepositInAtomicUnits) {
+    constructor(address depositTokenAddress, uint initialMinDepositInAtomicUnits) public {
         // We can only use one token for the lifetime of the contract.
         tokenAddress = MRVToken(depositTokenAddress);
         // But the minimum deposit for new claims can change
