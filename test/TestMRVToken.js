@@ -104,7 +104,7 @@ contract('MRVToken', function(accounts) {
     
     await instance.setCrowdsaleOpenTimerFor(30)
     
-    assert.isAtLeast(await instance.openTimer.call(), 1, "Open timer is set")
+    assert.isAtLeast((await instance.openTimer.call()).toNumber(), 1, "Open timer is set")
   })
   
   it("should not let random people unset the start timer", async function() {
@@ -116,7 +116,7 @@ contract('MRVToken', function(accounts) {
       assert.ok(true, "Did not unset timer")
     })
     
-    assert.isAtLeast(await instance.openTimer.call(), 1, "Open timer is set")
+    assert.isAtLeast((await instance.openTimer.call()).toNumber(), 1, "Open timer is set")
   })
   
   it("should let the owner unset the start timer before it elapses", async function() {
@@ -127,7 +127,7 @@ contract('MRVToken', function(accounts) {
     
     await instance.clearCrowdsaleOpenTimer()
     
-    assert.equal(await instance.openTimer.call(), 0, "Open timer is not set")
+    assert.equal((await instance.openTimer.call()).toNumber(), 0, "Open timer is not set")
     
   })
   
@@ -141,7 +141,7 @@ contract('MRVToken', function(accounts) {
     
     await instance.setCrowdsaleOpenTimerFor(50)
     
-    assert.isAtLeast(await instance.openTimer.call(), 1, "Open timer is set")
+    assert.isAtLeast((await instance.openTimer.call()).toNumber(), 1, "Open timer is set")
   })
   
   it("should not let the owner unset the start timer after it elapses", async function() {
@@ -157,7 +157,7 @@ contract('MRVToken', function(accounts) {
       assert.ok(true, "Did not unset timer")
     })
     
-   assert.isAtLeast(await instance.openTimer.call(), 1, "Open timer is set")
+   assert.isAtLeast((await instance.openTimer.call()).toNumber(), 1, "Open timer is set")
     
   })
   
@@ -169,7 +169,7 @@ contract('MRVToken', function(accounts) {
     await instance.sendTransaction({from: accounts[1], value: web3.toWei(1, "ether")})
     
     // See if we got them
-    assert.isAtLeast((await instance.balanceOf.call(accounts[1])).toNumber(), web3.toWei(5000, "ether"), "Tokens can be bought")
+    assert.equal((await instance.balanceOf.call(accounts[1])).toNumber(), web3.toWei(5000, "ether"), "Tokens can be bought")
   })
   
   it("should not let random people set the stop timer", async function() {
@@ -181,7 +181,7 @@ contract('MRVToken', function(accounts) {
       assert.ok(true, "Did not set timer")
     })
     
-    assert.equal(await instance.closeTimer.call(), 0, "Close timer is not set")
+    assert.equal((await instance.closeTimer.call()).toNumber(), 0, "Close timer is not set")
   })
   
   it("should let the owner set the stop timer", async function() {
@@ -189,7 +189,7 @@ contract('MRVToken', function(accounts) {
     
     await instance.setCrowdsaleCloseTimerFor(30)
     
-    assert.isAtLeast(await instance.closeTimer.call(), 1, "Close timer is set")
+    assert.isAtLeast((await instance.closeTimer.call()).toNumber(), 1, "Close timer is set")
   })
   
   it("should not let random people unset the stop timer", async function() {
@@ -201,7 +201,7 @@ contract('MRVToken', function(accounts) {
       assert.ok(true, "Did not unset timer")
     })
     
-    assert.isAtLeast(await instance.closeTimer.call(), 1, "Close timer is set")
+    assert.isAtLeast((await instance.closeTimer.call()).toNumber(), 1, "Close timer is set")
   })
   
   it("should let the owner unset the stop timer before it ends", async function() {
@@ -212,7 +212,7 @@ contract('MRVToken', function(accounts) {
     
     await instance.clearCrowdsaleCloseTimer()
     
-    assert.equal(await instance.closeTimer.call(), 0, "Close timer is not set")
+    assert.equal((await instance.closeTimer.call()).toNumber(), 0, "Close timer is not set")
   })
   
   it("should say the crowdsale is still open", async function() {
@@ -225,7 +225,7 @@ contract('MRVToken', function(accounts) {
     
     await instance.setCrowdsaleCloseTimerFor(50)
     
-    assert.isAtLeast(await instance.closeTimer.call(), 1, "Close timer is set")
+    assert.isAtLeast((await instance.closeTimer.call()).toNumber(), 1, "Close timer is set")
   })
   
   it("should reject contributions after the stop timer elapses", async function() {
