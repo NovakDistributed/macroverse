@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.24;
 
 import "./AccessControl.sol";
 
@@ -15,7 +15,7 @@ contract ControlledAccess is Ownable {
     /**
      * Make a new ControlledAccess contract, controlling access with the given AccessControl strategy.
      */
-    function ControlledAccess(address originalAccessControl) internal {
+    constructor(address originalAccessControl) internal {
         accessControl = AccessControl(originalAccessControl);
     }
     

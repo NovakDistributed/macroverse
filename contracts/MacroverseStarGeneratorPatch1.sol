@@ -50,7 +50,7 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
      * Deploy a new copy of the patch generator.
      * Use the contract at the given address to regulate access.
      */
-    function MacroverseStarGeneratorPatch1(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
+    constructor(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
         // Nothing to do!
     }
 
@@ -62,7 +62,7 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
     function getObjectPlanetCount(bytes32 starSeed, MacroverseStarGenerator.ObjectClass objectClass,
         MacroverseStarGenerator.SpectralType spectralType) public view onlyControlledAccess returns (uint) {
         
-        var node = RNG.RandNode(starSeed).derive("planetcount");
+        RNG.RandNode memory node = RNG.RandNode(starSeed).derive("planetcount");
         
         
         uint limit;
@@ -91,7 +91,7 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
            limit = 2;
         }
         
-        var roll = uint(node.getIntBetween(1, int88(limit + 1)));
+        uint roll = uint(node.getIntBetween(1, int88(limit + 1)));
         
         return roll;
     }
@@ -104,7 +104,7 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
      */
     function getObjectLuminosity(bytes32 starSeed, MacroverseStarGenerator.ObjectClass objectClass, int128 realObjectMass) public view onlyControlledAccess returns (int128) {
         
-        var node = RNG.RandNode(starSeed);
+        RNG.RandNode memory node = RNG.RandNode(starSeed);
 
         int128 realBaseLuminosity;
         if (objectClass == MacroverseStarGenerator.ObjectClass.BlackHole) {

@@ -53,7 +53,7 @@ contract MacroverseStarGenerator is ControlledAccess {
      * Deploy a new copy of the Macroverse generator contract. Use the given seed to generate a galaxy, down to the star level.
      * Use the contract at the given address to regulate access.
      */
-    function MacroverseStarGenerator(bytes32 baseSeed, address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
+    constructor(bytes32 baseSeed, address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
         root = RNG.RandNode(baseSeed);
     }
     
@@ -90,11 +90,11 @@ contract MacroverseStarGenerator is ControlledAccess {
      */
     function getSectorObjectCount(int16 sectorX, int16 sectorY, int16 sectorZ) public view onlyControlledAccess returns (uint16) {
         // Decide on a base item count
-        var sectorNode = root.derive(sectorX).derive(sectorY).derive(sectorZ);
-        var maxObjects = sectorNode.derive("count").d(3, 20, 0);
+        RNG.RandNode memory sectorNode = root.derive(sectorX).derive(sectorY).derive(sectorZ);
+        int16 maxObjects = sectorNode.derive("count").d(3, 20, 0);
         
         // Multiply by the density function
-        var presentObjects = RealMath.toReal(maxObjects).mul(getGalaxyDensity(sectorX, sectorY, sectorZ));
+        int128 presentObjects = RealMath.toReal(maxObjects).mul(getGalaxyDensity(sectorX, sectorY, sectorZ));
         
         return uint16(RealMath.fromReal(RealMath.round(presentObjects)));
     }
@@ -111,9 +111,9 @@ contract MacroverseStarGenerator is ControlledAccess {
      */
     function getObjectClass(bytes32 seed) public view onlyControlledAccess returns (ObjectClass) {
         // Make a node for rolling for the class.
-        var node = RNG.RandNode(seed).derive("class");
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("class");
         // Roll an impractical d10,000
-        var roll = node.getIntBetween(1, 10000);
+        int88 roll = node.getIntBetween(1, 10000);
         
         if (roll == 1) {
             // Should be a black hole
@@ -138,8 +138,8 @@ contract MacroverseStarGenerator is ControlledAccess {
      * Get the spectral type for an object with the given seed of the given class.
      */
     function getObjectSpectralType(bytes32 seed, ObjectClass objectClass) public view onlyControlledAccess returns (SpectralType) {
-        var node = RNG.RandNode(seed).derive("type");
-        var roll = node.getIntBetween(1, 10000000); // Even more implausible dice
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("type");
+        int88 roll = node.getIntBetween(1, 10000000); // Even more implausible dice
 
         if (objectClass == ObjectClass.MainSequence) {
             if (roll <= 3) {
@@ -193,7 +193,7 @@ contract MacroverseStarGenerator is ControlledAccess {
      * Note that stars may end up implausibly close together. Such is life in the Macroverse.
      */
     function getObjectPosition(bytes32 seed) public view onlyControlledAccess returns (int128 realX, int128 realY, int128 realZ) {
-        var node = RNG.RandNode(seed).derive("position");
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("position");
         
         realX = node.derive("x").getRealBetween(RealMath.toReal(0), RealMath.toReal(25));
         realY = node.derive("y").getRealBetween(RealMath.toReal(0), RealMath.toReal(25));
@@ -204,7 +204,7 @@ contract MacroverseStarGenerator is ControlledAccess {
      * Get the mass of a star, in solar masses as a real, given its seed and class and spectral type.
      */
     function getObjectMass(bytes32 seed, ObjectClass objectClass, SpectralType spectralType) public view onlyControlledAccess returns (int128) {
-        var node = RNG.RandNode(seed).derive("mass");
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("mass");
          
         if (objectClass == ObjectClass.BlackHole) {
             return node.getRealBetween(RealMath.toReal(5), RealMath.toReal(50));
@@ -241,8 +241,8 @@ contract MacroverseStarGenerator is ControlledAccess {
      * Determine if the given star has any orbiting planets or not.
      */
     function getObjectHasPlanets(bytes32 seed, ObjectClass objectClass, SpectralType spectralType) public view onlyControlledAccess returns (bool) {
-        var node = RNG.RandNode(seed).derive("hasplanets");
-        var roll = node.getIntBetween(1, 1000);
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("hasplanets");
+        int88 roll = node.getIntBetween(1, 1000);
 
         if (objectClass == ObjectClass.MainSequence) {
             if (spectralType == SpectralType.TypeO || spectralType == SpectralType.TypeB) {

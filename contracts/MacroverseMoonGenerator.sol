@@ -1,3 +1,5 @@
+pragma solidity ^0.4.24;
+
 import "./RNG.sol";
 import "./RealMath.sol";
 
@@ -78,7 +80,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
     /**
      * Deploy a new copy of the MacroverseMoonGenerator.
      */
-    function MacroverseMoonGenerator(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
+    constructor(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
         // Nothing to do!
     }
 
@@ -86,7 +88,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
      * Get the number of moons a planet has, using its class. Will sometimes return 0; there is no hasMoons boolean flag to check.
      */
     function getPlanetMoonCount(bytes32 planetSeed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (uint) {
-        var node = RNG.RandNode(planetSeed).derive("mooncount");
+        RNG.RandNode memory node = RNG.RandNode(planetSeed).derive("mooncount");
         
         uint limit;
 
@@ -105,7 +107,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
             revert();
         }
         
-        var roll = uint(node.getIntBetween(0, int88(limit + 1)));
+        uint roll = uint(node.getIntBetween(0, int88(limit + 1)));
         
         return roll;
     }
@@ -124,7 +126,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
         // Moons of the same type (rocky or icy) should be more common than cross-type.
         // Jovians can have Neptunian moons
 
-        var moonNode = RNG.RandNode(moonSeed);
+        RNG.RandNode memory moonNode = RNG.RandNode(moonSeed);
 
         if (moonNumber == 0 && moonNode.derive("ring").d(1, 100, 0) < 15) {
             // This should be a ring
@@ -164,7 +166,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
         // Then we take cube root of volume / (4/3 pi) to get the radius of such a body
         // Then we derive the scale factor from a few times that.
 
-        var node = RNG.RandNode(planetSeed).derive("moonscale");
+        RNG.RandNode memory node = RNG.RandNode(planetSeed).derive("moonscale");
 
         // Get the volume. We can definitely hold Jupiter's volume in m^3
         int128 realVolume = planetRealMass.mul(REAL_M3_PER_EARTH);
@@ -183,7 +185,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
     function getMoonOrbitDimensions(int128 planetMoonScale, bytes32 seed, MacroverseSystemGenerator.WorldClass class, int128 realPrevClearance)
         public view onlyControlledAccess returns (int128 realPeriapsis, int128 realApoapsis, int128 realClearance) {
 
-        var moonNode = RNG.RandNode(seed);
+        RNG.RandNode memory moonNode = RNG.RandNode(seed);
 
         if (class == MacroverseSystemGenerator.WorldClass.Ring) {
             // Rings are special
@@ -212,7 +214,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
      */ 
     function getMoonInclination(bytes32 seed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (int128 real_inclination) {
         
-        var node = RNG.RandNode(seed).derive("inclination");
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("inclination");
 
         // Define maximum inclination in milliradians
         // 175 milliradians = ~ 10 degrees

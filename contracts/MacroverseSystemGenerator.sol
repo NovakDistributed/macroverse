@@ -85,7 +85,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Deploy a new copy of the MacroverseSystemGenerator.
      */
-    function MacroverseSystemGenerator(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
+    constructor(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
         // Nothing to do!
     }
     
@@ -103,9 +103,9 @@ contract MacroverseSystemGenerator is ControlledAccess {
      */
     function getPlanetClass(bytes32 seed, uint planetNumber, uint totalPlanets) public view onlyControlledAccess returns (WorldClass) {
         // TODO: do something based on metallicity?
-        var node = RNG.RandNode(seed).derive("class");
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("class");
         
-        var roll = node.getIntBetween(0, 100);
+        int88 roll = node.getIntBetween(0, 100);
         
         // Inner planets should be more planet-y, ideally smaller
         // Asteroid belts shouldn't be first that often
@@ -172,7 +172,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Also produces the masses for moons.
      */
     function getWorldMass(bytes32 seed, WorldClass class) public view onlyControlledAccess returns (int128) {
-        var node = RNG.RandNode(seed).derive("mass");
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("mass");
         
         if (class == WorldClass.Asteroidal) {
             // For tiny bodies like this we work in nano-earths
@@ -218,7 +218,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
         // We scale all the random generation around the habitable zone distance.
 
         // Make the planet RNG node to use for all the computations
-        var node = RNG.RandNode(seed);
+        RNG.RandNode memory node = RNG.RandNode(seed);
         
         // Compute the statistics with their own functions
         realPeriapsis = getPlanetPeriapsis(realInnerRadius, realOuterRadius, node, class, realPrevClearance);
@@ -239,8 +239,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
         
         // We're going to sample 2 values and take the minimum, to get a nicer distribution than uniform.
         // We really kind of want a log scale but that's expensive.
-        var node1 = planetNode.derive("periapsis");
-        var node2 = planetNode.derive("periapsis2");
+        RNG.RandNode memory node1 = planetNode.derive("periapsis");
+        RNG.RandNode memory node2 = planetNode.derive("periapsis2");
         
         // Define minimum and maximum periapsis distance above previous planet's
         // cleared band. Work in % of the habitable zone inner radius.
@@ -279,8 +279,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
     function getPlanetApoapsis(int128 realInnerRadius, int128 realOuterRadius, RNG.RandNode planetNode, WorldClass class, int128 realPeriapsis)
         internal pure returns (int128) {
         
-        var node1 = planetNode.derive("apoapsis");
-        var node2 = planetNode.derive("apoapsis2");
+        RNG.RandNode memory node1 = planetNode.derive("apoapsis");
+        RNG.RandNode memory node2 = planetNode.derive("apoapsis2");
         
         // Define minimum and maximum apoapsis distance above planet's periapsis.
         // Work in % of the habitable zone inner radius.
@@ -318,8 +318,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
     function getPlanetClearance(int128 realInnerRadius, int128 realOuterRadius, RNG.RandNode planetNode, WorldClass class, int128 realApoapsis)
         internal pure returns (int128) {
         
-        var node1 = planetNode.derive("cleared");
-        var node2 = planetNode.derive("cleared2");
+        RNG.RandNode memory node1 = planetNode.derive("cleared");
+        RNG.RandNode memory node2 = planetNode.derive("cleared2");
         
         // Define minimum and maximum clearance.
         // Work in % of the habitable zone inner radius.
@@ -371,7 +371,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * by the equatorial plane/rotation axis angles.
      */ 
     function getWorldLan(bytes32 seed) public view onlyControlledAccess returns (int128) {
-        var node = RNG.RandNode(seed).derive("LAN");
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("LAN");
         // Angles should be uniform from 0 to 2 PI
         return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
     }
@@ -383,7 +383,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Result is a real in radians.
      */ 
     function getPlanetInclination(bytes32 seed, WorldClass class) public view onlyControlledAccess returns (int128) {
-        var node = RNG.RandNode(seed).derive("inclination");
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("inclination");
     
         // Define minimum and maximum inclinations in milliradians
         // 175 milliradians = ~ 10 degrees
@@ -425,7 +425,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Get the argument of periapsis (angle from ascending node to periapsis position, in the orbital plane) for a planet or moon.
      */
     function getWorldAop(bytes32 seed) public view onlyControlledAccess returns (int128) {
-        var node = RNG.RandNode(seed).derive("AOP");
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("AOP");
         // Angles should be uniform from 0 to 2 PI.
         // We already made sure planets/moons wouldn't get too close together when laying out the orbits.
         return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
@@ -435,7 +435,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Get the mean anomaly (which sweeps from 0 at periapsis to 2 pi at the next periapsis) at epoch (time 0) for a planet or moon.
      */
     function getWorldMeanAnomalyAtEpoch(bytes32 seed) public view onlyControlledAccess returns (int128) {
-        var node = RNG.RandNode(seed).derive("MAE");
+        RNG.RandNode memory node = RNG.RandNode(seed).derive("MAE");
         // Angles should be uniform from 0 to 2 PI.
         return node.getRealBetween(RealMath.toReal(0), RealMath.mul(RealMath.toReal(2), REAL_PI));
     }
@@ -469,7 +469,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
         realYRadians = RNG.RandNode(seed).derive("axisy").getRealBetween(-REAL_PI, REAL_PI);
 
         // The Z angle will be mostly small positive or negative, with some sideways and some near Pi/2 (meaning retrograde rotation)
-        var tilt_die = RNG.RandNode(seed).derive("tilt").d(1, 6, 0);
+        int16 tilt_die = RNG.RandNode(seed).derive("tilt").d(1, 6, 0);
         
         // Start with low tilt, right side up
         // Earth is like 0.38 radians overall
@@ -479,7 +479,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
             real_tilt_limit = REAL_HALF_PI;
         }
     
-        var x_node = RNG.RandNode(seed).derive("axisx");
+        RNG.RandNode memory x_node = RNG.RandNode(seed).derive("axisx");
         realXRadians = x_node.getRealBetween(0, real_tilt_limit);
 
         if (tilt_die == 4 || tilt_die == 5) {

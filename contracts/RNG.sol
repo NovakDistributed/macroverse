@@ -26,21 +26,21 @@ library RNG {
      */
     function derive(RandNode self, string entropy) internal pure returns (RandNode) {
         // Hash what's there now with the new stuff.
-        return RandNode(sha256(self._hash, entropy));
+        return RandNode(sha256(abi.encodePacked(self._hash, entropy)));
     }
     
     /**
      * Mix signed int data into a RandNode. Returns a new RandNode.
      */
     function derive(RandNode self, int256 entropy) internal pure returns (RandNode) {
-        return RandNode(sha256(self._hash, entropy));
+        return RandNode(sha256(abi.encodePacked(self._hash, entropy)));
     }
     
      /**
      * Mix unsigned int data into a RandNode. Returns a new RandNode.
      */
     function derive(RandNode self, uint256 entropy) internal pure returns (RandNode) {
-        return RandNode(sha256(self._hash, entropy));
+        return RandNode(sha256(abi.encodePacked(self._hash, entropy)));
     }
 
     /**
@@ -48,7 +48,7 @@ library RNG {
      * Does another round of hashing in case you made a RandNode("Stuff").
      */
     function getHash(RandNode self) internal pure returns (bytes32) {
-        return sha256(self._hash);
+        return sha256(abi.encodePacked(self._hash));
     }
     
     /**
