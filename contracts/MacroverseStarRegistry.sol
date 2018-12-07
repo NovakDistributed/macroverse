@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.24;
 
 import "./MRVToken.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
