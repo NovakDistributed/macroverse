@@ -143,7 +143,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         require(deposit > minDepositInAtomicUnits);
 
         // Make sure we can take the money
-        require(tokenAddress.transferFrom(msg.sender, deposit));
+        require(tokenAddress.transferFrom(msg.sender, this, deposit), "Deposit not approved");
 
         // Determine the ID
         commitmentID = commitments.length;
