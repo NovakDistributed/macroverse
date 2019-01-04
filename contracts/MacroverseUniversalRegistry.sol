@@ -408,7 +408,6 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     // Contract state
     //////////////
 
-
     // This is the token in which ownership deposits have to be paid.
     MRVToken public tokenAddress;
     // This is the minimum ownership deposit in atomic token units.
@@ -429,6 +428,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     uint public commitmentTimeout = 1 days;
 
     /// A Commitment represents an outstanding attempt to claim a deed.
+    /// It also needs to be referenced to look up the deposit associated with an owned token when the token is destroyed.
     struct Commitment {
         // msg.sender making the commitment, who is the only one who can reveal on it.
         address owner;
@@ -448,6 +448,10 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     /// It gives the priority date/creation tiem fro the token, for resolving commitment conflicts.
     mapping (uint256 => uint256) internal tokenToCommitment;
 
+    /// This holds the homesteading-allowed flag for each token.
+    /// Ignored for land.
+    mapping (uint256 => bool) internal tokenHomesteading;
+
     /**
      * Deploy a new copy of the Macroverse Universal Registry.
      * The given token will be used to pay deposits, and the given minimum
@@ -459,6 +463,35 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // But the minimum deposit for new claims can change
         minDepositInAtomicUnits = initialMinDepositInAtomicUnits;
     }
+
+    //////////////
+    // State-aware token utility functions
+    //////////////
+
+    /**
+     * Get the lowest-in-the-hierarchy token that exists (is owned or in escrow).
+     * Returns a 0-value sentinel if no parent token exists.
+     */
+    function lowestExistingParent(uint256 token) public view returns (uint256) {
+        if (getTokenType(token) == TOKEN_TYPE_SECTOR) {
+            // No parent exists, and we can't exist.
+            return 0;
+        }
+
+        uint256 parent = parentOfToken(token);
+
+        if (_exists(parent)) {
+            // We found a token that really exists
+            return parent;
+        }
+
+        // Otherwise, recurse on the parent
+        return lowestExistingParent(parent);
+    }
+
+    //////////////
+    // Minting logic: commit/reveal/close escrow/cancel
+    //////////////
     
     /**
      * Make a new commitment by debiting msg.sender's account for the given deposit.
@@ -466,7 +499,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * reveal() together with the actual bit-packed keypath of the thing being
      * claimed in order to finalize the claim.
      */
-    function commit(bytes32 hash, uint256 deposit) external returns (uint256 commitmentID) {
+    function commit(bytes32 hash, uint256 deposit) external returns (uint256 commitment_id) {
         // Make sure they are depositing enough
         require(deposit > minDepositInAtomicUnits);
 
@@ -474,7 +507,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         require(tokenAddress.transferFrom(msg.sender, this, deposit), "Deposit not approved");
 
         // Determine the ID
-        commitmentID = commitments.length;
+        commitment_id = commitments.length;
         // Push the commitment
         commitments.push(Commitment({
             owner: msg.sender,
@@ -487,20 +520,22 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     }
 
     /**
-     * Finish a commitment by revealing the token we want to claim and the salt to make the commitment hash.
-     * Fails and reverts if the preimage is incorrect, the commitment is
-     * expired, the commitment is not owned by the msg.sender trying to do the
-     * reveal, the deposit is insufficient for whatever is being claimed, the
-     * Macroverse generators cannot be accessed to prove the existence of the
-     * thing being claimed or its parents, or the thing or a child or parent is
-     * already claimed by an earlier conflicting commitment.
-     * Otherwise issues the token for the bit-packed keypath given in preimage.
+     * Finish a commitment by revealing the token we want to claim and the salt
+     * to make the commitment hash. Creates the token, but it will be owned by
+     * this contract in escrow until all prior commitments expire. Fails and
+     * reverts if the preimage is incorrect, the commitment is expired, the
+     * commitment is not owned by the msg.sender trying to do the reveal, the
+     * deposit is insufficient for whatever is being claimed, the Macroverse
+     * generators cannot be accessed to prove the existence of the thing being
+     * claimed or its parents, or the thing or a child or parent is already
+     * claimed by an earlier conflicting commitment. Otherwise issues the
+     * token for the bit-packed keypath given in preimage.
      */
-    function reveal(uint256 commitmentID, uint256 token, uint256 salt) external {
+    function reveal(uint256 commitment_id, uint256 token, uint256 salt) external {
         // Make sure the commitment exists
-        require(commitmentID < commitments.length);
+        require(commitment_id < commitments.length);
         // Find it
-        Commitment storage commitment = commitments[commitmentID];
+        Commitment storage commitment = commitments[commitment_id];
 
         // Make sure the commitment belongs to this person.
         // Otherwise just anyone could steal the preimage.
@@ -512,24 +547,49 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Make sure this is really the token that was committed to
         require(commitment.hash == keccak256(abi.encodePacked(token, salt)), "Commitment hash mismatch");
 
+        // Validate the token
+        require(tokenIsCanonical(token), "Token data is mis-packed");
+
+        // Make sure that sufficient money has been deposited for this thing to be claimed
+        // TODO: allow for different requirements by token type
+        require(commitment.deposit > minDepositInAtomicUnits);
+
         if (_exists(token)) {
             // There's a conflict for this token in particular
-            uint256 otherCommitmentID = tokenToCommitment[token];
+
+            // Make sure that the token is still in escrow. Otherwise the other person already won
+            require(ownerOf(token) == address(this), "Token can only be contested while in escrow");
+
+            uint256 other_commitment_id = tokenToCommitment[token];
             // We can just compare the commitment IDs in sequence. Smaller wins.
-            require(commitmentID < otherCommitmentID, "Already claimed with better priority");
+            require(commitment_id < other_commitment_id, "Already claimed with better priority");
             
-            // Now steal the token because we are earlier.
-            // TODO: Does OpenZeppelin support some people causing other people's tokens to explode?
-            // The OZ way to do this appears to be to destroy it.
-            _burn(commitments[commitmentID].owner, token);
+            // We'll just take over the token from the old commitment.
         }
 
+        // Do checks on the parent
+        uint256 extant_parent = lowestExistingParent(token);
+        if (extant_parent != 0) {
+            // A parent exists. Can this person claim its children?
+            require(childrenClaimable(extant_parent, msg.sender), "Cannot claim children here");
+        }
+
+        // TODO: front-running of nested claims!
+        // I need to stop someone quickly committing and revealing all the planets when I have revealed the system
+        // I need to make sure that the planets can't come out of escrow until the previously committed system does
+        // Or land claims within/around an earlier one, with the caveat that I have no access to the earlier claims several levels down the tree.
+        // Maybe each tree node needs an earliest priority date?
+        // I need to make sure that things in escrow forever because they can't leave don't upset the homesteading query (or not have it).
+
         // Save our commitment as the commitment for this token
-        tokenToCommitment[token] = commitmentID;
+        tokenToCommitment[token] = commitment_id;
+
+        // TODO: Emit an event if usurping from someone else?
         
         // TODO: Make sure the token exists in the Macroverse world.
         // This part requires the transaction as a whole to pass Macroverse access control.
-        // Also we should validate that the trixel number is well-formed
+
+        
 
         // TODO: Allow claims within an astronomical parent only if that parent is unclaimed or set to allow child claims.
 
