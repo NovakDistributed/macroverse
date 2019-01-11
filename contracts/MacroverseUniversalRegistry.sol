@@ -1,39 +1,47 @@
 pragma solidity ^0.4.24;
 
-import "./MRVToken.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./HasNoEther.sol";
 import "./HasNoContracts.sol";
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
  * The MacroverseUniversalRegistry keeps track of who currently owns virtual
  * real estate in the Macroverse world, at all scales. It supersedes the
  * MacroverseStarRegistry.
  *
- * Ownership is handled by having the first person who wants to own an object
- * claim it, by putting up a deposit in MRV tokens of a certain minimum size.
- * Note that the owner of the contract reserves the right to adjust this
- * minimum size at any time, for any reason, and without notice. Since the size
- * of the deposit to be made is specified by the claimant, trying to claim
- * something when the minimum deposit size has been increased without your
- * knowledge should at worst result in wasted gas.
+ * Ownership is based on a claim system, where unowned objects can be claimed
+ * by people by putting up a deposit in MRV. The MRV deposit is returned when
+ * the owner releases their claim on the corresponding object.
  *
- * The claiming system is protected against front-running by a commit/reveal
- * process. When you reveal, you will take the object away from anyone who
- * currently has it with a later priority date than your commit. This may cause
- * trouble for you if you claim an object and sell it, and then someone comes
- * by with an earlier commit on the object and takes it away from your
- * customer.
+ * The claim system is protected against front-running by a commit/reveal
+ * system with a mandatory waiting period. You first commit to the claim you
+ * want to make, by putting up the deposit and publishing a hash. After a
+ * certain mandatory waiting period, you can reveal what it is you are trying
+ * to claim, and actually take ownership of the object.
+ *
+ * The first person to reveal wins in case two or more people try to claim the
+ * same object, or if they try to claim things that are
+ * parents/children/overlapping in such a way that the claims conflict. Since
+ * there's a mandatory waiting period between the commit and reveal, and since
+ * a malicious front-runner cannot commit until they see a reveal they are
+ * trying to front-run, then as long as malicious front-runners cannot keep
+ * transactions off the chain for the duration of the mandatory wait period,
+ * then they can't steal things other people are trying to claim.
+ *
+ * It's still possible for an organic conflict to end up getting resolved in
+ * favor of whoever is willing to pay more for gas, or for people to leave many
+ * un-revealed claims and grief people by revealing them when someone else
+ * tries to claim the same objects.
+ *
+ * To further mitigate griefing, committed claims will expire after a while if
+ * not revealed.
  *
  * Revealing requires demonstrating that the Macroverse object being claimed
  * actually exists, and so claiming can only be done by people who can pass the
  * Macroverse generator's AccessControl checks.
- *
- * Owners of objects can send them to other addresses, and an owner can
- * abdicate ownership of an object and collect the original MRV deposit used to
- * claim it.
  *
  * Note that ownership of a star system does not necessarily imply ownership of
  * everything in it. Just as one person can own a condo in another person's
@@ -70,9 +78,9 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
  * More specific claims use more of the higher-value bits, producing larger
  * numbers in general.
  *
- * At the astronomical level (stars, planets, moons), deed tokens can be issued
+ * At the astronomical level (stars, planets, moons), tokens can be issued
  * for the children of things already claimed, if the lowest owned parent token
- * has homesteading enabled.  At the land level, only one deed token can cover
+ * has homesteading enabled.  At the land level, only one token can cover
  * a given point at a given time, but plots can be subdivided and merged
  * according to the trixel structure.
  *
@@ -80,31 +88,6 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
  * to be traversed. All issued tokens exist in the tree, as well as the
  * internal nodes of the token hierarchy necessary to connect them. The
  * presence of child nodes in the tree is tracked using a bitmap for each node.
- *
- * Acquiring ownership of something is a three-phase process.
- *
- * First, you have to commit: publish a hash of the token ID you want to claim
- * and a salt, and put up a deposit, to establish a priority date. Commitments
- * eventually expire, after which all you can do with them is cancel them and
- * get your deposit back.
- *
- * The next step is to reveal your commitment. You can do this as soon as your
- * commitment has been mined. You publish the ID of the token you are trying to
- * claim, and the salt you used to generate your commitment hash. At this
- * point, if the token you are trying to claim is unclaimed and legal to claim,
- * it will be created and placed into escrow (owned by the registry contract).
- * If the token already exists and is still in escrow, and you have an earlier
- * commitment than the person who it is currently in escrow for, you will
- * become its new pending owner.
- *
- * Finally, once the mandatory escrow period has elapsed, and all commitments
- * before yours are expired without any of them having taken the token you were
- * trying to claim, you can close escrow and actually take custody of the
- * token.
- *
- * Alternately, if the token was taken by another claimant with an earlier
- * claim while in escrow, all you can do is cancel your commitment and take
- * back your deposit.
  *
  * The deployer of this contract reserves the right to supersede it with a new
  * version at any time, for any reason, and without notice. The deployer of
@@ -115,6 +98,8 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
  * balance that this contract thinks it is supposed to have.
  */
 contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC721Full {
+
+    using SafeMath for uint256;
 
     //////////////
     // Code for working on token IDs
@@ -353,6 +338,35 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     }
 
     /**
+     * If the token has a parent, get the token's index among all children of the parent.
+     * Planets have surface trixels and moons as children; the 8 surface trixels come first, followed by any moons. 
+     * Fails if the token has no parent.
+     */
+    function childIndexOfToken(uint256 token) internal pure returns (uint256) {
+        uint256 token_type = getTokenType(token);
+
+        assert(token_type != TOKEN_TYPE_SECTOR);
+
+        if (token_type == TOKEN_TYPE_SYSTEM) {
+            // Get the system field of a system token
+            return getTokenSystem(token);
+        } else if (token_type == TOKEN_TYPE_PLANET) {
+            // Get the planet field of a planet token
+            return getTokenPlanet(token);
+        } else if (token_type == TOKEN_TYPE_MOON) {
+            // Get the moon field of a moon token. Offset it by the 0-7 top trixels of the planet's land.
+            return getTokenMoon(token) + 8;
+        } else if (token_type >= TOKEN_TYPE_LAND_MIN && token_type <= TOKEN_TYPE_LAND_MAX) {
+            // Get the value of the last trixel. Top-level trixels are the first children of planets.
+            uint256 last_trixel = getTokenTrixelCount(token) - 1;
+            return getTokenTrixel(token, last_trixel);
+        } else {
+            // We have an invalid token type somehow
+            assert(false);
+        }
+    }
+
+    /**
      * Not all uint256 values are valid tokens.
      * Returns true if the token represents something that may exist in the Macroverse world.
      * Only does validation of the bitstring representation (i.e. no extraneous set bits).
@@ -408,60 +422,179 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     // Contract state
     //////////////
 
-    // This is the token in which ownership deposits have to be paid.
-    MRVToken public tokenAddress;
-    // This is the minimum ownership deposit in atomic token units.
+    /// This is the token in which ownership deposits have to be paid.
+    IERC20 public depositTokenContract;
+    /// This is the minimum ownership deposit in atomic token units.
     uint public minDepositInAtomicUnits;
     
-    // This tracks how much MRV the contract is supposed to have.
-    // If it ends up with extra (because someone incorrectly used transfer() instead of approve()), the owner can remove it.
-    uint public expectedMrvBalance;
+    /// This tracks how much of the deposit token the contract is supposed to have.
+    /// If it ends up with extra (because someone incorrectly used transfer() instead of approve()), the owner can remove it.
+    uint public expectedDepositBalance;
 
-    // This maps from each hierarchical bit-packed keypath entry to a bitmap of
-    // which of its direct children have deed tokens issued at or under them.
-    // If all the bits would be 0, an entry need not exist (which is the
-    // Solidity mapping default behavior).
-    mapping (uint256 => uint256) internal childDeedFlags;
+    /// How long should a commitment be required to sit before it can be revealed, in Ethereum time?
+    /// This is also the maximum delay that we can let a bad actor keep good transactions off the chain, in our front-running security model.
+    uint constant COMMITMENT_MIN_WAIT  = 1 days;
 
-    // How long should a commitment be valid before needing to be revealed or destroyed and re-created, in Ethereum time?
-    // This is the same timeout that we need to wait for a land registration to become unchallengeable (because all prior commitments expired).
-    uint public commitmentTimeout = 1 days;
+    /// How long should a commitment be allowed to sit un-revealed before it becomes invalid and can only be canceled?
+    /// This protects against unrevealed commitments being used as griefing traps.
+    uint constant COMMITMENT_MAX_WAIT = 7 days;
+
+    /// Commitments can be committed, revealed, or canceled.
+    /// Expired commitments stay committed until canceled.
+    enum CommitmentState {
+        Committed,
+        Revealed,
+        Canceled
+    }
 
     /// A Commitment represents an outstanding attempt to claim a deed.
     /// It also needs to be referenced to look up the deposit associated with an owned token when the token is destroyed.
     struct Commitment {
-        // msg.sender making the commitment, who is the only one who can reveal on it.
+        // msg.sender making the commitment, who is the only one who can reveal/cancel it.
         address owner;
         // Hash (keccak256) of the token we want to claim and a uint256 salt to be revealed with it.
         bytes32 hash;
         // Number of atomic token units deposited with the commitment
         uint256 deposit;
         // Time number at which the commitment was created.
-        // Commitments expire a certain amount of time after creation.
         uint256 creationTime;
+        // What state is the commitment in?
+        CommitmentState state;
     }
     
     /// This is all the commitments that have ever been made
     Commitment[] public commitments;
 
-    /// This is the commitment ID for each outstanding token.
-    /// It gives the priority date/creation tiem fro the token, for resolving commitment conflicts.
-    mapping (uint256 => uint256) internal tokenToCommitment;
+    /// Tokens have some configuration info to them, beyond what the base ERC721 implementation tracks.
+    struct TokenConfig {
+        /// This holds the deposit amount associated with the token, which will be released when the token is unclaimed.
+        uint256 deposit;
+        /// True if the token allows homesteading (i.e. the claiming of child tokens by others)
+        bool homesteading;
+    }
 
-    /// This holds the homesteading-allowed flag for each token.
-    /// Ignored for land.
-    mapping (uint256 => bool) internal tokenHomesteading;
+    /// This holds the TokenConfig for each token
+    mapping(uint256 => TokenConfig) tokenConfigs;
+
+    /// This maps from each hierarchical bit-packed keypath entry to a bitmap of
+    /// which of its direct children have deed tokens issued at or under them.
+    /// If all the bits would be 0, an entry need not exist (which is the
+    /// Solidity mapping default behavior).
+    mapping (uint256 => uint256) internal childTree;
 
     /**
      * Deploy a new copy of the Macroverse Universal Registry.
      * The given token will be used to pay deposits, and the given minimum
      * deposit size will be required.
      */
-    constructor(address depositTokenAddress, uint initialMinDepositInAtomicUnits) public {
+    constructor(address deposit_token_address, uint initial_min_deposit_in_atomic_units) public {
         // We can only use one token for the lifetime of the contract.
-        tokenAddress = MRVToken(depositTokenAddress);
+        depositTokenContract = IERC20(deposit_token_address);
         // But the minimum deposit for new claims can change
-        minDepositInAtomicUnits = initialMinDepositInAtomicUnits;
+        minDepositInAtomicUnits = initial_min_deposit_in_atomic_units;
+    }
+
+    //////////////
+    // Child tree functions
+    //////////////
+
+    // First we need some bit utilities
+
+    /**
+     * Set the value of a bit by index in a uint256.
+     * Bits are counted from the LSB left.
+     */
+    function setBit(uint256 bitmap, uint256 index, bool value) internal pure returns (uint256) {
+        uint256 bit = 0x1 << index;
+        if (value) {
+            // Set it
+            return bitmap | bit;
+        } else {
+            // Clear it
+            return bitmap & (~bit);
+        }
+    }
+
+    /**
+     * Get the value of a bit by index in a uint256.
+     * Bits are counted from the LSB left.
+     */
+    function getBit(uint256 bitmap, uint256 index) internal pure returns (bool) {
+        uint256 bit = 0x1 << index;
+        return (bitmap & bit != 0);
+    }
+
+    /**
+     * Register a token/internal node and all parents as having an extant token
+     * present under them in the child tree.
+     */
+    function addChildToTree(uint256 token) internal {
+        
+        if (getTokenType(token) == TOKEN_TYPE_SECTOR) {
+            // No parent exists; we're a tree root.
+            return;
+        }
+
+        // Find the parent
+        uint256 parent = parentOfToken(token);
+
+        // Find what child index we are of the parent
+        uint256 child_index = childIndexOfToken(token);
+        
+        // Get the parent's child tree entry
+        uint256 bitmap = childTree[parent];
+
+        if (getBit(bitmap, child_index)) {
+            // Stop if the correct bit is set already
+            return;
+            // TODO: reuse the mask for the bit?
+        }
+
+        // Set the correct bit if unset
+        childTree[parent] = setBit(bitmap, child_index, true);
+
+        // Continue until we hit the top of the tree
+        addChildToTree(parent);
+    }
+
+    /**
+     * Record in the child tree that a token no longer exists. Also handles
+     * cleanup of internal nodes that now have no children.
+     */
+    function removeChildFromTree(uint256 token) internal {
+
+        if (getTokenType(token) == TOKEN_TYPE_SECTOR) {
+            // No parent exists; we're a tree root.
+            return;
+        }
+
+        // See if we have any children that still exist
+        if (childTree[token] == 0) {
+            // We are not an existing token ourselves, and we have no existing children.
+
+            // Find the parent
+            uint256 parent = parentOfToken(token);
+
+            // Find what child index we are of the parent
+            uint256 child_index = childIndexOfToken(token);
+            
+            // Getmthe parent's child tree entry
+            uint256 bitmap = childTree[parent];
+
+            if (getBit(bitmap, child_index)) {
+                // Our bit in our immediate parent is set.
+
+                // Clear it
+                childTree[parent] = setBit(bitmap, child_index, false);
+
+                if (!_exists(parent)) {
+                    // Recurse up to maybe clean up the parent, if we were the
+                    // last child and the parent doesn't exist as a token
+                    // itself.
+                    removeChildFromTree(parent);
+                }
+            }
+        }
     }
 
     //////////////
@@ -490,7 +623,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     }
 
     //////////////
-    // Minting logic: commit/reveal/close escrow/cancel
+    // Minting logic: commit/wait/reveal/cancel
     //////////////
     
     /**
@@ -501,10 +634,13 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function commit(bytes32 hash, uint256 deposit) external returns (uint256 commitment_id) {
         // Make sure they are depositing enough
-        require(deposit > minDepositInAtomicUnits);
+        require(deposit > minDepositInAtomicUnits, "Deposit too small");
+
+        // Record we have the money
+        expectedDepositBalance = expectedDepositBalance.add(deposit);
 
         // Make sure we can take the money
-        require(tokenAddress.transferFrom(msg.sender, this, deposit), "Deposit not approved");
+        require(depositTokenContract.transferFrom(msg.sender, this, deposit), "Deposit not approved");
 
         // Determine the ID
         commitment_id = commitments.length;
@@ -513,59 +649,85 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
             owner: msg.sender,
             hash: hash,
             deposit: deposit,
-            creationTime: now
+            creationTime: now,
+            state: CommitmentState.Committed
         }));
 
         // TODO: Do an event for easy lookup so the frontend can reveal
     }
 
     /**
+     * Cancel a commitment that has not yet been revealed.
+     * Returns the associated deposit.
+     */
+    function cancel(uint256 commitment_id) external {
+        // Make sure this commitment exists
+        require(commitment_id < commitments.length, "Commitment not found");
+
+        // Find it
+        Commitment storage commitment = commitments[commitment_id];
+
+        // Make sure this is the original committer
+        require(commitment.owner == msg.sender, "Commitment owner mismatch");
+
+        // Make sure it is in the committed state (not revealed or canceled)
+        require(commitment.state == CommitmentState.Committed, "Wrong commitment state");
+
+        // Mark it canceled
+        commitment.state = CommitmentState.Canceled;
+
+        // Record we sent the money
+        expectedDepositBalance = expectedDepositBalance.sub(commitment.deposit);
+
+        // Return the money
+        require(depositTokenContract.transfer(commitment.owner, commitment.deposit));
+
+        // TODO: emit a canceled event
+    }
+
+    /**
      * Finish a commitment by revealing the token we want to claim and the salt
-     * to make the commitment hash. Creates the token, but it will be owned by
-     * this contract in escrow until all prior commitments expire. Fails and
-     * reverts if the preimage is incorrect, the commitment is expired, the
-     * commitment is not owned by the msg.sender trying to do the reveal, the
-     * deposit is insufficient for whatever is being claimed, the Macroverse
-     * generators cannot be accessed to prove the existence of the thing being
-     * claimed or its parents, or the thing or a child or parent is already
-     * claimed by an earlier conflicting commitment. Otherwise issues the
-     * token for the bit-packed keypath given in preimage.
+     * to make the commitment hash. Creates the token. Fails and reverts if the
+     * preimage is incorrect, the commitment is expired, the commitment is too
+     * new, the commitment is not owned by the msg.sender trying to do the
+     * reveal, the deposit is insufficient for whatever is being claimed, the
+     * Macroverse generators cannot be accessed to prove the existence of the
+     * thing being claimed or its parents, or the thing or a child or parent is
+     * already claimed by a conflicting commitment. Otherwise issues the token
+     * for the bit-packed keypath given in preimage.
      */
     function reveal(uint256 commitment_id, uint256 token, uint256 salt) external {
         // Make sure the commitment exists
-        require(commitment_id < commitments.length);
+        require(commitment_id < commitments.length, "Commitment not found");
         // Find it
         Commitment storage commitment = commitments[commitment_id];
 
         // Make sure the commitment belongs to this person.
         // Otherwise just anyone could steal the preimage.
         require(commitment.owner == msg.sender, "Commitment owner mismatch");
+
+        // Make sure it is in the committed state (not revealed or canceled)
+        require(commitment.state == CommitmentState.Committed, "Wrong commitment state");
         
         // Make sure the commitment is not expired
-        require(commitment.creationTime + commitmentTimeout < now, "Commitment expired");
+        require(commitment.creationTime + COMMITMENT_MAX_WAIT < now, "Commitment expired");
+
+        // Make sure the commitment is not too new
+        require(commitment.creationTime + COMMITMENT_MIN_WAIT > now, "Commitment too new");
 
         // Make sure this is really the token that was committed to
         require(commitment.hash == keccak256(abi.encodePacked(token, salt)), "Commitment hash mismatch");
 
+        // Make sure the token doesn't already exists
+        require(!_exists(token), "Token already exists");
+
         // Validate the token
-        require(tokenIsCanonical(token), "Token data is mis-packed");
+        require(tokenIsCanonical(token), "Token data mis-packed");
+        // TODO: query the generator to make sure the thing exists
 
         // Make sure that sufficient money has been deposited for this thing to be claimed
         // TODO: allow for different requirements by token type
-        require(commitment.deposit > minDepositInAtomicUnits);
-
-        if (_exists(token)) {
-            // There's a conflict for this token in particular
-
-            // Make sure that the token is still in escrow. Otherwise the other person already won
-            require(ownerOf(token) == address(this), "Token can only be contested while in escrow");
-
-            uint256 other_commitment_id = tokenToCommitment[token];
-            // We can just compare the commitment IDs in sequence. Smaller wins.
-            require(commitment_id < other_commitment_id, "Already claimed with better priority");
-            
-            // We'll just take over the token from the old commitment.
-        }
+        require(commitment.deposit > minDepositInAtomicUnits, "Deposit too small");
 
         // Do checks on the parent
         uint256 extant_parent = lowestExistingParent(token);
@@ -574,60 +736,36 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
             require(childrenClaimable(extant_parent, msg.sender), "Cannot claim children here");
         }
 
-        // TODO: front-running of nested claims!
-        // I need to stop someone quickly committing and revealing all the planets when I have revealed the system
-        // I need to make sure that the planets can't come out of escrow until the previously committed system does
-        // Or land claims within/around an earlier one, with the caveat that I have no access to the earlier claims several levels down the tree.
-        // Maybe each tree node needs an earliest priority date?
-        // I need to make sure that things in escrow forever because they can't leave don't upset the homesteading query (or not have it).
+        // If it's land, no children can be claimed already
+        require(!tokenIsLand(token) || childTree[token] == 0, "Cannot claim land with claimed subplots");
 
-        // Save our commitment as the commitment for this token
-        tokenToCommitment[token] = commitment_id;
+        // OK, now we know the claim is valid. Execute it.
 
-        // TODO: Emit an event if usurping from someone else?
-        
-        // TODO: Make sure the token exists in the Macroverse world.
-        // This part requires the transaction as a whole to pass Macroverse access control.
+        // Mark the commitment as revealed
+        commitment.state = CommitmentState.Revealed;
 
-        
+        // Create the state, with homesteading off, carrying over the deposit
+        tokenConfigs[token] = TokenConfig({
+            deposit: commitment.deposit,
+            homesteading: false
+        });
 
-        // TODO: Allow claims within an astronomical parent only if that parent is unclaimed or set to allow child claims.
-
-        if (tokenIsLand(token)) {
-            // Land claims can't ever overlap.
-
-            // TODO: Check down from the top level to here for containing land claims.
-            // If they're later, destroy them.
-            // If they're earlier, fail.
-
-            // TODO: Check below here for contained land claims
-            // If they're later, destroy them.
-            // If they're earlier, fail.
-            // TODO: What if someone claims 1000 tiny things between our commit and reveal?
-            // We can't destroy all of them!
-            // TODO: We need to adopt a three-phase commit reveal claim system
-            // You can't claim until all potential conflicts are revealed, so we can check priority and conflicts and only the winner can claim
-        }
-
-        // TODO: Register this token under all its parents.
+        // Record it in the child tree. This informs all parent land tokens
+        // that could be created that there are child claims, and blocks them.
+        addChildToTree(token);
 
         // If we pass everything, mint the token
         _mint(msg.sender, token);
-
     }
 
     /**
-     * Returns true if children of the given token can be claimed by the given claimant.
+     * Returns true if direct children of the given token can be claimed by the given claimant.
      * Children of land tokens can never be claimed (the plot must be subdivided).
-     * Children of system/planet/moon tokens can only be claimed if:
-     * 1. No parent is owned
-     * 2. Claimant is the owner of the lowest owned parent
-     * 3. The owner of the lowest owned parent has set it to allow subclaims/homesteading
+     * Children of system/planet/moon tokens can only be claimed if the claimer owns them or the owner allows homesteading.
      */
     function childrenClaimable(uint256 token, address claimant) internal view returns (bool) {
-        // TODO: implement parent search
-        // TODO: implement homesteading
-        return !tokenIsLand(token) && (!_exists(token) || claimant == ownerOf(token));
+        assert(_exists(token));
+        return !tokenIsLand(token) && (claimant == ownerOf(token) || tokenConfigs[token].homesteading);
     }
 
     /**
@@ -648,9 +786,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         uint excessBalance = other.balanceOf(this);
         
         // Unless we're talking about the MRV token
-        if (address(other) == address(tokenAddress)) {
+        if (address(other) == address(depositTokenContract)) {
             // In which case we send only any balance that we shouldn't have
-            excessBalance = excessBalance.sub(expectedMrvBalance);
+            excessBalance = excessBalance.sub(expectedDepositBalance);
         }
         
         // Make the transfer. If it doesn't work, we can try again later.
