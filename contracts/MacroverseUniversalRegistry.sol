@@ -636,10 +636,10 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Make sure they are depositing enough
         require(deposit > minDepositInAtomicUnits, "Deposit too small");
 
-        // Record we have the money
+        // Record we have the deposit value
         expectedDepositBalance = expectedDepositBalance.add(deposit);
 
-        // Make sure we can take the money
+        // Make sure we can take the deposit
         require(depositTokenContract.transferFrom(msg.sender, this, deposit), "Deposit not approved");
 
         // Determine the ID
@@ -676,10 +676,10 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Mark it canceled
         commitment.state = CommitmentState.Canceled;
 
-        // Record we sent the money
+        // Record we sent the deposit value
         expectedDepositBalance = expectedDepositBalance.sub(commitment.deposit);
 
-        // Return the money
+        // Return the deposit
         require(depositTokenContract.transfer(commitment.owner, commitment.deposit));
 
         // TODO: emit a canceled event
@@ -725,7 +725,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         require(tokenIsCanonical(token), "Token data mis-packed");
         // TODO: query the generator to make sure the thing exists
 
-        // Make sure that sufficient money has been deposited for this thing to be claimed
+        // Make sure that sufficient tokens have been deposited for this thing to be claimed
         // TODO: allow for different requirements by token type
         require(commitment.deposit > minDepositInAtomicUnits, "Deposit too small");
 
@@ -769,7 +769,32 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     }
 
     /**
-     * Allow the owner to set the minimum deposit amount for granting new
+     * Destroy a token that you own, allowing it to be claimed by someone else.
+     * Retruns the associated deposit to you.
+     */
+    function release(uint256 token) external {
+        // Burn the token IFF it exists and is owned by msg.sender
+        _burn(msg.sender, token);
+
+        // Remove it from the tree so it no longer blocks parent claims if it is land
+        removeChildFromTree(token);
+        
+        // Work out what the deposit was
+        uint256 deposit = tokenConfigs[token].deposit;
+
+        // Record we sent the deposit back
+        expectedDepositBalance = expectedDepositBalance.sub(deposit);
+
+        // Return the deposit
+        require(depositTokenContract.transfer(msg.sender, deposit));
+    }
+
+    //////////////
+    // Admin functions
+    //////////////
+
+    /**
+     * Allow the contract owner to set the minimum deposit amount for granting new
      * ownership claims.
      */
     function setMinimumDeposit(uint newMinimumDepositInAtomicUnits) external onlyOwner {
