@@ -419,13 +419,27 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     }
 
     //////////////
+    // Events for the commit/reveal system
+    //////////////
+
+    /// Fired when an owner makes a commitment. Includes the commitment ID.
+    event Commit(uint256 indexed commitment_id, address indexed owner);
+    /// Fired when a commitment is successfully revealed and the token issued.
+    event Reveal(uint256 indexed commitment_id, uint256 indexed token, address indexed owner);
+    /// Fired when a commitment is canceled without being revealed.
+    event Cancel(uint256 indexed commitment_id, address indexed owner);
+    /// Fired when homesteading under a token is enabled or disabled.
+    /// Not fired when the token is issued; it starts disabled.
+    event Homesteading(uint256 indexed token, bool indexed value);
+
+    //////////////
     // Contract state
     //////////////
 
     /// This is the token in which ownership deposits have to be paid.
     IERC20 public depositTokenContract;
     /// This is the minimum ownership deposit in atomic token units.
-    uint public minDepositInAtomicUnits;
+    uint public minSystemDepositInAtomicUnits;
     
     /// This tracks how much of the deposit token the contract is supposed to have.
     /// If it ends up with extra (because someone incorrectly used transfer() instead of approve()), the owner can remove it.
@@ -485,13 +499,14 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     /**
      * Deploy a new copy of the Macroverse Universal Registry.
      * The given token will be used to pay deposits, and the given minimum
-     * deposit size will be required.
+     * deposit size will be required to claim a star system.
+     * Other deposit sizes will be calculated from that.
      */
-    constructor(address deposit_token_address, uint initial_min_deposit_in_atomic_units) public {
+    constructor(address deposit_token_address, uint initial_min_system_deposit_in_atomic_units) public {
         // We can only use one token for the lifetime of the contract.
         depositTokenContract = IERC20(deposit_token_address);
         // But the minimum deposit for new claims can change
-        minDepositInAtomicUnits = initial_min_deposit_in_atomic_units;
+        minSystemDepositInAtomicUnits = initial_min_system_deposit_in_atomic_units;
     }
 
     //////////////
@@ -622,8 +637,38 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         return lowestExistingParent(parent);
     }
 
+    /**
+     * Get the min deposit that will be required to create a claim on a token.
+     */
+    function getMinDepositToCreate(uint256 token) public view returns (uint256) {
+        // Get the token's type
+        uint256 token_type = getTokenType(token);
+
+        if (token_type == TOKEN_TYPE_SECTOR) {
+            // Sectors cannot be owned.
+            return 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+        } else if (token_type == TOKEN_TYPE_SYSTEM) {
+            // For systems, the deposit is set
+            return minSystemDepositInAtomicUnits;
+        } else if (token_type == TOKEN_TYPE_PLANET) {
+            // For planets, the deposit is a fraction of the system
+            return minSystemDepositInAtomicUnits.div(10);
+        } else if (token_type == TOKEN_TYPE_MOON) {
+            // For moons, the deposit is a smaller fraction
+            return minSystemDepositInAtomicUnits.div(30);
+        } else {
+            // It must be land
+            
+            // For land, the deposit is smaller and cuts in half with each level of subdivision (starting at 1).
+            // So all the small claims is twice as expensive as the big claim.
+            uint256 subdivisions = getTokenTrixelCount(token);
+            return minSystemDepositInAtomicUnits.div(30) >> subdivisions;
+            // TODO: Look at and balance the exact relationships between planet, moon, and whole-surface claim costs.
+        }
+    }
+
     //////////////
-    // Minting logic: commit/wait/reveal/cancel
+    // Minting and destruction logic: commit/reveal/cancel and release
     //////////////
     
     /**
@@ -633,8 +678,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * claimed in order to finalize the claim.
      */
     function commit(bytes32 hash, uint256 deposit) external returns (uint256 commitment_id) {
-        // Make sure they are depositing enough
-        require(deposit > minDepositInAtomicUnits, "Deposit too small");
+        // Deposit size will not be checked until reveal!
 
         // Record we have the deposit value
         expectedDepositBalance = expectedDepositBalance.add(deposit);
@@ -653,7 +697,8 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
             state: CommitmentState.Committed
         }));
 
-        // TODO: Do an event for easy lookup so the frontend can reveal
+        // Do an event for easy lookup so the frontend can reveal later
+        emit Commit(commitment_id, msg.sender);
     }
 
     /**
@@ -682,7 +727,8 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Return the deposit
         require(depositTokenContract.transfer(commitment.owner, commitment.deposit));
 
-        // TODO: emit a canceled event
+        // Emit a Cancel event
+        emit Cancel(commitment_id, msg.sender);
     }
 
     /**
@@ -726,8 +772,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // TODO: query the generator to make sure the thing exists
 
         // Make sure that sufficient tokens have been deposited for this thing to be claimed
-        // TODO: allow for different requirements by token type
-        require(commitment.deposit > minDepositInAtomicUnits, "Deposit too small");
+        require(commitment.deposit >= getMinDepositToCreate(token), "Deposit too small");
 
         // Do checks on the parent
         uint256 extant_parent = lowestExistingParent(token);
@@ -753,6 +798,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Record it in the child tree. This informs all parent land tokens
         // that could be created that there are child claims, and blocks them.
         addChildToTree(token);
+
+        // Emit a reveal event, before actually making the token
+        emit Reveal(commitment_id, token, msg.sender);
 
         // If we pass everything, mint the token
         _mint(msg.sender, token);
@@ -790,15 +838,108 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     }
 
     //////////////
+    // Token owner functions
+    //////////////
+
+    /**
+     * Set whether homesteading is allowed under a token. The token must be owned by you, and must not be land.
+     */
+    function setHomesteading(uint256 token, bool value) external {
+        require(ownerOf(token) == msg.sender, "Token owner mismatch");
+        require(!tokenIsLand(token));
+        
+        // Find the token's config
+        TokenConfig storage config = tokenConfigs[token];
+
+        if (config.homesteading != value) {
+            // The value is actually changing
+
+            // Set the homesteading flag
+            config.homesteading = value;
+
+            // Make an event so clients can find homesteading areas
+            emit Homesteading(token, value);
+        }
+    }
+
+    /**
+     * Get whether homesteading is allowed under a token.
+     * Returns false for nonexistent or invalid tokens.
+     */
+    function getHomesteading(uint256 token) external returns (bool) {
+        // Only existing non-land tokens with homesteading on can be homesteaded.
+        return (_exists(token) && !tokenIsLand(token) && tokenConfigs[token].homesteading); 
+    }
+
+    /**
+     * Split a trixel of land into 4 sub-trixel tokens.
+     * The new tokens will be owned by the same owner.
+     * The old token will be destroyed.
+     * Additional deposit may be required so that all subdivided tokens have the minimum deposit.
+     * The deposit from the original token will be re-used if possible.
+     * If the deposit available is not divisible by 4, the extra will be assigned to the first child token.
+     */
+    function subdivideLand(uint256 parent, uint256 additionalDeposit) external {
+        // TODO: Implement
+
+        // Make sure the parent is land owned by the caller
+
+        // Make sure the parent isn't maximally subdivided
+
+        // Get the deposit from it
+
+        // Take the new deposit from the caller
+
+        // Add in the new deposit
+
+        // Compute and check the deposit for all the new child tokens
+
+        // Compute the token numbers for the new child tokens
+
+        // Burn the parent
+
+        // Mint the children
+
+        // Set the parent's entry in the child tree to having all 4 children.
+        // Its parent will still record its presence.
+    }
+
+    /**
+     * Combine 4 land tokens with the same parent trixel into one token for the parent trixel.
+     * Tokens must all be owned by the message sender.
+     * Allows withdrawing some of the deposit of the original child tokens, as long as sufficient deposit is left to back the new parent land claim.
+     */
+    function combineLand(uint256 child1, uint256 child2, uint256 child3, uint256 child4, uint256 withdrawDeposit) external {
+        // TODO: Implement
+
+        // Make sure all the children are distinct and owned by the caller
+
+        // Make sure they are all children of the same parent
+
+        // Make sure that that parent is land
+
+        // Compute the parent deposit and make sure it will be sufficient
+
+        // Burn the children
+
+        // Create the parent
+
+        // Set the parent's entry in the child tree to having no children.
+        // Its parent will still record its presence as an internal node.
+
+        // Return the requested amount of returned deposit.
+    }
+
+    //////////////
     // Admin functions
     //////////////
 
     /**
      * Allow the contract owner to set the minimum deposit amount for granting new
-     * ownership claims.
+     * system ownership claims.
      */
-    function setMinimumDeposit(uint newMinimumDepositInAtomicUnits) external onlyOwner {
-        minDepositInAtomicUnits = newMinimumDepositInAtomicUnits;
+    function setMinimumSystemDeposit(uint256 new_minimum_deposit_in_atomic_units) external onlyOwner {
+        minSystemDepositInAtomicUnits = new_minimum_deposit_in_atomic_units;
     }
     
     /**
