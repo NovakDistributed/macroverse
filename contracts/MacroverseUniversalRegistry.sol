@@ -134,6 +134,11 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     // How many trixel fields are there
     uint256 constant TOKEN_TRIXEL_FIELD_COUNT = 27;
 
+    // How many children does a trixel have?
+    uint256 constant CHILDREN_PER_TRIXEL = 4;
+    // And how many top level trixels does a world have?
+    uint256 constant TOP_TRIXELS = 8;
+
     // We keep a bit mask of the high bits of all but the least specific trixel.
     // None of these may be set
     // We rely on it being left-shifted TOKEN_TRIXEL_SHIFT bits before being applied.
@@ -279,9 +284,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     function setTokenTrixel(uint256 token, uint256 trixel_index, uint256 value) internal pure returns (uint256) {
         assert(trixel_index < TOKEN_TRIXEL_FIELD_COUNT);
         if (trixel_index == 0) {
-            assert(value <= 7);
+            assert(value < TOP_TRIXELS);
         } else {
-            assert(value <= 3);
+            assert(value < CHILDREN_PER_TRIXEL);
         }
         
         // Compute the bit shift distance
@@ -355,11 +360,49 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
             return getTokenPlanet(token);
         } else if (token_type == TOKEN_TYPE_MOON) {
             // Get the moon field of a moon token. Offset it by the 0-7 top trixels of the planet's land.
-            return getTokenMoon(token) + 8;
+            return getTokenMoon(token) + TOP_TRIXELS;
         } else if (token_type >= TOKEN_TYPE_LAND_MIN && token_type <= TOKEN_TYPE_LAND_MAX) {
             // Get the value of the last trixel. Top-level trixels are the first children of planets.
             uint256 last_trixel = getTokenTrixelCount(token) - 1;
             return getTokenTrixel(token, last_trixel);
+        } else {
+            // We have an invalid token type somehow
+            assert(false);
+        }
+    }
+
+    /**
+     * If a token has a possible child for which childIndexOfToken would return the given index, returns that child.
+     * Fails otherwise.
+     * Index must not be wider than uint16 or it may be truncated.
+     */
+    function childTokenAtIndex(uint256 token, uint256 index) internal pure returns (uint256) {
+        uint256 token_type = getTokenType(token);
+
+        assert(token_type != TOKEN_TYPE_LAND_MAX);
+
+        if (token_type == TOKEN_TYPE_SECTOR) {
+            // Set the system field and make it a system token
+            return setTokenType(setTokenSystem(token, uint16(index)), TOKEN_TYPE_SYSTEM);
+        } else if (token_type == TOKEN_TYPE_SYSTEM) {
+            // Set the planet field and make it a planet token
+            return setTokenType(setTokenPlanet(token, uint16(index)), TOKEN_TYPE_PLANET);
+        } else if (token_type == TOKEN_TYPE_PLANET) {
+            // Child could be a land or moon. The land trixels are first as 0-7
+            if (index < TOP_TRIXELS) {
+                // Make it land and set the first trixel
+                return setTokenType(setTokenTrixel(token, 0, uint16(index)), TOKEN_TYPE_LAND_MIN);
+            } else {
+                // Make it a moon
+                return setTokenType(setTokenMoon(token, uint16(index - TOP_TRIXELS)), TOKEN_TYPE_MOON);
+            }
+        } else if (token_type == TOKEN_TYPE_MOON) {
+            // Make it land and set the first trixel
+            return setTokenType(setTokenTrixel(token, 0, uint16(index)), TOKEN_TYPE_LAND_MIN);
+        } else if (token_type >= TOKEN_TYPE_LAND_MIN && token_type < TOKEN_TYPE_LAND_MAX) {
+            // Add another trixel with this value.
+            uint256 next_trixel = getTokenTrixelCount(token) + 1;
+            return setTokenTrixel(setTokenTrixelCount(token, next_trixel), next_trixel, uint16(index));
         } else {
             // We have an invalid token type somehow
             assert(false);
@@ -830,6 +873,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Work out what the deposit was
         uint256 deposit = tokenConfigs[token].deposit;
 
+        // Clean up its config
+        delete tokenConfigs[token];
+
         // Record we sent the deposit back
         expectedDepositBalance = expectedDepositBalance.sub(deposit);
 
@@ -875,33 +921,75 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * Split a trixel of land into 4 sub-trixel tokens.
      * The new tokens will be owned by the same owner.
      * The old token will be destroyed.
-     * Additional deposit may be required so that all subdivided tokens have the minimum deposit.
+     * Additional deposit may be required so that all subdivided tokens have at least the minimum deposit.
      * The deposit from the original token will be re-used if possible.
      * If the deposit available is not divisible by 4, the extra will be assigned to the first child token.
      */
-    function subdivideLand(uint256 parent, uint256 additionalDeposit) external {
-        // TODO: Implement
-
+    function subdivideLand(uint256 parent, uint256 additional_deposit) external {
         // Make sure the parent is land owned by the caller
+        require(ownerOf(parent) == msg.sender, "Token owner mismatch");
 
         // Make sure the parent isn't maximally subdivided
+        require(getTokenType(parent) != TOKEN_TYPE_LAND_MAX, "Land maximally subdivided");
 
         // Get the deposit from it
+        uint256 deposit = tokenConfigs[parent].deposit;
 
         // Take the new deposit from the caller
+        // Record we have the deposit value
+        expectedDepositBalance = expectedDepositBalance.add(additional_deposit);
+
+        // Make sure we can take the deposit
+        require(depositTokenContract.transferFrom(msg.sender, this, additional_deposit), "Deposit not approved");
 
         // Add in the new deposit
-
-        // Compute and check the deposit for all the new child tokens
+        deposit = deposit.add(additional_deposit);
 
         // Compute the token numbers for the new child tokens
+        uint256[] memory children = new uint256[](CHILDREN_PER_TRIXEL);
+        // And their deposits. In theory they might vary by token identity.
+        uint256[] memory child_deposits = new uint256[](CHILDREN_PER_TRIXEL);
+        // And the total required
+        uint256 required_deposit = 0;
+        for (uint256 i = 0; i < CHILDREN_PER_TRIXEL; i++) {
+            uint256 child = childTokenAtIndex(parent, i);
+            children[i] = child;
+            uint256 child_deposit = getMinDepositToCreate(child);
+            child_deposits[i] = child_deposit;
+            required_deposit = required_deposit.add(child_deposit);
+        }
+
+        require(required_deposit <= deposit, "Deposit not sufficient");
 
         // Burn the parent
+        _burn(msg.sender, parent);
 
-        // Mint the children
+        // Clean up its config
+        delete tokenConfigs[parent];
+
+        // Apportion deposit and create the children
+
+        // Now deposit will be is the remaining deposit to try and distribute evenly among the children
+        deposit = deposit.sub(required_deposit);
+        uint256 split_evenly = deposit.div(CHILDREN_PER_TRIXEL);
+        uint256 extra = deposit.mod(CHILDREN_PER_TRIXEL);
+        child_deposits[0] = child_deposits[0].add(extra);
+        for (i = 0; i < CHILDREN_PER_TRIXEL; i++) {
+            child_deposits[i] = child_deposits[i].add(split_evenly);
+
+            // Now we can make the child token config
+            tokenConfigs[children[i]] = TokenConfig({
+                deposit: child_deposits[i],
+                homesteading: false
+            });
+
+            // And mint the child
+            _mint(msg.sender, children[i]);
+        }
 
         // Set the parent's entry in the child tree to having all 4 children.
         // Its parent will still record its presence.
+        childTree[parent] = 0xf;
     }
 
     /**
