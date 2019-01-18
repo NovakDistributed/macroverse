@@ -471,9 +471,20 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     event Reveal(uint256 indexed commitment_id, uint256 indexed token, address indexed owner);
     /// Fired when a commitment is canceled without being revealed.
     event Cancel(uint256 indexed commitment_id, address indexed owner);
+
+    /// Fired when a token is released to be claimed by others.
+    /// Use this instead of transfers to 0, because those also happen when subdividing/merging land.
+    event Release(uint256 indexed token, address indexed former_owner);
+
     /// Fired when homesteading under a token is enabled or disabled.
     /// Not fired when the token is issued; it starts disabled.
     event Homesteading(uint256 indexed token, bool indexed value);
+    /// Fired when a parcel of land is split out of another
+    /// Gets emitted once per child.
+    event LandSplit(uint256 indexed parent, uint256 indexed child);
+    /// Fired when a parcel of land is merged into another.
+    /// Gets emitted once per child.
+    event LandMerge(uint256 indexed child, uint256 indexed parent);
 
     //////////////
     // Contract state
@@ -867,6 +878,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Burn the token IFF it exists and is owned by msg.sender
         _burn(msg.sender, token);
 
+        // Say the token was released
+        emit Release(token, msg.sender);
+
         // Remove it from the tree so it no longer blocks parent claims if it is land
         removeChildFromTree(token);
         
@@ -912,7 +926,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * Get whether homesteading is allowed under a token.
      * Returns false for nonexistent or invalid tokens.
      */
-    function getHomesteading(uint256 token) external returns (bool) {
+    function getHomesteading(uint256 token) external view returns (bool) {
         // Only existing non-land tokens with homesteading on can be homesteaded.
         return (_exists(token) && !tokenIsLand(token) && tokenConfigs[token].homesteading); 
     }
@@ -926,7 +940,8 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * If the deposit available is not divisible by 4, the extra will be assigned to the first child token.
      */
     function subdivideLand(uint256 parent, uint256 additional_deposit) external {
-        // Make sure the parent is land owned by the caller
+        // Make sure the parent is land owned by the caller.
+        // If a token is owned, it must be canonical.
         require(ownerOf(parent) == msg.sender, "Token owner mismatch");
 
         // Make sure the parent isn't maximally subdivided
@@ -983,6 +998,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
                 homesteading: false
             });
 
+            // Say land is being split
+            emit LandSplit(parent, children[i]);
+
             // And mint the child
             _mint(msg.sender, children[i]);
         }
@@ -997,25 +1015,76 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * Tokens must all be owned by the message sender.
      * Allows withdrawing some of the deposit of the original child tokens, as long as sufficient deposit is left to back the new parent land claim.
      */
-    function combineLand(uint256 child1, uint256 child2, uint256 child3, uint256 child4, uint256 withdrawDeposit) external {
-        // TODO: Implement
+    function combineLand(uint256 child1, uint256 child2, uint256 child3, uint256 child4, uint256 withdraw_deposit) external {
+        // Make a child array
+        uint256[CHILDREN_PER_TRIXEL] memory children = [child1, child2, child3, child4];
 
-        // Make sure all the children are distinct and owned by the caller
+        // And count up the deposit they represent
+        uint256 available_deposit = 0;
+        
+        for (uint256 i = 0; i < CHILDREN_PER_TRIXEL; i++) {
+            // Make sure all the children are owned by the caller
+            require(ownerOf(children[i]) == msg.sender, "Token owner mismatch");
+            // If a token is owned, it must be canonical.
 
+            // Collect the deposit
+            available_deposit = available_deposit.add(tokenConfigs[children[i]].deposit);
+        }
+        
+        // Make sure all the children are distinct
+        require(children[0] != children[1], "Children not distinct");
+        require(children[0] != children[2], "Children not distinct");
+        require(children[0] != children[3], "Children not distinct");
+
+        require(children[1] != children[2], "Children not distinct");
+        require(children[1] != children[3], "Children not distinct");
+
+        require(children[2] != children[3], "Children not distinct");
+        
         // Make sure they are all children of the same parent
-
+        uint256 parent = parentOfToken(children[0]);
+        for (i = 1; i < CHILDREN_PER_TRIXEL; i++) {
+            require(parentOfToken(children[i]) == parent, "Parent not shared");
+        }
+        
         // Make sure that that parent is land
+        require(tokenIsLand(parent));
 
         // Compute the parent deposit and make sure it will be sufficient
+        uint256 parent_deposit = available_deposit.sub(withdraw_deposit);
+        require(parent_deposit >= getMinDepositToCreate(parent), "Deposit not sufficient");
 
-        // Burn the children
+        for (i = 0; i < CHILDREN_PER_TRIXEL; i++) {
+            // Burn the children
+            _burn(msg.sender, children[i]);
+
+            // Clean up the config
+            delete tokenConfigs[children[i]];
+
+            // Say land is being merged
+            emit LandSplit(children[i], parent);
+        }
+
+        // Make a parent config
+        tokenConfigs[parent] = TokenConfig({
+            deposit: parent_deposit,
+            homesteading: false
+        });
 
         // Create the parent
+        _mint(msg.sender, parent);
 
         // Set the parent's entry in the child tree to having no children.
         // Its parent will still record its presence as an internal node.
+        childTree[parent] = 0;
 
         // Return the requested amount of returned deposit.
+
+        // Record we sent the deposit back
+        expectedDepositBalance = expectedDepositBalance.sub(withdraw_deposit);
+
+        // Return the deposit
+        require(depositTokenContract.transfer(msg.sender, withdraw_deposit));
     }
 
     //////////////
