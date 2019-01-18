@@ -520,7 +520,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     struct Commitment {
         // msg.sender making the commitment, who is the only one who can reveal/cancel it.
         address owner;
-        // Hash (keccak256) of the token we want to claim and a uint256 salt to be revealed with it.
+        // Hash (keccak256) of the token we want to claim and a uint256 nonce to be revealed with it.
         bytes32 hash;
         // Number of atomic token units deposited with the commitment
         uint256 deposit;
@@ -556,7 +556,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * deposit size will be required to claim a star system.
      * Other deposit sizes will be calculated from that.
      */
-    constructor(address deposit_token_address, uint initial_min_system_deposit_in_atomic_units) public {
+    constructor(address deposit_token_address, uint initial_min_system_deposit_in_atomic_units) public ERC721Full("Macroverse Real Estate", "MRE") {
         // We can only use one token for the lifetime of the contract.
         depositTokenContract = IERC20(deposit_token_address);
         // But the minimum deposit for new claims can change
@@ -786,7 +786,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     }
 
     /**
-     * Finish a commitment by revealing the token we want to claim and the salt
+     * Finish a commitment by revealing the token we want to claim and the nonce
      * to make the commitment hash. Creates the token. Fails and reverts if the
      * preimage is incorrect, the commitment is expired, the commitment is too
      * new, the commitment is not owned by the msg.sender trying to do the
@@ -796,7 +796,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * already claimed by a conflicting commitment. Otherwise issues the token
      * for the bit-packed keypath given in preimage.
      */
-    function reveal(uint256 commitment_id, uint256 token, uint256 salt) external {
+    function reveal(uint256 commitment_id, uint256 token, uint256 nonce) external {
         // Make sure the commitment exists
         require(commitment_id < commitments.length, "Commitment not found");
         // Find it
@@ -816,7 +816,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         require(commitment.creationTime + COMMITMENT_MIN_WAIT > now, "Commitment too new");
 
         // Make sure this is really the token that was committed to
-        require(commitment.hash == keccak256(abi.encodePacked(token, salt)), "Commitment hash mismatch");
+        require(commitment.hash == keccak256(abi.encodePacked(token, nonce)), "Commitment hash mismatch");
 
         // Make sure the token doesn't already exists
         require(!_exists(token), "Token already exists");

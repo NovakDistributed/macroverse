@@ -6,6 +6,9 @@
 
 const BigNumber = require('bignumber.js')
 
+// We need this for the Solidity-alike hashing functions
+const Web3Utils = require('web3-utils')
+
 var mv = module.exports
 
 mv.REAL_FBITS = 40
@@ -102,6 +105,15 @@ mv.hasBody = function(worldClassNum) {
 
     // Everybody else is a real world
     return true
+}
+
+// We have a function to properly hash a number or BigNumber or 0x string token number and nonce, for making claims
+mv.hashTokenAndNonce = function(token, nonce) {
+    token = new BigNumber(token)
+    nonce = new BigNumber(nonce)
+    
+    // Bignums are hashed as uint256 if positive
+    return Web3Utils.soliditySha3(token, nonce)
 }
 
 
