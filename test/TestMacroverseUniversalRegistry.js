@@ -4,6 +4,25 @@ let MRVToken = artifacts.require("MRVToken");
 // Load the Macroverse module JavaScript
 let mv = require('../src')
 
+// We need a function to advance time
+// TODO: deduplicate with the crowsdale test and put in a test utils module somewhere
+function advanceTime(minutes) {
+  return new Promise(function (resolve, reject) {
+    web3.currentProvider.sendAsync({
+      jsonrpc: "2.0",
+      method: "evm_increaseTime",
+      params: [60 * minutes],
+      id: new Date().getTime()
+    }, function(err, result) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    })
+  })
+}
+
 contract('MacroverseUniversalRegistry', function(accounts) {
   it("should allow committing", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
@@ -16,7 +35,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     // Decide what to claim.
     // TODO: Write token packing in Javascript
-    let to_claim = 12345
+    // This happens to be a real token: system 0 of sector 0,0,0
+    let to_claim = 0x1
 
     // Generate a **random** nonce.
     // If someone can brute force this they may be able to front run your claim
@@ -25,7 +45,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Compute a hash
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
 
-    var commitment_id;
+    let commitment_id;
 
     // Watch commit events
     let filter = instance.Commit({}, { fromBlock: 0, toBlock: 'latest'})
@@ -55,5 +75,53 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // We should have less money now
     assert.equal((await token.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4000, "ether"), "We lost the expected amount of MRV to the deposit")
 
+  })
+
+  it("should prohibit revealing too soon", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+
+    // Remember our commitment from the last test?
+    let to_claim = 0x1
+    let nonce = 0xDEAD
+    let commitment_id = 0
+
+    await instance.reveal(commitment_id, to_claim, nonce).then(function() {
+      assert.ok(false, "Revealed too early")
+    }).catch(function() {
+      assert.ok(true, "Early reveal rejected")
+    })
+
+    let balance = (await instance.balanceOf(accounts[0])).toNumber();
+    assert.equal(balance, 0, "Claimant got a token anyway")
+
+    // ownerOf throws for nonexistent tokens, it doesn't say they're owned by nobody.
+    // There's no way to poll existence either I don't think.
+  })
+
+  it("should allow revealing later", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+
+    // Remember our commitment from the last test?
+    let to_claim = 0x1
+    let nonce = 0xDEAD
+    let commitment_id = 0
+
+    console.log("Move time")
+
+    // Advance time for 2 days which should be enough
+    await advanceTime(60 * 24 * 2);
+
+    console.log("Do reveal")
+
+    // Wait for the reveal to try to happen
+    await instance.reveal(commitment_id, to_claim, nonce)
+
+    console.log("Check owner")
+
+    // Get the owner of the token that shouldn't exist
+    let token_owner = await instance.ownerOf(to_claim)
+
+    // Make sure we own the token
+    assert.equal(token_owner, accounts[0], "Token not owned by claimant");
   })
 })
