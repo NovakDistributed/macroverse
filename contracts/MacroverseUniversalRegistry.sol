@@ -809,11 +809,11 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Make sure it is in the committed state (not revealed or canceled)
         require(commitment.state == CommitmentState.Committed, "Wrong commitment state");
         
-        // Make sure the commitment is not expired
-        require(commitment.creationTime + COMMITMENT_MAX_WAIT < now, "Commitment expired");
+        // Make sure the commitment is not expired (max wait is in the future)
+        require(commitment.creationTime + COMMITMENT_MAX_WAIT > now, "Commitment expired");
 
-        // Make sure the commitment is not too new
-        require(commitment.creationTime + COMMITMENT_MIN_WAIT > now, "Commitment too new");
+        // Make sure the commitment is not too new (min wait is in the past)
+        require(commitment.creationTime + COMMITMENT_MIN_WAIT < now, "Commitment too new");
 
         // Make sure this is really the token that was committed to
         require(commitment.hash == keccak256(abi.encodePacked(token, nonce)), "Commitment hash mismatch");
