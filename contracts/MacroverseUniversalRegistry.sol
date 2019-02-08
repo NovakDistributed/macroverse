@@ -140,7 +140,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     uint256 constant TOP_TRIXELS = 8;
 
     // We keep a bit mask of the high bits of all but the least specific trixel.
-    // None of these may be set
+    // None of these may be set in a valid token.
     // We rely on it being left-shifted TOKEN_TRIXEL_SHIFT bits before being applied.
     // Note that this has 26 1s, with one every 3 bits, except the last 3 bits are 0.
     uint256 constant TOKEN_TRIXEL_HIGH_BIT_MASK = 0x124924924924924924920;
@@ -464,6 +464,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     //////////////
     // Events for the commit/reveal system
     //////////////
+
+    // Note that in addition to these special events, transfers to/from 0 are
+    // fired as tokens are created and destroyed.
 
     /// Fired when an owner makes a commitment. Includes the commitment ID.
     event Commit(uint256 indexed commitment_id, address indexed owner);

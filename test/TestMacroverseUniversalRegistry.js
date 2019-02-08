@@ -26,12 +26,12 @@ function advanceTime(minutes) {
 contract('MacroverseUniversalRegistry', function(accounts) {
   it("should allow committing", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
-    let token = await MRVToken.deployed()
+    let mrv = await MRVToken.deployed()
 
-    assert.equal((await token.balanceOf.call(accounts[0])).toNumber(), web3.toWei(5000, "ether"), "We start with the expected amount of MRV for the test")
+    assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(5000, "ether"), "We start with the expected amount of MRV for the test")
     
     // Approve the deposit tokens
-    await token.approve(instance.address, await token.balanceOf.call(accounts[0]))
+    await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[0]))
 
     // Decide what to claim.
     // TODO: Write token packing in Javascript
@@ -45,10 +45,10 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Compute a hash
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
 
-    let commitment_id;
+    let commitment_id
 
     // Watch commit events
-    let filter = instance.Commit({}, { fromBlock: 0, toBlock: 'latest'})
+    let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
     filter.watch((error, event_report) => { 
       if (event_report.event == 'Commit' && event_report.args.owner == accounts[0]) {
         // We did a commit.
@@ -73,7 +73,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     assert.equal(commitment_id, 0, "We got the expected commitment ID in an event")
 
     // We should have less money now
-    assert.equal((await token.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4000, "ether"), "We lost the expected amount of MRV to the deposit")
+    assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4000, "ether"), "We lost the expected amount of MRV to the deposit")
 
   })
 
@@ -106,22 +106,160 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let nonce = 0xDEAD
     let commitment_id = 0
 
-    console.log("Move time")
-
     // Advance time for 2 days which should be enough
-    await advanceTime(60 * 24 * 2);
-
-    console.log("Do reveal")
+    await advanceTime(60 * 24 * 2)
 
     // Wait for the reveal to try to happen
     await instance.reveal(commitment_id, to_claim, nonce)
 
-    console.log("Check owner")
-
-    // Get the owner of the token that shouldn't exist
+    // Get the owner of the token we got
     let token_owner = await instance.ownerOf(to_claim)
 
     // Make sure we own the token
     assert.equal(token_owner, accounts[0], "Token not owned by claimant");
   })
+
+  it("should prohibit revealing for an already owned thing", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    let mrv = await MRVToken.deployed()
+
+    // Approve the deposit tokens
+    await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[0]))
+
+    // Claim the same token as the last test
+    let to_claim = 0x1
+    let nonce = 0xDEAD2 
+    let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
+    let commitment_id
+
+    // Watch commit events
+    let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
+    filter.watch((error, event_report) => { 
+      if (event_report.event == 'Commit' && event_report.args.owner == accounts[0]) {
+        // Remember the ID we observed
+        commitment_id = event_report.args.commitment_id.toNumber()
+      }
+    })
+
+    // Commit for it
+    await instance.commit(data_hash, web3.toWei(1000, "ether"))
+
+    // Don't care about events after that
+    filter.stopWatching()
+
+    assert.equal(commitment_id, 1, "We got the expected commitment ID in an event")
+
+    assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(3000, "ether"), "We lost the expected amount of MRV to the deposit")
+
+    // Advance time for 2 days to mature the commitment
+    await advanceTime(60 * 24 * 2)
+
+    // Now try revealing. It should fail.
+    await instance.reveal(commitment_id, to_claim, nonce).then(function() {
+      assert.ok(false, "Revealed conflicting claim")
+    }).catch(function() {
+      assert.ok(true, "Conflicting reveal rejected")
+    })
+  })
+
+  it("should prohibit canceling someone else's commitment", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+
+    let commitment_id = 1
+
+    await instance.cancel(commitment_id, {from: accounts[1]}).then(function() {
+      assert.ok(false, "Canceled someone's claim")
+    }).catch(function() {
+      assert.ok(true, "Non-owner cancel rejected")
+    })
+    
+  })
+
+  it("should allow canceling your own commitment that you failed to reveal", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    let mrv = await MRVToken.deployed()
+
+    let commitment_id = 1
+
+    await instance.cancel(commitment_id)
+
+    assert.ok(true, "Cancel transaction goes through")
+
+    assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4000, "ether"), "Our deposit was refunded")
+    
+  })
+
+  it("should prohibit releasing unowned things", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+
+    let token = 0x1
+
+    await instance.release(token, {from: accounts[1]}).then(function() {
+      assert.ok(false, "Released someone's claim")
+    }).catch(function() {
+      assert.ok(true, "Non-owner release rejected")
+    })
+    
+  })
+
+  it("should prohibit transfering unowned things", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+
+    let token = 0x1
+
+    // ERC-721 weirdly has no transfer, only transferFrom. Probably because
+    // that's easier to prove correctness for by inspection.
+
+    await instance.transferFrom(accounts[0], accounts[1], token, {from: accounts[1]}).then(function() {
+      assert.ok(false, "Moved someone's token")
+    }).catch(function() {
+      assert.ok(true, "Non-owner move rejected")
+    })
+    
+  })
+
+  it("should allow transfering owned things", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+
+    let token = 0x1
+
+    await instance.transferFrom(accounts[0], accounts[1], token, {from: accounts[0]})
+
+    // Get the owner of the token
+    let token_owner = await instance.ownerOf(token)
+
+    // Make sure we own the token
+    assert.equal(token_owner, accounts[1], "Token owned by recipient");
+    
+  })
+
+  it("should allow releasing owned things", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    let mrv = await MRVToken.deployed()
+
+    let token = 0x1
+    let released
+
+    // Watch release events
+    let filter = instance.Release({}, { fromBlock: 'latest', toBlock: 'latest'})
+    filter.watch((error, event_report) => { 
+      if (event_report.event == 'Release' && event_report.args.former_owner == accounts[1]) {
+        // We did a release.
+        // Remember the token we released
+        released = event_report.args.token.toNumber()
+      }
+
+    })
+
+    await instance.release(token, {from: accounts[1]})
+
+    filter.stopWatching();
+
+    assert.equal(released, token, "Token not released")
+
+    // We should have less money now
+    assert.equal((await mrv.balanceOf.call(accounts[1])).toNumber(), web3.toWei(1000, "ether"), "We got the expected amount of MRV back from the deposit")
+  })
+
+
 })
