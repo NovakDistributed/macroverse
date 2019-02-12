@@ -401,8 +401,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
             return setTokenType(setTokenTrixel(token, 0, uint16(index)), TOKEN_TYPE_LAND_MIN);
         } else if (token_type >= TOKEN_TYPE_LAND_MIN && token_type < TOKEN_TYPE_LAND_MAX) {
             // Add another trixel with this value.
-            uint256 next_trixel = getTokenTrixelCount(token) + 1;
-            return setTokenTrixel(setTokenTrixelCount(token, next_trixel), next_trixel, uint16(index));
+            // Its index will be the *count* of existing trixels.
+            uint256 next_trixel = getTokenTrixelCount(token);
+            return setTokenTrixel(setTokenTrixelCount(token, next_trixel + 1), next_trixel, uint16(index));
         } else {
             // We have an invalid token type somehow
             assert(false);

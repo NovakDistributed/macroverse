@@ -6,6 +6,9 @@
 
 const BigNumber = require('bignumber.js')
 
+// We set our BigNumber to be useful for token numbering and addresses.
+BigNumber.config({ EXPONENTIAL_AT: 256 })
+
 // We need this for the Solidity-alike hashing functions
 const Web3Utils = require('web3-utils')
 
@@ -243,9 +246,9 @@ mv.keypathToToken = function(keypath) {
 
   // Set the type to the appropriate granularity of land
   token = token.plus(new BigNumber(mv.TOKEN_TYPE_LAND_MIN + (parts.length - 7)))
-
+    
   // Spit out the constructed token
-  return token;
+  return token
 
 }
 

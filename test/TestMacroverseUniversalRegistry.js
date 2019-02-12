@@ -326,4 +326,130 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     assert.equal((await mrv.balanceOf.call(accounts[1])).toNumber(), startBalance.plus(web3.toWei(1000, "ether")), "We got the expected amount of MRV back from the deposit")
   })
 
+  it("should prohibit revealing for a child token of owned land", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    let mrv = await MRVToken.deployed()
+
+    // Approve the deposit tokens
+    await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
+
+    // This is a child of the land token we have been working with
+    let to_claim = mv.keypathToToken('0.0.0.0.0.-1.7.2.2.2.1')
+    let nonce = 0xDEADBEEF55 
+    let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
+    let commitment_id
+
+    // Watch commit events
+    let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
+    filter.watch((error, event_report) => {
+      if (event_report.event == 'Commit' && event_report.args.owner == accounts[1]) {
+        // Remember the ID we observed
+        commitment_id = event_report.args.commitment_id.toNumber()
+      }
+    })
+
+    // Commit for it
+    await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
+
+    // Don't care about events after that
+    filter.stopWatching()
+
+    // Advance time for 2 days to mature the commitment
+    await advanceTime(60 * 24 * 2)
+
+    // Now try revealing. It should fail.
+    await instance.reveal(commitment_id, to_claim, nonce).then(function() {
+      assert.ok(false, "Revealed land subplot")
+    }).catch(function() {
+      assert.ok(true, "Subplot reveal rejected")
+    })
+
+    // Clean up
+    await instance.cancel(commitment_id, {from: accounts[1]})
+  })
+
+  it("should prohibit revealing for a parent token of owned land", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    let mrv = await MRVToken.deployed()
+
+    // Approve the deposit tokens
+    await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
+
+    // This is a parent of the land token we have been working with
+    let to_claim = mv.keypathToToken('0.0.0.0.0.-1.7.2.2')
+    let nonce = 0xDEADBEEF88
+    let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
+    let commitment_id
+
+    // Watch commit events
+    let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
+    filter.watch((error, event_report) => {
+      if (event_report.event == 'Commit' && event_report.args.owner == accounts[1]) {
+        // Remember the ID we observed
+        commitment_id = event_report.args.commitment_id.toNumber()
+      }
+    })
+
+    // Commit for it
+    await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
+
+    // Don't care about events after that
+    filter.stopWatching()
+
+    // Advance time for 2 days to mature the commitment
+    await advanceTime(60 * 24 * 2)
+
+    // Now try revealing. It should fail.
+    await instance.reveal(commitment_id, to_claim, nonce).then(function() {
+      assert.ok(false, "Revealed land superplot")
+    }).catch(function() {
+      assert.ok(true, "Superplot reveal rejected")
+    })
+
+    // Clean up
+    await instance.cancel(commitment_id, {from: accounts[1]})
+  })
+
+  it("should permit subdividing land", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+
+    let parent_token = mv.keypathToToken('0.0.0.0.0.-1.7.2.2.2')
+    let child_tokens = []
+    for (let i = 0; i < 4; i++) {
+        child_tokens.push(mv.keypathToToken('0.0.0.0.0.-1.7.2.2.2.' + i))
+    }
+
+    // Land min deposits are pretty small, and we put 1000 MRV in here, so we should be OK to subdivide for a while.
+    
+    // Subdivide the land
+    await instance.subdivideLand(parent_token, 0, {from: accounts[1]})
+
+    for (let child of child_tokens) {
+      // Get the owner of the token
+      let token_owner = await instance.ownerOf(child)
+
+      // Make sure we own the token
+      assert.equal(token_owner, accounts[1], "Child token owned by subdivider");
+    }
+  })
+
+  it("should permit merging land", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+
+    let parent_token = mv.keypathToToken('0.0.0.0.0.-1.7.2.2.2')
+    let child_tokens = []
+    for (let i = 0; i < 4; i++) {
+        child_tokens.push(mv.keypathToToken('0.0.0.0.0.-1.7.2.2.2.' + i))
+    }
+
+    // Merge the land
+    await instance.combineLand(child_tokens[0], child_tokens[1], child_tokens[2], child_tokens[3], 0, {from: accounts[1]})
+
+    // Get the owner of the token
+    let token_owner = await instance.ownerOf(parent_token)
+
+    // Make sure we own the token
+    assert.equal(token_owner, accounts[1], "Parent token owned by merger");
+  })
+
 })
