@@ -7,7 +7,8 @@
 const BigNumber = require('bignumber.js')
 
 // We set our BigNumber to be useful for token numbering and addresses.
-BigNumber.config({ EXPONENTIAL_AT: 256 })
+// And also for nonce generation
+BigNumber.config({ EXPONENTIAL_AT: 256, CRYPTO: true })
 
 // We need this for the Solidity-alike hashing functions
 const Web3Utils = require('web3-utils')
@@ -252,6 +253,16 @@ mv.keypathToToken = function(keypath) {
 
 }
 
+// Generate a BigNumber nonce with 77 digits of entropy (a bit under 256 bits)
+mv.generateNonce = function() {
+  return BigNumber.random(77).mul(new BigNumber(10).pow(77))
+}
+
+// Get the minimum deposit by token keypath
+mv.getMinimumDeposit = function(keypath) {
+  // TODO: implement. For now we overestimate
+  return Web3Utils.toWei('1000', 'ether')
+}
 
 
 
