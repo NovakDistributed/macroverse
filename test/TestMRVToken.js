@@ -1,22 +1,7 @@
 var MRVToken = artifacts.require("MRVToken");
 
-// We need a function to advance time
-function advanceTime(minutes) {
-  return new Promise(function (resolve, reject) {
-    web3.currentProvider.sendAsync({
-      jsonrpc: "2.0",
-      method: "evm_increaseTime",
-      params: [60 * minutes],
-      id: new Date().getTime()
-    }, function(err, result) {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(result)
-      }
-    })
-  })
-}
+// Load the Macroverse module JavaScript
+let mv = require('../src')
 
 contract('MRVToken', function(accounts) {
   it("should start inactive", async function() {
@@ -123,7 +108,7 @@ contract('MRVToken', function(accounts) {
     let instance = await MRVToken.deployed()
     
     // Go ahead some time
-    await advanceTime(29)
+    await mv.advanceTime(29)
     
     await instance.clearCrowdsaleOpenTimer()
     
@@ -149,7 +134,7 @@ contract('MRVToken', function(accounts) {
     
     
     // Go ahead some time
-    await advanceTime(51)
+    await mv.advanceTime(51)
     
     await instance.clearCrowdsaleOpenTimer().then(function() {
       assert.ok(false, "Unset timer")
@@ -208,7 +193,7 @@ contract('MRVToken', function(accounts) {
     let instance = await MRVToken.deployed()
     
     // Go ahead some time
-    await advanceTime(29)
+    await mv.advanceTime(29)
     
     await instance.clearCrowdsaleCloseTimer()
     
@@ -232,7 +217,7 @@ contract('MRVToken', function(accounts) {
     let instance = await MRVToken.deployed()
     
     // Go ahead some time
-    await advanceTime(51)
+    await mv.advanceTime(51)
     
     // Fail to get tokens
     await instance.sendTransaction({from: accounts[2], value: web3.toWei(1, "ether")}).then(function () {

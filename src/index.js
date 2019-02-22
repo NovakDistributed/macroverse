@@ -264,6 +264,26 @@ mv.getMinimumDeposit = function(keypath) {
   return Web3Utils.toWei('1000', 'ether')
 }
 
+// We need a function to advance time.
+// Only works on Truffle testnet, but we use it in some tests.
+mv.advanceTime = function(minutes) {
+  return new Promise(function (resolve, reject) {
+    web3.currentProvider.sendAsync({
+      jsonrpc: "2.0",
+      method: "evm_increaseTime",
+      params: [60 * minutes],
+      id: new Date().getTime()
+    }, function(err, result) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(result)
+      }
+    })
+  })
+}
+
+
 
 
 

@@ -4,25 +4,6 @@ let MRVToken = artifacts.require("MRVToken");
 // Load the Macroverse module JavaScript
 let mv = require('../src')
 
-// We need a function to advance time
-// TODO: deduplicate with the crowsdale test and put in a test utils module somewhere
-function advanceTime(minutes) {
-  return new Promise(function (resolve, reject) {
-    web3.currentProvider.sendAsync({
-      jsonrpc: "2.0",
-      method: "evm_increaseTime",
-      params: [60 * minutes],
-      id: new Date().getTime()
-    }, function(err, result) {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(result)
-      }
-    })
-  })
-}
-
 contract('MacroverseUniversalRegistry', function(accounts) {
   it("should allow committing", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
@@ -104,7 +85,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let commitment_id = 0
 
     // Advance time for 2 days which should be enough
-    await advanceTime(60 * 24 * 2)
+    await mv.advanceTime(60 * 24 * 2)
 
     // Wait for the reveal to try to happen
     await instance.reveal(commitment_id, to_claim, nonce)
@@ -149,7 +130,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(3000, "ether"), "We lost the expected amount of MRV to the deposit")
 
     // Advance time for 2 days to mature the commitment
-    await advanceTime(60 * 24 * 2)
+    await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
     await instance.reveal(commitment_id, to_claim, nonce).then(function() {
@@ -220,7 +201,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     assert.equal((await mrv.balanceOf.call(accounts[1])).toNumber(), web3.toWei(0, "ether"), "We lost the expected amount of MRV to the deposit")
 
     // Advance time for 2 days to mature the commitment
-    await advanceTime(60 * 24 * 2)
+    await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
     await instance.reveal(commitment_id, to_claim, nonce).then(function() {
@@ -355,7 +336,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     filter.stopWatching()
 
     // Advance time for 2 days to mature the commitment
-    await advanceTime(60 * 24 * 2)
+    await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
     await instance.reveal(commitment_id, to_claim, nonce).then(function() {
@@ -397,7 +378,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     filter.stopWatching()
 
     // Advance time for 2 days to mature the commitment
-    await advanceTime(60 * 24 * 2)
+    await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
     await instance.reveal(commitment_id, to_claim, nonce).then(function() {
