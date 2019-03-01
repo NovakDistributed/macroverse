@@ -837,7 +837,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         require(commitment.hash == hash, "Commitment not found");
         
         // Make sure the commitment is not expired (max wait is in the future)
-        require(commitment.creationTime + commitmentMinWait * COMMITMENT_MAX_WAIT_FACTOR > now, "Commitment expired");
+        require(commitment.creationTime + (commitmentMinWait * COMMITMENT_MAX_WAIT_FACTOR) > now, "Commitment expired");
 
         // Make sure the commitment is not too new (min wait is in the past)
         require(commitment.creationTime + commitmentMinWait < now, "Commitment too new");
