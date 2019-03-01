@@ -469,12 +469,12 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     // Note that in addition to these special events, transfers to/from 0 are
     // fired as tokens are created and destroyed.
 
-    /// Fired when an owner makes a commitment. Includes the commitment ID.
-    event Commit(uint256 indexed commitment_id, address indexed owner);
+    /// Fired when an owner makes a commitment. Includes the commitment hash of token, nonce.
+    event Commit(bytes32 indexed hash, address indexed owner);
     /// Fired when a commitment is successfully revealed and the token issued.
-    event Reveal(uint256 indexed commitment_id, uint256 indexed token, address indexed owner);
+    event Reveal(bytes32 indexed hash, uint256 indexed token, address indexed owner);
     /// Fired when a commitment is canceled without being revealed.
-    event Cancel(uint256 indexed commitment_id, address indexed owner);
+    event Cancel(bytes32 indexed hash, address indexed owner);
 
     /// Fired when a token is released to be claimed by others.
     /// Use this instead of transfers to 0, because those also happen when subdividing/merging land.
@@ -505,11 +505,12 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
     /// How long should a commitment be required to sit before it can be revealed, in Ethereum time?
     /// This is also the maximum delay that we can let a bad actor keep good transactions off the chain, in our front-running security model.
-    uint constant COMMITMENT_MIN_WAIT  = 1 days;
+    uint public commitmentMinWait;
 
     /// How long should a commitment be allowed to sit un-revealed before it becomes invalid and can only be canceled?
     /// This protects against unrevealed commitments being used as griefing traps.
-    uint constant COMMITMENT_MAX_WAIT = 7 days;
+    /// This is a multiple of the min wait.
+    uint constant COMMITMENT_MAX_WAIT_FACTOR = 7;
 
     /// Commitments can be committed, revealed, or canceled.
     /// Expired commitments stay committed until canceled.
@@ -521,21 +522,22 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
     /// A Commitment represents an outstanding attempt to claim a deed.
     /// It also needs to be referenced to look up the deposit associated with an owned token when the token is destroyed.
+    /// It is identified by a "key", which is the hash of the committing hash and the owner address.
+    /// This is the mapping key under which it is stored.
+    /// We don't need to store the owner because the mapping key hash binds the commitment to the owner.
     struct Commitment {
-        // msg.sender making the commitment, who is the only one who can reveal/cancel it.
-        address owner;
         // Hash (keccak256) of the token we want to claim and a uint256 nonce to be revealed with it.
-        bytes32 hash;
+        bytes32 hash;        
         // Number of atomic token units deposited with the commitment
         uint256 deposit;
         // Time number at which the commitment was created.
         uint256 creationTime;
-        // What state is the commitment in?
-        CommitmentState state;
     }
     
-    /// This is all the commitments that have ever been made
-    Commitment[] public commitments;
+    /// This is all the commitments that are currently outstanding.
+    /// The mapping key is keccak256(hash, owner address).
+    /// When they are revealed or canceled, they are deleted from the map.
+    mapping(bytes32 => Commitment) public commitments;
 
     /// Tokens have some configuration info to them, beyond what the base ERC721 implementation tracks.
     struct TokenConfig {
@@ -559,12 +561,15 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * The given token will be used to pay deposits, and the given minimum
      * deposit size will be required to claim a star system.
      * Other deposit sizes will be calculated from that.
+     * The given min wait time will be the required time you must wait after committing before revealing.
      */
-    constructor(address deposit_token_address, uint initial_min_system_deposit_in_atomic_units) public ERC721Full("Macroverse Real Estate", "MRE") {
+    constructor(address deposit_token_address, uint initial_min_system_deposit_in_atomic_units, uint commitment_min_wait) public ERC721Full("Macroverse Real Estate", "MRE") {
         // We can only use one token for the lifetime of the contract.
         depositTokenContract = IERC20(deposit_token_address);
         // But the minimum deposit for new claims can change
         minSystemDepositInAtomicUnits = initial_min_system_deposit_in_atomic_units;
+        // Set the wait time
+        commitmentMinWait = commitment_min_wait;
     }
 
     //////////////
@@ -735,8 +740,12 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * reveal() together with the actual bit-packed keypath of the thing being
      * claimed in order to finalize the claim.
      */
-    function commit(bytes32 hash, uint256 deposit) external returns (uint256 commitment_id) {
+    function commit(bytes32 hash, uint256 deposit) external {
         // Deposit size will not be checked until reveal!
+
+        // We use the 0 hash as an indication that a commitment isn't present
+        // in the mapping, so we prohibit it here as a real commitment hash.
+        require(hash != bytes32(0), "Zero hash prohibited");
 
         // Record we have the deposit value
         expectedDepositBalance = expectedDepositBalance.add(deposit);
@@ -744,83 +753,98 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Make sure we can take the deposit
         require(depositTokenContract.transferFrom(msg.sender, this, deposit), "Deposit not approved");
 
-        // Determine the ID
-        commitment_id = commitments.length;
-        // Push the commitment
-        commitments.push(Commitment({
-            owner: msg.sender,
-            hash: hash,
-            deposit: deposit,
-            creationTime: now,
-            state: CommitmentState.Committed
-        }));
+        // Compute the commitment key
+        bytes32 commitment_key = keccak256(abi.encodePacked(hash, msg.sender));
 
-        // Do an event for easy lookup so the frontend can reveal later
-        emit Commit(commitment_id, msg.sender);
+        // Find the record for it
+        Commitment storage commitment = commitments[commitment_key];
+
+        // Make sure it is free
+        require(commitment.hash == bytes32(0), "Duplicate commitment prohibited");
+
+        // Fill it in
+        commitment.hash = hash;
+        commitment.deposit = deposit;
+        commitment.creationTime = now;
+
+        // Do an event for tracking.  Nothing needs to come out of this for the
+        // reveal; you just need to know that you succeeded and about when.
+        emit Commit(hash, msg.sender);
     }
 
     /**
      * Cancel a commitment that has not yet been revealed.
      * Returns the associated deposit.
+     * ID the commitment by the committing hash passed to commit(), *not* the
+     * internal key.
+     * Must be sent from the same address that created the commitment, or the
+     * commitment cannot be addressed.
      */
-    function cancel(uint256 commitment_id) external {
-        // Make sure this commitment exists
-        require(commitment_id < commitments.length, "Commitment not found");
+    function cancel(bytes32 hash) external {
+        // We use the 0 hash as an indication that a commitment isn't present
+        // in the mapping, so we prohibit it here as a real commitment hash.
+        require(hash != bytes32(0), "Zero hash prohibited");
 
-        // Find it
-        Commitment storage commitment = commitments[commitment_id];
+        // Look up the right commitment for this hash and owner.
+        bytes32 commitment_key = keccak256(abi.encodePacked(hash, msg.sender));
+        Commitment storage commitment = commitments[commitment_key];
 
-        // Make sure this is the original committer
-        require(commitment.owner == msg.sender, "Commitment owner mismatch");
+        // Make sure it is present with the right nonzero hash.
+        // If it seems to have a zero hash, the commitment is gone/never existed.
+        require(commitment.hash == hash, "Commitment not found");
 
-        // Make sure it is in the committed state (not revealed or canceled)
-        require(commitment.state == CommitmentState.Committed, "Wrong commitment state");
+        // Work out how much to refund
+        uint256 refund = commitment.deposit;
 
-        // Mark it canceled
-        commitment.state = CommitmentState.Canceled;
+        // Destroy the commitment
+        delete commitments[commitment_key];
+
+        // Make sure it is properly gone.
+        // TODO: remove for production
+        assert(commitments[commitment_key].hash == bytes32(0));
 
         // Record we sent the deposit value
-        expectedDepositBalance = expectedDepositBalance.sub(commitment.deposit);
+        expectedDepositBalance = expectedDepositBalance.sub(refund);
 
         // Return the deposit
-        require(depositTokenContract.transfer(commitment.owner, commitment.deposit));
+        require(depositTokenContract.transfer(msg.sender, refund));
 
         // Emit a Cancel event
-        emit Cancel(commitment_id, msg.sender);
+        emit Cancel(hash, msg.sender);
     }
 
     /**
-     * Finish a commitment by revealing the token we want to claim and the nonce
-     * to make the commitment hash. Creates the token. Fails and reverts if the
-     * preimage is incorrect, the commitment is expired, the commitment is too
-     * new, the commitment is not owned by the msg.sender trying to do the
-     * reveal, the deposit is insufficient for whatever is being claimed, the
-     * Macroverse generators cannot be accessed to prove the existence of the
-     * thing being claimed or its parents, or the thing or a child or parent is
-     * already claimed by a conflicting commitment. Otherwise issues the token
-     * for the bit-packed keypath given in preimage.
+     * Finish a commitment by revealing the token we want to claim and the
+     * nonce to make the commitment hash. Creates the token. Fails and reverts
+     * if the preimage is incorrect, the commitment is expired, the commitment
+     * is too new, the commitment is missing, the deposit is insufficient for
+     * whatever is being claimed, the Macroverse generators cannot be accessed
+     * to prove the existence of the thing being claimed or its parents, or the
+     * thing or a child or parent is already claimed by a conflicting
+     * commitment. Otherwise issues the token for the bit-packed keypath given
+     * in preimage.
+     *
+     * Doesn't need the commitment hash: it is computed from the provided
+     * preimage.  Commitment lookup also depends on the originating address, so
+     * the function must be called by the original committer.
      */
-    function reveal(uint256 commitment_id, uint256 token, uint256 nonce) external {
-        // Make sure the commitment exists
-        require(commitment_id < commitments.length, "Commitment not found");
-        // Find it
-        Commitment storage commitment = commitments[commitment_id];
+    function reveal(uint256 token, uint256 nonce) external {
+        // Compute the committing hash that this is the preimage for
+        bytes32 hash = keccak256(abi.encodePacked(token, nonce));
+        
+        // Look up the right commitment for this hash and owner.
+        bytes32 commitment_key = keccak256(abi.encodePacked(hash, msg.sender));
+        Commitment storage commitment = commitments[commitment_key];
 
-        // Make sure the commitment belongs to this person.
-        // Otherwise just anyone could steal the preimage.
-        require(commitment.owner == msg.sender, "Commitment owner mismatch");
-
-        // Make sure it is in the committed state (not revealed or canceled)
-        require(commitment.state == CommitmentState.Committed, "Wrong commitment state");
+        // Make sure it is present with the right nonzero hash.
+        // If it seems to have a zero hash, the commitment is gone/never existed.
+        require(commitment.hash == hash, "Commitment not found");
         
         // Make sure the commitment is not expired (max wait is in the future)
-        require(commitment.creationTime + COMMITMENT_MAX_WAIT > now, "Commitment expired");
+        require(commitment.creationTime + commitmentMinWait * COMMITMENT_MAX_WAIT_FACTOR > now, "Commitment expired");
 
         // Make sure the commitment is not too new (min wait is in the past)
-        require(commitment.creationTime + COMMITMENT_MIN_WAIT < now, "Commitment too new");
-
-        // Make sure this is really the token that was committed to
-        require(commitment.hash == keccak256(abi.encodePacked(token, nonce)), "Commitment hash mismatch");
+        require(commitment.creationTime + commitmentMinWait < now, "Commitment too new");
 
         // Make sure the token doesn't already exists
         require(!_exists(token), "Token already exists");
@@ -844,10 +868,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
         // OK, now we know the claim is valid. Execute it.
 
-        // Mark the commitment as revealed
-        commitment.state = CommitmentState.Revealed;
-
-        // Create the state, with homesteading off, carrying over the deposit
+        // Create the token state, with homesteading off, carrying over the deposit
         tokenConfigs[token] = TokenConfig({
             deposit: commitment.deposit,
             homesteading: false
@@ -857,8 +878,15 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // that could be created that there are child claims, and blocks them.
         addChildToTree(token);
 
+        // Destroy the commitment
+        delete commitments[commitment_key];
+
+        // Make sure it is properly gone.
+        // TODO: remove for production
+        assert(commitments[commitment_key].hash == bytes32(0));
+
         // Emit a reveal event, before actually making the token
-        emit Reveal(commitment_id, token, msg.sender);
+        emit Reveal(hash, token, msg.sender);
 
         // If we pass everything, mint the token
         _mint(msg.sender, token);

@@ -24,19 +24,15 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Compute a hash
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
 
-    let commitment_id
+    let saw_event = false
 
     // Watch commit events
     let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
     filter.watch((error, event_report) => { 
-      if (event_report.event == 'Commit' && event_report.args.owner == accounts[0]) {
+      if (event_report.event == 'Commit' && event_report.args.owner == accounts[0] && event_report.args.hash == data_hash) {
         // We did a commit.
-        // TODO: Distinguish it from any other attempt we are simultaneously making to commit.
-        // Include the hash in the event?
-        // Remember the ID we observed
-        commitment_id = event_report.args.commitment_id.toNumber()
+        saw_event = true
       }
-
       // TODO: For some reason this fires twice with the same event...
     })
 
@@ -46,10 +42,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Don't care about events after that
     filter.stopWatching();
 
-    // We can't get the ID because we can't get the return value of a real transaction because reasons...
-    // We have to watch the events for it
-
-    assert.equal(commitment_id, 0, "We got the expected commitment ID in an event")
+    assert.equal(saw_event, true, "We got the expected commitment hash in an event")
 
     // We should have less money now
     assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4000, "ether"), "We lost the expected amount of MRV to the deposit")
@@ -62,9 +55,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Remember our commitment from the last test?
     let to_claim = mv.keypathToToken('0.0.0.0')
     let nonce = 0xDEAD
-    let commitment_id = 0
-
-    await instance.reveal(commitment_id, to_claim, nonce).then(function() {
+    
+    await instance.reveal(to_claim, nonce).then(function() {
       assert.ok(false, "Revealed too early")
     }).catch(function() {
       assert.ok(true, "Early reveal rejected")
@@ -82,13 +74,12 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     let to_claim = mv.keypathToToken('0.0.0.0')
     let nonce = 0xDEAD
-    let commitment_id = 0
-
+    
     // Advance time for 2 days which should be enough
     await mv.advanceTime(60 * 24 * 2)
 
     // Wait for the reveal to try to happen
-    await instance.reveal(commitment_id, to_claim, nonce)
+    await instance.reveal(to_claim, nonce)
 
     // Get the owner of the token we got
     let token_owner = await instance.ownerOf(to_claim)
@@ -108,14 +99,15 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let to_claim = mv.keypathToToken('0.0.0.0')
     let nonce = 0xDEAD2 
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
-    let commitment_id
+    
+    let saw_event = false
 
     // Watch commit events
     let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
     filter.watch((error, event_report) => { 
-      if (event_report.event == 'Commit' && event_report.args.owner == accounts[0]) {
-        // Remember the ID we observed
-        commitment_id = event_report.args.commitment_id.toNumber()
+      if (event_report.event == 'Commit' && event_report.args.owner == accounts[0] && event_report.args.hash == data_hash) {
+        // Remember we saw the hash
+        saw_event = true
       }
     })
 
@@ -125,7 +117,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Don't care about events after that
     filter.stopWatching()
 
-    assert.equal(commitment_id, 1, "We got the expected commitment ID in an event")
+    assert.equal(saw_event, true, "We got the expected commitment hash in an event")
 
     assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(3000, "ether"), "We lost the expected amount of MRV to the deposit")
 
@@ -133,19 +125,23 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
-    await instance.reveal(commitment_id, to_claim, nonce).then(function() {
+    await instance.reveal(to_claim, nonce).then(function() {
       assert.ok(false, "Revealed conflicting claim")
     }).catch(function() {
       assert.ok(true, "Conflicting reveal rejected")
     })
   })
 
-  it("should prohibit canceling someone else's commitment", async function() {
+  it("should prohibit canceling commitments made by others commitment", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
 
-    let commitment_id = 1
+    // We don't even have a way to address other people's commitments unless we can collide hashes.
+    // But make a half-assed attempt.
+    let to_claim = mv.keypathToToken('0.0.0.0')
+    let nonce = 0xDEAD2 
+    let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
 
-    await instance.cancel(commitment_id, {from: accounts[1]}).then(function() {
+    await instance.cancel(data_hash, {from: accounts[1]}).then(function() {
       assert.ok(false, "Canceled someone's claim")
     }).catch(function() {
       assert.ok(true, "Non-owner cancel rejected")
@@ -157,9 +153,11 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let instance = await MacroverseUniversalRegistry.deployed()
     let mrv = await MRVToken.deployed()
 
-    let commitment_id = 1
+    let to_claim = mv.keypathToToken('0.0.0.0')
+    let nonce = 0xDEAD2 
+    let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
 
-    await instance.cancel(commitment_id)
+    await instance.cancel(data_hash)
 
     assert.ok(true, "Cancel transaction goes through")
 
@@ -179,14 +177,15 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let to_claim = mv.keypathToToken('0.0.0.0.0.-1.7.2.2.2')
     let nonce = 0xDEADBEEF 
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
-    let commitment_id
+    
+    let saw_event = false
 
     // Watch commit events
     let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
     filter.watch((error, event_report) => {
-      if (event_report.event == 'Commit' && event_report.args.owner == accounts[1]) {
-        // Remember the ID we observed
-        commitment_id = event_report.args.commitment_id.toNumber()
+      if (event_report.event == 'Commit' && event_report.args.owner == accounts[1] && event_report.args.hash == data_hash) {
+        // Remember we saw the hash
+        saw_event = true
       }
     })
 
@@ -196,7 +195,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Don't care about events after that
     filter.stopWatching()
 
-    assert.equal(commitment_id, 2, "We got the expected commitment ID in an event")
+    assert.equal(saw_event, true, "We got the expected commitment hash in an event")
 
     assert.equal((await mrv.balanceOf.call(accounts[1])).toNumber(), web3.toWei(0, "ether"), "We lost the expected amount of MRV to the deposit")
 
@@ -204,7 +203,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
-    await instance.reveal(commitment_id, to_claim, nonce).then(function() {
+    await instance.reveal(to_claim, nonce).then(function() {
       assert.ok(false, "Revealed unauthorized subclaim")
     }).catch(function() {
       assert.ok(true, "Subclaim reveal rejected")
@@ -264,10 +263,9 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Try to get a child (some land on a planet) of the token (system) we now own
     let to_claim = mv.keypathToToken('0.0.0.0.0.-1.7.2.2.2')
     let nonce = 0xDEADBEEF 
-    let commitment_id = 2
 
     // Now try revealing. It should work because we own the parent token and it isn't land.
-    await instance.reveal(commitment_id, to_claim, nonce, {from: accounts[1]})
+    await instance.reveal(to_claim, nonce, {from: accounts[1]})
 
     // Get the owner of the token
     let token_owner = await instance.ownerOf(to_claim)
@@ -318,35 +316,22 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let to_claim = mv.keypathToToken('0.0.0.0.0.-1.7.2.2.2.1')
     let nonce = 0xDEADBEEF55 
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
-    let commitment_id
-
-    // Watch commit events
-    let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
-    filter.watch((error, event_report) => {
-      if (event_report.event == 'Commit' && event_report.args.owner == accounts[1]) {
-        // Remember the ID we observed
-        commitment_id = event_report.args.commitment_id.toNumber()
-      }
-    })
-
+    
     // Commit for it
     await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
-
-    // Don't care about events after that
-    filter.stopWatching()
 
     // Advance time for 2 days to mature the commitment
     await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
-    await instance.reveal(commitment_id, to_claim, nonce).then(function() {
+    await instance.reveal(to_claim, nonce).then(function() {
       assert.ok(false, "Revealed land subplot")
     }).catch(function() {
       assert.ok(true, "Subplot reveal rejected")
     })
 
     // Clean up
-    await instance.cancel(commitment_id, {from: accounts[1]})
+    await instance.cancel(data_hash, {from: accounts[1]})
   })
 
   it("should prohibit revealing for a parent token of owned land", async function() {
@@ -360,35 +345,22 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let to_claim = mv.keypathToToken('0.0.0.0.0.-1.7.2.2')
     let nonce = 0xDEADBEEF88
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
-    let commitment_id
-
-    // Watch commit events
-    let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
-    filter.watch((error, event_report) => {
-      if (event_report.event == 'Commit' && event_report.args.owner == accounts[1]) {
-        // Remember the ID we observed
-        commitment_id = event_report.args.commitment_id.toNumber()
-      }
-    })
 
     // Commit for it
     await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
-
-    // Don't care about events after that
-    filter.stopWatching()
 
     // Advance time for 2 days to mature the commitment
     await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
-    await instance.reveal(commitment_id, to_claim, nonce).then(function() {
+    await instance.reveal(to_claim, nonce).then(function() {
       assert.ok(false, "Revealed land superplot")
     }).catch(function() {
       assert.ok(true, "Superplot reveal rejected")
     })
 
     // Clean up
-    await instance.cancel(commitment_id, {from: accounts[1]})
+    await instance.cancel(data_hash, {from: accounts[1]})
   })
 
   it("should permit subdividing land", async function() {
