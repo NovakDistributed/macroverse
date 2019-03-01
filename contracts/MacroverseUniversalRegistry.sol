@@ -799,10 +799,6 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Destroy the commitment
         delete commitments[commitment_key];
 
-        // Make sure it is properly gone.
-        // TODO: remove for production
-        assert(commitments[commitment_key].hash == bytes32(0));
-
         // Record we sent the deposit value
         expectedDepositBalance = expectedDepositBalance.sub(refund);
 
@@ -880,10 +876,6 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
         // Destroy the commitment
         delete commitments[commitment_key];
-
-        // Make sure it is properly gone.
-        // TODO: remove for production
-        assert(commitments[commitment_key].hash == bytes32(0));
 
         // Emit a reveal event, before actually making the token
         emit Reveal(hash, token, msg.sender);
