@@ -698,6 +698,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
         // Otherwise, recurse on the parent
         return lowestExistingParent(parent);
+
+        // Recursion depth is limited to a reasonable maximum by the maximum
+        // depth of the land hierarchy.
     }
 
     /**
@@ -729,6 +732,16 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
             // TODO: Look at and balance the exact relationships between planet, moon, and whole-surface claim costs.
         }
     }
+
+    /**
+     * Return true if the given token exists and the corresponding world object is claimed, and false otherwise.
+     * Does not account for owners of parents.
+     */
+    function exists(uint256 token) public view returns (bool) {
+        // Just wrap the private exists function
+        return _exists(token);
+    }
+
 
     //////////////
     // Minting and destruction logic: commit/reveal/cancel and release

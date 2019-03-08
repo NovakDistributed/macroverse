@@ -74,6 +74,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     let to_claim = mv.keypathToToken('0.0.0.0')
     let nonce = 0xDEAD
+
+    assert.equal(await instance.exists(to_claim), false, "Token exists too early");
     
     // Advance time for 2 days which should be enough
     await mv.advanceTime(60 * 24 * 2)
@@ -86,6 +88,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     // Make sure we own the token
     assert.equal(token_owner, accounts[0], "Token not owned by claimant");
+    assert.equal(await instance.exists(to_claim), true, "Token not created");
   })
 
   it("should prohibit revealing for an already owned thing", async function() {
