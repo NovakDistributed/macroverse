@@ -161,6 +161,10 @@ mv.TOKEN_TRIXEL_HIGH_BIT_MASK = 0x124924924924924924920
 // Sentinel for no moon used (for land on a planet)
 mv.MOON_NONE = 0xFFFF
 
+// How long does it take for a commitment to expire, as a multiple of the maturation time?
+// This is hardcoded in the registry, but the maturation time is configurable at registry deployment.
+mv.COMMITMENT_MAX_WAIT_FACTOR = 7
+
 // We have a function to properly hash a number or BigNumber or 0x string token number and nonce, for making claims
 mv.hashTokenAndNonce = function(token, nonce) {
     token = new BigNumber(token)
@@ -168,6 +172,11 @@ mv.hashTokenAndNonce = function(token, nonce) {
     
     // Bignums are hashed as uint256 if positive
     return Web3Utils.soliditySha3(token, nonce)
+}
+
+// We have a function to properly hash a token-and-nonce hash and an address, to get the key to look up a claim
+mv.getClaimKey = function(commitment_hash, owner_address) {
+    return Web3Utils.soliditySha3(commitment_hash, owner_address)
 }
 
 // We need a function to bit-shift bignums. A positive shift shifts left.
