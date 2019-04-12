@@ -512,14 +512,6 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     /// This is a multiple of the min wait.
     uint constant COMMITMENT_MAX_WAIT_FACTOR = 7;
 
-    /// Commitments can be committed, revealed, or canceled.
-    /// Expired commitments stay committed until canceled.
-    enum CommitmentState {
-        Committed,
-        Revealed,
-        Canceled
-    }
-
     /// A Commitment represents an outstanding attempt to claim a deed.
     /// It also needs to be referenced to look up the deposit associated with an owned token when the token is destroyed.
     /// It is identified by a "key", which is the hash of the committing hash and the owner address.

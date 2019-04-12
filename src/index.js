@@ -262,6 +262,67 @@ mv.keypathToToken = function(keypath) {
 
 }
 
+// To parse tokens we need a way to get bit ranges
+mv.getBits = function(num, lowest, count) {
+  // Divide by 2^lowest, integral
+  let cutoff = num.dividedToIntegerBy(new BigNumber(2).pow(lowest))
+  // Then mod by 2^count
+  return cutoff.modulo(new BigNumber(2).pow(count))
+}
+
+// And we have a function to convert tokens to keypaths
+mv.tokenToKeypath = function(token) {
+  let type = mv.getBits(token, 0, 5).toNumber()
+
+  // We always have sector X, Y, Z
+  let sectorX = mv.getBits(token, mv.TOKEN_SECTOR_X_SHIFT, mv.TOKEN_SECTOR_X_BITS).toNumber()
+  let sectorY = mv.getBits(token, mv.TOKEN_SECTOR_Y_SHIFT, mv.TOKEN_SECTOR_Y_BITS).toNumber()
+  let sectorZ = mv.getBits(token, mv.TOKEN_SECTOR_Z_SHIFT, mv.TOKEN_SECTOR_Z_BITS).toNumber()
+
+  let keypath = sectorX + '.' + sectorY + '.' + sectorZ
+
+  if (type < mv.TOKEN_TYPE_SYSTEM) {
+    return keypath
+  }
+
+  // If we are star or more specific we have a star
+  let star = mv.getBits(token, mv.TOKEN_SYSTEM_SHIFT, mv.TOKEN_SYSTEM_BITS).toNumber()
+  keypath += '.' + star
+
+  if (type < mv.TOKEN_TYPE_PLANET) {
+    return keypath
+  }
+
+  // If we are planet or more specific we have a planet
+  let planet = mv.getBits(token, mv.TOKEN_PLANET_SHIFT, mv.TOKEN_PLANET_BITS).toNumber()
+  keypath += '.' + planet
+
+  if (type < mv.TOKEN_TYPE_MOON) {
+    return keypath
+  }
+
+  // If we are moon or more specific we *may* have a moon, or -1 (0xFFFF).
+  // Either way it goes in the keypath.
+  let moon = mv.getBits(token, mv.TOKEN_MOON_SHIFT, mv.TOKEN_MOON_BITS).toNumber()
+  if (moon == 0xffff) {
+    moon = -1
+  }
+  keypath += '.' + moon
+
+  // If we are land, we have some number of 3-bit trixels
+
+  if (type < mv.TOKEN_TYPE_LAND_MIN) {
+    return keypath
+  }
+
+  for (let i = 0; i < (type - mv.TOKEN_TYPE_LAND_MIN + 1); i++) {
+    let trixel = mv.getBits(token, mv.TOKEN_TRIXEL_SHIFT + i * mv.TOKEN_TRIXEL_EACH_BITS, mv.TOKEN_TRIXEL_EACH_BITS).toNumber()
+    keypath += '.' + trixel
+  }
+
+  return keypath
+}
+
 // Generate a BigNumber nonce with 77 digits of entropy (a bit under 256 bits)
 mv.generateNonce = function() {
   return BigNumber.random(77).mul(new BigNumber(10).pow(77))
