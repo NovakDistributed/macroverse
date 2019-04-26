@@ -961,6 +961,19 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     }
 
     /**
+     * Get the deposit tied up in a token, in MRV atomic units.
+     * Returns 0 for nonexistent or invalid tokens.
+     * Deposits associated with claims need to be gotten by looking at the claim mapping directly.
+     */
+    function getDeposit(uint256 token) external view returns (uint256) {
+        // Only existing non-land tokens with homesteading on can be homesteaded.
+        if (!_exists(token)) {
+            return 0;
+        }
+        return tokenConfigs[token].deposit;
+    }
+
+    /**
      * Split a trixel of land into 4 sub-trixel tokens.
      * The new tokens will be owned by the same owner.
      * The old token will be destroyed.
