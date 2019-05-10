@@ -696,6 +696,16 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     }
 
     /**
+     * Returns true if direct children of the given token can be claimed by the given claimant.
+     * Children of land tokens can never be claimed (the plot must be subdivided).
+     * Children of system/planet/moon tokens can only be claimed if the claimer owns them or the owner allows homesteading.
+     */
+    function childrenClaimable(uint256 token, address claimant) public view returns (bool) {
+        require(_exists(token));
+        return !tokenIsLand(token) && (claimant == ownerOf(token) || tokenConfigs[token].homesteading);
+    }
+
+    /**
      * Get the min deposit that will be required to create a claim on a token.
      */
     function getMinDepositToCreate(uint256 token) public view returns (uint256) {
@@ -887,16 +897,6 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
         // If we pass everything, mint the token
         _mint(msg.sender, token);
-    }
-
-    /**
-     * Returns true if direct children of the given token can be claimed by the given claimant.
-     * Children of land tokens can never be claimed (the plot must be subdivided).
-     * Children of system/planet/moon tokens can only be claimed if the claimer owns them or the owner allows homesteading.
-     */
-    function childrenClaimable(uint256 token, address claimant) internal view returns (bool) {
-        assert(_exists(token));
-        return !tokenIsLand(token) && (claimant == ownerOf(token) || tokenConfigs[token].homesteading);
     }
 
     /**
