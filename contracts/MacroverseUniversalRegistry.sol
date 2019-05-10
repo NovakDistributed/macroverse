@@ -672,7 +672,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     //////////////
 
     /**
-     * Get the lowest-in-the-hierarchy token that exists (is owned or in escrow).
+     * Get the lowest-in-the-hierarchy token that exists (is owned).
      * Returns a 0-value sentinel if no parent token exists.
      */
     function lowestExistingParent(uint256 token) public view returns (uint256) {
