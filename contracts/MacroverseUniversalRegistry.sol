@@ -490,6 +490,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     /// Gets emitted once per child.
     event LandMerge(uint256 indexed child, uint256 indexed parent);
 
+    /// Fired when the deposit scale for the registry is updated by the administrator.
+    event DepositScaleChange(uint256 new_min_system_deposit_in_atomic_units);
+
     //////////////
     // Contract state
     //////////////
@@ -707,6 +710,10 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
     /**
      * Get the min deposit that will be required to create a claim on a token.
+     *
+     * Tokens can only exist with deposits smaller than this if they were
+     * created before the minimum deposit was raised, or if they are the result
+     * of merging other tokens whose deposits were too small.
      */
     function getMinDepositToCreate(uint256 token) public view returns (uint256) {
         // Get the token's type
@@ -1092,9 +1099,15 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // Make sure that that parent is land
         require(tokenIsLand(parent));
 
-        // Compute the parent deposit and make sure it will be sufficient
+        // Compute the parent deposit
         uint256 parent_deposit = available_deposit.sub(withdraw_deposit);
-        require(parent_deposit >= getMinDepositToCreate(parent), "Deposit not sufficient");
+
+        // Edge case: min deposit scale was adjusted and now the deposits for
+        // the children aren't enough for the parent.
+        // In that case, we allow the merge, but withdraw_deposit must be 0.
+        if (withdraw_deposit > 0) {
+            require(parent_deposit >= getMinDepositToCreate(parent), "Deposit not sufficient");
+        }
 
         for (i = 0; i < CHILDREN_PER_TRIXEL; i++) {
             // Burn the children
@@ -1139,6 +1152,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function setMinimumSystemDeposit(uint256 new_minimum_deposit_in_atomic_units) external onlyOwner {
         minSystemDepositInAtomicUnits = new_minimum_deposit_in_atomic_units;
+        emit DepositScaleChange(minSystemDepositInAtomicUnits);
     }
     
     /**
