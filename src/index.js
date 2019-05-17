@@ -337,11 +337,7 @@ mv.keypathIsLand = function(keypath) {
   return (parts.length > 5 || (parts.length == 5 && parts[3] == -1))
 }
 
-// Get the minimum deposit by token keypath
-mv.getMinimumDeposit = function(keypath) {
-  // TODO: implement. For now we overestimate
-  return Web3Utils.toWei('1000', 'ether')
-}
+// Minimum deposit information must be read from the chain via the contract.
 
 // We need a function to advance time.
 // Only works on Truffle testnet, but we use it in some tests.
