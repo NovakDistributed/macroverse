@@ -333,8 +333,9 @@ mv.keypathIsLand = function(keypath) {
   let parts = keypath.split('.')
 
   // It is land if it is under a moon, or if it has a non-final moon field that
-  // is -1 (no moon, land on parent planet)
-  return (parts.length > 5 || (parts.length == 5 && parts[3] == -1))
+  // is -1 (no moon, land on parent planet).
+  // Moons are at depth 6 (x, y, z, star, planet, moon)
+  return (parts.length > 6 || (parts.length == 6 && parts[4] == -1))
 }
 
 // Minimum deposit information must be read from the chain via the contract.
