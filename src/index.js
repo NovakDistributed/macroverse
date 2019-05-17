@@ -328,6 +328,15 @@ mv.generateNonce = function() {
   return BigNumber.random(77).mul(new BigNumber(10).pow(77))
 }
 
+// Determine if a keypath is land
+mv.keypathIsLand = function(keypath) {
+  let parts = keypath.split('.')
+
+  // It is land if it is under a moon, or if it has a non-final moon field that
+  // is -1 (no moon, land on parent planet)
+  return (parts.length > 5 || (parts.length == 5 && parts[3] == -1))
+}
+
 // Get the minimum deposit by token keypath
 mv.getMinimumDeposit = function(keypath) {
   // TODO: implement. For now we overestimate
