@@ -78,6 +78,17 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
  * More specific claims use more of the higher-value bits, producing larger
  * numbers in general.
  *
+ * "Planets" which are asteroid belts and "moons" which are ring systems also
+ * are subdivided into 8 triangles, and then recursively into nested sets of 4
+ * sub-triangles. However, the initial 8 triangles are defined as wedges, with
+ * the points at the central body and with the outer edges being curved. They
+ * are numbered prograde, with the division from 0 to 7 corresponding to the
+ * object's notional position, computed as if it were a point body with the
+ * same orbital parameters. Note that this means that some ownership claims do
+ * not actually overlap the orbital range (and thus do not contain anything),
+ * and that any actual particles would move relative to the positions of the
+ * claims over time, depending on their actual orbits. 
+ *
  * At the astronomical level (stars, planets, moons), tokens can be issued
  * for the children of things already claimed, if the lowest owned parent token
  * has homesteading enabled.  At the land level, only one token can cover
