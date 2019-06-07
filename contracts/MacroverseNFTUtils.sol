@@ -28,6 +28,11 @@ pragma solidity ^0.4.24;
  * moon, or the area of an asteroid belt or ring. See the documentation for the
  * MacroverseUniversalRegistry for more information on the trixel system.
  *
+ * Small functions in the library are internal, because inlining them will take
+ * less space than a call.
+ *
+ * Larger functions are public.
+ *
  */
 library MacroverseNFTUtils {
 
@@ -306,7 +311,7 @@ library MacroverseNFTUtils {
      * Fails otherwise.
      * Index must not be wider than uint16 or it may be truncated.
      */
-    function childTokenAtIndex(uint256 token, uint256 index) internal pure returns (uint256) {
+    function childTokenAtIndex(uint256 token, uint256 index) public pure returns (uint256) {
         uint256 token_type = getTokenType(token);
 
         assert(token_type != TOKEN_TYPE_LAND_MAX);
@@ -346,7 +351,7 @@ library MacroverseNFTUtils {
      * Only does validation of the bitstring representation (i.e. no extraneous set bits).
      * We still need to check in with the generator to validate that the system/planet/moon actually exists.
      */
-    function tokenIsCanonical(uint256 token) internal pure returns (bool) {
+    function tokenIsCanonical(uint256 token) public pure returns (bool) {
         
         if (token >> (TOKEN_TRIXEL_SHIFT + TOKEN_TRIXEL_EACH_BITS * getTokenTrixelCount(token)) != 0) {
             // There are bits set above the highest used trixel (for land) or in any trixel (for non-land)
