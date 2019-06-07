@@ -92,8 +92,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Get the seed for a planet or moon from the seed for its parent (star or planet) and its child number.
      */
-    function getWorldSeed(bytes32 parentSeed, uint childNumber) public view onlyControlledAccess returns (bytes32) {
-        return RNG.RandNode(parentSeed).derive(childNumber)._hash;
+    function getWorldSeed(bytes32 parentSeed, uint16 childNumber) public view onlyControlledAccess returns (bytes32) {
+        return RNG.RandNode(parentSeed).derive(uint(childNumber))._hash;
     }
     
     /**
@@ -101,7 +101,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * It depends on its place in the order.
      * Takes the *planet*'s seed, its number, and the total planets in the system.
      */
-    function getPlanetClass(bytes32 seed, uint planetNumber, uint totalPlanets) public view onlyControlledAccess returns (WorldClass) {
+    function getPlanetClass(bytes32 seed, uint16 planetNumber, uint16 totalPlanets) public view onlyControlledAccess returns (WorldClass) {
         // TODO: do something based on metallicity?
         RNG.RandNode memory node = RNG.RandNode(seed).derive("class");
         
@@ -448,7 +448,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
      * Overrides getWorldZXAxisAngles and getWorldSpinRate. 
      * Not used for asteroid belts or rings.
      */
-    function isTidallyLocked(bytes32 seed, uint worldNumber) public view onlyControlledAccess returns (bool) {
+    function isTidallyLocked(bytes32 seed, uint16 worldNumber) public view onlyControlledAccess returns (bool) {
         // Tidal lock should be common near the parent and less common further out.
         return RNG.RandNode(seed).derive("tidal_lock").getReal() < RealMath.fraction(1, int88(worldNumber + 1));
     }

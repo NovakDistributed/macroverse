@@ -75,7 +75,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
      * We also keep a "stowage factor" for planetary material in m^3 per earth mass, at water density, for
      * faking planetary radii during moon orbit calculations.
      */
-    int128 constant REAL_M3_PER_EARTH = 6566501804087548000000000000000000; // 6.566501804087548E33
+    int128 constant REAL_M3_PER_EARTH = 6566501804087548000000000000000000; // 6.566501804087548E33 as an int, 5.97219E21 m^3/earth
 
     /**
      * Deploy a new copy of the MacroverseMoonGenerator.
@@ -87,10 +87,10 @@ contract MacroverseMoonGenerator is ControlledAccess {
     /**
      * Get the number of moons a planet has, using its class. Will sometimes return 0; there is no hasMoons boolean flag to check.
      */
-    function getPlanetMoonCount(bytes32 planetSeed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (uint) {
+    function getPlanetMoonCount(bytes32 planetSeed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (uint16) {
         RNG.RandNode memory node = RNG.RandNode(planetSeed).derive("mooncount");
         
-        uint limit;
+        uint16 limit;
 
         if (class == MacroverseSystemGenerator.WorldClass.Lunar || class == MacroverseSystemGenerator.WorldClass.Europan) {
             limit = 3;
@@ -107,7 +107,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
             revert();
         }
         
-        uint roll = uint(node.getIntBetween(0, int88(limit + 1)));
+        uint16 roll = uint16(node.getIntBetween(0, int88(limit + 1)));
         
         return roll;
     }
@@ -116,7 +116,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
      * Get the class of a moon, given the moon's seed and the class of its parent planet.
      * The actual moon body properties (i.e. mass) are generated with the MacroverseSystemGenerator as if it were a planet.
      */
-    function getMoonClass(MacroverseSystemGenerator.WorldClass parent, bytes32 moonSeed, uint moonNumber) public view onlyControlledAccess
+    function getMoonClass(MacroverseSystemGenerator.WorldClass parent, bytes32 moonSeed, uint16 moonNumber) public view onlyControlledAccess
         returns (MacroverseSystemGenerator.WorldClass) {
         
         // We can have moons of smaller classes than us only.

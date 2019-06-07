@@ -182,7 +182,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     //////////////
 
     /// This is the token in which ownership deposits have to be paid.
-    IERC20 public depositTokenContract;
+    IERC20 private depositTokenContract;
     /// This is the minimum ownership deposit in atomic token units.
     uint public minSystemDepositInAtomicUnits;
     

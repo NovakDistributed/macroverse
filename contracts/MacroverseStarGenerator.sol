@@ -28,7 +28,7 @@ contract MacroverseStarGenerator is ControlledAccess {
 
     // How big is a sector on a side in LY?
     int16 constant SECTOR_SIZE = 25;
-    // How far out dowes the sector system extend?
+    // How far out does the sector system extend?
     int16 constant MAX_SECTOR = 10000;
     // How big is the galaxy?
     int16 constant DISK_RADIUS_IN_SECTORS = 6800;

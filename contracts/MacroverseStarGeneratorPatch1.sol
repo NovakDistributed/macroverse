@@ -60,12 +60,12 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
      * Star Generator.
      */
     function getObjectPlanetCount(bytes32 starSeed, MacroverseStarGenerator.ObjectClass objectClass,
-        MacroverseStarGenerator.SpectralType spectralType) public view onlyControlledAccess returns (uint) {
+        MacroverseStarGenerator.SpectralType spectralType) public view onlyControlledAccess returns (uint16) {
         
         RNG.RandNode memory node = RNG.RandNode(starSeed).derive("planetcount");
         
         
-        uint limit;
+        uint16 limit;
 
         if (objectClass == MacroverseStarGenerator.ObjectClass.MainSequence) {
             if (spectralType == MacroverseStarGenerator.SpectralType.TypeO ||
@@ -91,7 +91,7 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
            limit = 2;
         }
         
-        uint roll = uint(node.getIntBetween(1, int88(limit + 1)));
+        uint16 roll = uint16(node.getIntBetween(1, int88(limit + 1)));
         
         return roll;
     }
