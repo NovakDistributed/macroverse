@@ -99,7 +99,7 @@ import "./MacroverseNFTUtils.sol";
 contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC721Full {
 
     using SafeMath for uint256;
-    using MacroverseNFTUtils for *;
+    using MacroverseNFTUtils for uint256;
 
     // These constants are shared with the TokenUtils library
 
@@ -287,16 +287,16 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function addChildToTree(uint256 token) internal {
         
-        if (MacroverseNFTUtils.getTokenType(token) == TOKEN_TYPE_SECTOR) {
+        if (token.getTokenType() == TOKEN_TYPE_SECTOR) {
             // No parent exists; we're a tree root.
             return;
         }
 
         // Find the parent
-        uint256 parent = MacroverseNFTUtils.parentOfToken(token);
+        uint256 parent = token.parentOfToken();
 
         // Find what child index we are of the parent
-        uint256 child_index = MacroverseNFTUtils.childIndexOfToken(token);
+        uint256 child_index = token.childIndexOfToken();
         
         // Get the parent's child tree entry
         uint256 bitmap = childTree[parent];
@@ -320,7 +320,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function removeChildFromTree(uint256 token) internal {
 
-        if (MacroverseNFTUtils.getTokenType(token) == TOKEN_TYPE_SECTOR) {
+        if (token.getTokenType() == TOKEN_TYPE_SECTOR) {
             // No parent exists; we're a tree root.
             return;
         }
@@ -330,10 +330,10 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
             // We are not an existing token ourselves, and we have no existing children.
 
             // Find the parent
-            uint256 parent = MacroverseNFTUtils.parentOfToken(token);
+            uint256 parent = token.parentOfToken();
 
             // Find what child index we are of the parent
-            uint256 child_index = MacroverseNFTUtils.childIndexOfToken(token);
+            uint256 child_index = token.childIndexOfToken();
             
             // Getmthe parent's child tree entry
             uint256 bitmap = childTree[parent];
@@ -363,12 +363,12 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * Returns a 0-value sentinel if no parent token exists.
      */
     function lowestExistingParent(uint256 token) public view returns (uint256) {
-        if (MacroverseNFTUtils.getTokenType(token) == TOKEN_TYPE_SECTOR) {
+        if (token.getTokenType() == TOKEN_TYPE_SECTOR) {
             // No parent exists, and we can't exist.
             return 0;
         }
 
-        uint256 parent = MacroverseNFTUtils.parentOfToken(token);
+        uint256 parent = token.parentOfToken();
 
         if (_exists(parent)) {
             // We found a token that really exists
@@ -389,7 +389,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function childrenClaimable(uint256 token, address claimant) public view returns (bool) {
         require(_exists(token));
-        return !MacroverseNFTUtils.tokenIsLand(token) && (claimant == ownerOf(token) || tokenConfigs[token].homesteading);
+        return !token.tokenIsLand() && (claimant == ownerOf(token) || tokenConfigs[token].homesteading);
     }
 
     /**
@@ -401,7 +401,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function getMinDepositToCreate(uint256 token) public view returns (uint256) {
         // Get the token's type
-        uint256 token_type = MacroverseNFTUtils.getTokenType(token);
+        uint256 token_type = token.getTokenType();
 
         if (token_type == TOKEN_TYPE_SECTOR) {
             // Sectors cannot be owned.
@@ -420,7 +420,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
             
             // For land, the deposit is smaller and cuts in half with each level of subdivision (starting at 1).
             // So all the small claims is twice as expensive as the big claim.
-            uint256 subdivisions = MacroverseNFTUtils.getTokenTrixelCount(token);
+            uint256 subdivisions = token.getTokenTrixelCount();
             return minSystemDepositInAtomicUnits.div(30) >> subdivisions;
             // TODO: Look at and balance the exact relationships between planet, moon, and whole-surface claim costs.
         }
@@ -552,7 +552,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         require(!_exists(token), "Token already exists");
 
         // Validate the token
-        require(MacroverseNFTUtils.tokenIsCanonical(token), "Token data mis-packed");
+        require(token.tokenIsCanonical(), "Token data mis-packed");
         // TODO: query the generator to make sure the thing exists
 
         // Make sure that sufficient tokens have been deposited for this thing to be claimed
@@ -566,7 +566,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         }
 
         // If it's land, no children can be claimed already
-        require(!MacroverseNFTUtils.tokenIsLand(token) || childTree[token] == 0, "Cannot claim land with claimed subplots");
+        require(!token.tokenIsLand() || childTree[token] == 0, "Cannot claim land with claimed subplots");
 
         // OK, now we know the claim is valid. Execute it.
 
@@ -626,7 +626,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function setHomesteading(uint256 token, bool value) external {
         require(ownerOf(token) == msg.sender, "Token owner mismatch");
-        require(!MacroverseNFTUtils.tokenIsLand(token));
+        require(!token.tokenIsLand());
         
         // Find the token's config
         TokenConfig storage config = tokenConfigs[token];
@@ -648,7 +648,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function getHomesteading(uint256 token) external view returns (bool) {
         // Only existing non-land tokens with homesteading on can be homesteaded.
-        return (_exists(token) && !MacroverseNFTUtils.tokenIsLand(token) && tokenConfigs[token].homesteading); 
+        return (_exists(token) && !token.tokenIsLand() && tokenConfigs[token].homesteading); 
     }
 
     /**
@@ -678,7 +678,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         require(ownerOf(parent) == msg.sender, "Token owner mismatch");
 
         // Make sure the parent isn't maximally subdivided
-        require(MacroverseNFTUtils.getTokenType(parent) != TOKEN_TYPE_LAND_MAX, "Land maximally subdivided");
+        require(parent.getTokenType() != TOKEN_TYPE_LAND_MAX, "Land maximally subdivided");
 
         // Get the deposit from it
         uint256 deposit = tokenConfigs[parent].deposit;
@@ -700,7 +700,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         // And the total required
         uint256 required_deposit = 0;
         for (uint256 i = 0; i < CHILDREN_PER_TRIXEL; i++) {
-            uint256 child = MacroverseNFTUtils.childTokenAtIndex(parent, i);
+            uint256 child = parent.childTokenAtIndex(i);
             children[i] = child;
             uint256 child_deposit = getMinDepositToCreate(child);
             child_deposits[i] = child_deposit;
@@ -775,13 +775,13 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         require(children[2] != children[3], "Children not distinct");
         
         // Make sure they are all children of the same parent
-        uint256 parent = MacroverseNFTUtils.parentOfToken(children[0]);
+        uint256 parent = children[0].parentOfToken();
         for (i = 1; i < CHILDREN_PER_TRIXEL; i++) {
-            require(MacroverseNFTUtils.parentOfToken(children[i]) == parent, "Parent not shared");
+            require(children[i].parentOfToken() == parent, "Parent not shared");
         }
         
         // Make sure that that parent is land
-        require(MacroverseNFTUtils.tokenIsLand(parent));
+        require(parent.tokenIsLand());
 
         // Compute the parent deposit
         uint256 parent_deposit = available_deposit.sub(withdraw_deposit);
