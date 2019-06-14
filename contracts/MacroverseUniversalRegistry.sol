@@ -8,6 +8,7 @@ import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 import "./MacroverseNFTUtils.sol";
+import "./MacroverseExistenceChecker.sol";
 
 /**
  * The MacroverseUniversalRegistry keeps track of who currently owns virtual
@@ -181,6 +182,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     // Contract state
     //////////////
 
+    /// This is the contract we check virtual real estate existence against;
+    MacroverseExistenceChecker existenceChecker;
+
     /// This is the token in which ownership deposits have to be paid.
     IERC20 private depositTokenContract;
     /// This is the minimum ownership deposit in atomic token units.
@@ -237,12 +241,16 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
     /**
      * Deploy a new copy of the Macroverse Universal Registry.
+     * The given existence checker will be used to check object existence.
      * The given token will be used to pay deposits, and the given minimum
      * deposit size will be required to claim a star system.
      * Other deposit sizes will be calculated from that.
      * The given min wait time will be the required time you must wait after committing before revealing.
      */
-    constructor(address deposit_token_address, uint initial_min_system_deposit_in_atomic_units, uint commitment_min_wait) public ERC721Full("Macroverse Real Estate", "MRE") {
+    constructor(address existence_checker_address, address deposit_token_address,
+        uint initial_min_system_deposit_in_atomic_units, uint commitment_min_wait) public ERC721Full("Macroverse Real Estate", "MRE") {
+        // We can only use one existence checker for the lifetime of the contract.
+        existenceChecker = MacroverseExistenceChecker(existence_checker_address);
         // We can only use one token for the lifetime of the contract.
         depositTokenContract = IERC20(deposit_token_address);
         // But the minimum deposit for new claims can change
@@ -553,7 +561,8 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
         // Validate the token
         require(token.tokenIsCanonical(), "Token data mis-packed");
-        // TODO: query the generator to make sure the thing exists
+        // Make sure it refers to something real
+        require(existenceChecker.exists(token), "Cannot claim non-existent thing");
 
         // Make sure that sufficient tokens have been deposited for this thing to be claimed
         require(commitment.deposit >= getMinDepositToCreate(token), "Deposit too small");

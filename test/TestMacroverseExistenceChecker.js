@@ -53,10 +53,17 @@ contract('MacroverseExistenceChecker', function(accounts) {
         }
 
     }
+  })
 
+  it("should say that a particulat plot of land we use in other tests exists", async function() {
+    let instance = await MacroverseExistenceChecker.deployed()
 
-    
+    let keypath = '0.0.0.0.0.-1.7.2.2.2'
+    let token = mv.keypathToToken(keypath)
+    let keypath2 = mv.tokenToKeypath(token)
+    assert.equal(keypath, keypath2, "We pack and unpack the keypath correctly") 
 
+    assert.equal(await instance.exists.call(token), true, "We get the right result checking by token")
   })
 
   

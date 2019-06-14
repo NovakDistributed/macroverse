@@ -239,7 +239,7 @@ mv.keypathToToken = function(keypath) {
   }
 
   // Otherwise it has a star number (non-negative)
-  token = token.plus(mv.shift(new BigNumber(parts[3]), mv.TOKEN_SYSTEM_BITS, mv.TOKEN_SYSTEM_SHIFT))
+  token = token.plus(mv.shift(new BigNumber(parts[3]), mv.TOKEN_SYSTEM_SHIFT))
 
   if (parts.length < 5) {
     // It's a real system token. Return it as one.
@@ -248,7 +248,7 @@ mv.keypathToToken = function(keypath) {
   }
 
   // Otherwise it has a planet number (non-negative)
-  token = token.plus(mv.shift(new BigNumber(parts[4]), mv.TOKEN_PLANET_BITS, mv.TOKEN_PLANET_SHIFT))
+  token = token.plus(mv.shift(new BigNumber(parts[4]), mv.TOKEN_PLANET_SHIFT))
 
   if (parts.length < 6) {
     // It's a real planet token. Return it as one.
@@ -260,10 +260,10 @@ mv.keypathToToken = function(keypath) {
   // TODO: should we use a different signifier for land?
   if (parts[5] == -1) {
     // Planet land. Mark it as no moon.
-    token = token.plus(mv.shift(new BigNumber(mv.MOON_NONE), mv.TOKEN_MOON_BITS, mv.TOKEN_MOON_SHIFT))
+    token = token.plus(mv.shift(new BigNumber(mv.MOON_NONE), mv.TOKEN_MOON_SHIFT))
   } else {
     // A moon or moon land. Store the moon number.
-    token = token.plus(mv.shift(new BigNumber(parts[5]), mv.TOKEN_MOON_BITS, mv.TOKEN_MOON_SHIFT))
+    token = token.plus(mv.shift(new BigNumber(parts[5]), mv.TOKEN_MOON_SHIFT))
   }
 
   if (parts.length < 7) {
