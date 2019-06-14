@@ -179,14 +179,39 @@ mv.getClaimKey = function(commitment_hash, owner_address) {
     return Web3Utils.soliditySha3(commitment_hash, owner_address)
 }
 
+// Convert a signed number to an unsigned bit pattern BigNumber of the same bit width.
+mv.signedToUnsigned = function(number, width) {
+  number = new BigNumber(number)
+  if (number.lt(0)) {
+    // Compute a two's complement representation.
+    // Add our negative number to (i.e. subtract from) 2^width
+    return new BigNumber(2).pow(width).add(number)
+  } else {
+    return number
+  }
+}
+
+// Convert an unsigned bit pattern to a signed BigNumber of the same bit width.
+mv.unsignedToSigned = function(number, width) {
+  number = new BigNumber(number)
+  let highBit = new BigNumber(2).pow(width - 1)
+  if (highBit.lte(number)) {
+    // Number should be negative. Subtract the offset.
+    return number.sub(highBit.mul(2))
+  } else {
+    return number
+  }
+}
+
 // We need a function to bit-shift bignums. A positive shift shifts left.
-mv.shift = function(number, bits) {
-  if (bits >= 0) {
+// Only works correctly (real bitwise shift) on unsigned numbers.
+mv.shift = function(number, shiftBits) {
+  if (shiftBits >= 0) {
     // Shift left
-    return number.times(new BigNumber(2).pow(bits))
+    return number.times(new BigNumber(2).pow(shiftBits))
   } else {
     // Shift right
-    return number.div(new BigNumber(2).pow(-bits))
+    return number.div(new BigNumber(2).pow(-shiftBits))
   }
 }
 
@@ -203,9 +228,9 @@ mv.keypathToToken = function(keypath) {
   }
 
   // Fill in the sector x, y, z
-  token = token.plus(mv.shift(new BigNumber(parts[0]), mv.TOKEN_SECTOR_X_SHIFT))
-  token = token.plus(mv.shift(new BigNumber(parts[1]), mv.TOKEN_SECTOR_Y_SHIFT))
-  token = token.plus(mv.shift(new BigNumber(parts[2]), mv.TOKEN_SECTOR_Z_SHIFT))
+  token = token.plus(mv.shift(mv.signedToUnsigned(parts[0], mv.TOKEN_SECTOR_X_BITS), mv.TOKEN_SECTOR_X_SHIFT))
+  token = token.plus(mv.shift(mv.signedToUnsigned(parts[1], mv.TOKEN_SECTOR_Y_BITS), mv.TOKEN_SECTOR_Y_SHIFT))
+  token = token.plus(mv.shift(mv.signedToUnsigned(parts[2], mv.TOKEN_SECTOR_Z_BITS), mv.TOKEN_SECTOR_Z_SHIFT))
 
   if (parts.length < 4) {
     // It's a sector (not a real token that can be claimed)
@@ -213,8 +238,8 @@ mv.keypathToToken = function(keypath) {
     return token
   }
 
-  // Otherwise it has a star number
-  token = token.plus(mv.shift(new BigNumber(parts[3]), mv.TOKEN_SYSTEM_SHIFT))
+  // Otherwise it has a star number (non-negative)
+  token = token.plus(mv.shift(new BigNumber(parts[3]), mv.TOKEN_SYSTEM_BITS, mv.TOKEN_SYSTEM_SHIFT))
 
   if (parts.length < 5) {
     // It's a real system token. Return it as one.
@@ -222,8 +247,8 @@ mv.keypathToToken = function(keypath) {
     return token
   }
 
-  // Otherwise it has a planet number
-  token = token.plus(mv.shift(new BigNumber(parts[4]), mv.TOKEN_PLANET_SHIFT))
+  // Otherwise it has a planet number (non-negative)
+  token = token.plus(mv.shift(new BigNumber(parts[4]), mv.TOKEN_PLANET_BITS, mv.TOKEN_PLANET_SHIFT))
 
   if (parts.length < 6) {
     // It's a real planet token. Return it as one.
@@ -235,10 +260,10 @@ mv.keypathToToken = function(keypath) {
   // TODO: should we use a different signifier for land?
   if (parts[5] == -1) {
     // Planet land. Mark it as no moon.
-    token = token.plus(mv.shift(new BigNumber(mv.MOON_NONE), mv.TOKEN_MOON_SHIFT))
+    token = token.plus(mv.shift(new BigNumber(mv.MOON_NONE), mv.TOKEN_MOON_BITS, mv.TOKEN_MOON_SHIFT))
   } else {
     // A moon or moon land. Store the moon number.
-    token = token.plus(mv.shift(new BigNumber(parts[5]), mv.TOKEN_MOON_SHIFT))
+    token = token.plus(mv.shift(new BigNumber(parts[5]), mv.TOKEN_MOON_BITS, mv.TOKEN_MOON_SHIFT))
   }
 
   if (parts.length < 7) {
@@ -274,10 +299,11 @@ mv.getBits = function(num, lowest, count) {
 mv.tokenToKeypath = function(token) {
   let type = mv.getBits(token, 0, 5).toNumber()
 
-  // We always have sector X, Y, Z
-  let sectorX = mv.getBits(token, mv.TOKEN_SECTOR_X_SHIFT, mv.TOKEN_SECTOR_X_BITS).toNumber()
-  let sectorY = mv.getBits(token, mv.TOKEN_SECTOR_Y_SHIFT, mv.TOKEN_SECTOR_Y_BITS).toNumber()
-  let sectorZ = mv.getBits(token, mv.TOKEN_SECTOR_Z_SHIFT, mv.TOKEN_SECTOR_Z_BITS).toNumber()
+  // We always have sector X, Y, Z.
+  // Make sure to interpret the values we get as signed.
+  let sectorX = mv.unsignedToSigned(mv.getBits(token, mv.TOKEN_SECTOR_X_SHIFT, mv.TOKEN_SECTOR_X_BITS), mv.TOKEN_SECTOR_X_BITS).toNumber()
+  let sectorY = mv.unsignedToSigned(mv.getBits(token, mv.TOKEN_SECTOR_Y_SHIFT, mv.TOKEN_SECTOR_Y_BITS), mv.TOKEN_SECTOR_Y_BITS).toNumber()
+  let sectorZ = mv.unsignedToSigned(mv.getBits(token, mv.TOKEN_SECTOR_Z_SHIFT, mv.TOKEN_SECTOR_Z_BITS), mv.TOKEN_SECTOR_Z_BITS).toNumber()
 
   let keypath = sectorX + '.' + sectorY + '.' + sectorZ
 
