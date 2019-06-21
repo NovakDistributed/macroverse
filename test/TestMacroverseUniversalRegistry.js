@@ -172,8 +172,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let instance = await MacroverseUniversalRegistry.deployed()
     let mrv = await MRVToken.deployed()
 
-    // Get and approve the deposit tokens
-    await mrv.transfer(accounts[1], web3.toWei(1000, "ether"))
+    // Get and approve the deposit tokens (plus 100 to pass the minimum balance control)
+    await mrv.transfer(accounts[1], web3.toWei(1100, "ether"))
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
 
     // Try to get a child (some land on a planet) of the token (system) we already claimed for account 0
@@ -200,7 +200,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     assert.equal(saw_event, true, "We got the expected commitment hash in an event")
 
-    assert.equal((await mrv.balanceOf.call(accounts[1])).toNumber(), web3.toWei(0, "ether"), "We lost the expected amount of MRV to the deposit")
+    assert.equal((await mrv.balanceOf.call(accounts[1])).toNumber(), web3.toWei(100, "ether"), "We lost the expected amount of MRV to the deposit")
 
     // Advance time for 2 days to mature the commitment
     await mv.advanceTime(60 * 24 * 2)
@@ -270,7 +270,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Now try revealing. It should work because we own the parent token and it isn't land.
     await instance.reveal(to_claim, nonce, {from: accounts[1]})
 
-    // Get the owner of the token
+    // Get the owner of the token'
     let token_owner = await instance.ownerOf(to_claim)
 
     // Make sure we own the token

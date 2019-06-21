@@ -12,6 +12,41 @@ contract('MacroverseExistenceChecker', function(accounts) {
 
   })
 
+  it("should say that a series of locations used in other tests exist", async function() {
+    let instance = await MacroverseExistenceChecker.deployed()
+
+    for (let keypath of [
+      '0.0.0.0',
+      '0.0.0.0.0.-1.7.2.2.2',
+      '0.0.0.0.0.-1.7.2.2.2.0',
+      '0.0.0.0.0.-1.7.2.2.2.1',
+      '0.0.0.0.0.-1.7.2.2.2.2',
+      '0.0.0.0.0.-1.7.2.2.2.3'
+    ]) {
+
+      let token = mv.keypathToToken(keypath)
+      let keypath2 = mv.tokenToKeypath(token)
+      assert.equal(keypath, keypath2, "We pack and unpack the keypath correctly")
+      
+      assert.equal(await instance.exists.call(token), true, "We get the right result for existence of " + keypath)
+    }
+
+  })
+
+  it("should work for this particular token value", async function() {
+    let instance = await MacroverseExistenceChecker.deployed()
+    
+    let token = '2981514173051169324652112348446727'
+
+    let keypath = mv.tokenToKeypath(token)
+    assert.equal(keypath, '0.0.0.0.0.-1.7.2.2.2', "Token decodes to the correct keypath")
+
+    assert.equal(await instance.exists.call(token), true, "We get the right result for existence of " + keypath)
+  })
+
+  // TODO: we could check for rejecting queries with below the minimum balance,
+  // but I can't seem to write a test that doesn't hang.
+
   it("should say that the corner sectors exist and the past-the-corner sectors don't", async function() {
     let instance = await MacroverseExistenceChecker.deployed()
 

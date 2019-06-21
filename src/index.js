@@ -297,6 +297,9 @@ mv.getBits = function(num, lowest, count) {
 
 // And we have a function to convert tokens to keypaths
 mv.tokenToKeypath = function(token) {
+  // Tolerate string tokens by converting to BigNumber
+  token = new BigNumber(token)
+  
   let type = mv.getBits(token, 0, 5).toNumber()
 
   // We always have sector X, Y, Z.
