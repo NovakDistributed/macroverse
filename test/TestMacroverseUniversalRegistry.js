@@ -408,4 +408,63 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     assert.equal(token_owner, accounts[1], "Parent token owned by merger");
   })
 
+  it("should prohibit revealing for land on an asteroid belt", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    let mrv = await MRVToken.deployed()
+
+    // Approve the deposit tokens
+    await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
+
+    // This is land on an asteroid belt
+    let to_claim = mv.keypathToToken('0.0.0.28.2.-1.5.2.1.2')
+    let nonce = 0xDEADBEEF89
+    let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
+
+    // Commit for it
+    await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
+
+    // Advance time for 2 days to mature the commitment
+    await mv.advanceTime(60 * 24 * 2)
+
+    // Now try revealing. It should fail.
+    await instance.reveal(to_claim, nonce).then(function() {
+      assert.ok(false, "Revealed asteroid belt land")
+    }).catch(function() {
+      assert.ok(true, "Asteroid belt land reveal rejected")
+    })
+
+    // Clean up
+    await instance.cancel(data_hash, {from: accounts[1]})
+  })
+
+  it("should prohibit revealing for land on a ring", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    let mrv = await MRVToken.deployed()
+
+    // Approve the deposit tokens
+    await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
+
+    // This is land on a ring
+    let to_claim = mv.keypathToToken('0.0.0.16.5.0.1.2.3.2.1.0')
+    let nonce = 0xDEADBEEF90
+    let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
+
+    // Commit for it
+    await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
+
+    // Advance time for 2 days to mature the commitment
+    await mv.advanceTime(60 * 24 * 2)
+
+    // Now try revealing. It should fail.
+    await instance.reveal(to_claim, nonce).then(function() {
+      assert.ok(false, "Revealed ring land")
+    }).catch(function() {
+      assert.ok(true, "Ring land reveal rejected")
+    })
+
+    // Clean up
+    await instance.cancel(data_hash, {from: accounts[1]})
+  })
+
+
 })
