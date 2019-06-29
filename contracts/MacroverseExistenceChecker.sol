@@ -105,7 +105,7 @@ contract MacroverseExistenceChecker {
 
     /**
      * Determine if the given planet exists, and if so returns some information
-     * generated about its system.
+     * generated about it for re-use.
      */
     function planetExistsVerbose(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 system, uint16 planet) internal view returns (bool exists,
         bytes32 systemSeed, uint16 totalPlanets) {
@@ -134,6 +134,34 @@ contract MacroverseExistenceChecker {
     }
 
     /**
+     * Determine if the given moon exists, and if so returns some information
+     * generated about it for re-use.
+     */
+    function moonExistsVerbose(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 system, uint16 planet, uint16 moon) public view returns (bool exists,
+        bytes32 planetSeed, MacroverseSystemGenerator.WorldClass planetClass) {
+        
+        (bool havePlanet, bytes32 systemSeed, uint16 totalPlanets) = planetExistsVerbose(sectorX, sectorY, sectorZ, system, planet);
+
+        if (!havePlanet) {
+            // Moon can't exist without its planet
+            exists = false;
+        } else {
+
+            // Otherwise, work out the seed of the planet.
+            planetSeed = systemGenerator.getWorldSeed(systemSeed, planet);
+            
+            // Use it to get the class of the planet, which is important for knowing if there is a moon
+            planetClass = systemGenerator.getPlanetClass(planetSeed, planet, totalPlanets);
+
+            // Count its moons
+            uint16 moonCount = moonGenerator.getPlanetMoonCount(planetSeed, planetClass);
+
+            // This moon exists if it is less than the count
+            exists = (moon < moonCount);
+        }
+    }
+
+    /**
      * Determine if the given planet exists.
      */
     function planetExists(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 system, uint16 planet) public view returns (bool) {
@@ -148,24 +176,11 @@ contract MacroverseExistenceChecker {
      * Determine if the given moon exists.
      */
     function moonExists(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 system, uint16 planet, uint16 moon) public view returns (bool) {
-        (bool havePlanet, bytes32 systemSeed, uint16 totalPlanets) = planetExistsVerbose(sectorX, sectorY, sectorZ, system, planet);
-
-        if (!havePlanet) {
-            // Moon can't exist without its planet
-            return false;
-        }
-
-        // Otherwise, work out the seed of the planet.
-        bytes32 planetSeed = systemGenerator.getWorldSeed(systemSeed, planet);
-        
-        // Use it to get the class of the planet, which is important for knowing if there is a moon
-        MacroverseSystemGenerator.WorldClass planetClass = systemGenerator.getPlanetClass(planetSeed, planet, totalPlanets);
-
-        // Count its moons
-        uint16 moonCount = moonGenerator.getPlanetMoonCount(planetSeed, planetClass);
-
-        // This moon exists if it is less than the count
-        return (moon < moonCount);
+        // Get only the existence flag
+        (bool exists, , ) = moonExistsVerbose(sectorX, sectorY, sectorZ, system, planet, moon);
+    
+        // Return it
+        return exists;
     }
 
     /**
@@ -201,14 +216,56 @@ contract MacroverseExistenceChecker {
         // And there may be a moon
         uint16 moon = token.getTokenMoon();
 
-        if (tokenType == TOKEN_TYPE_PLANET || (moon == MOON_NONE && token.tokenIsLand())) {
+        if (tokenType == TOKEN_TYPE_PLANET) {
             // We exist if the planet exists.
             // TODO: maybe check for ring/asteroid field types and don't let their land exist at all?
             return planetExists(sectorX, sectorY, sectorZ, system, planet);
         }
 
-        // Otherwise, it must be a moon or land on a moon
-        return moonExists(sectorX, sectorY, sectorZ, system, planet, moon);
+        if (tokenType == TOKEN_TYPE_MOON) {
+             // We exist if the moon exists
+            return moonExists(sectorX, sectorY, sectorZ, system, planet, moon);
+        }
+
+        // Otherwise it must be land.
+        assert(token.tokenIsLand());
+
+        // We exist if the planet or moon exists and isn't a ring or asteroid belt
+        // We need the parent existence flag
+        bool haveParent;
+        // We will need a seed scratch.
+        bytes32 seed;
+
+        if (moon == MOON_NONE) {
+            // Make sure the planet exists and isn't a ring
+            uint16 totalPlanets;
+            (haveParent, seed, totalPlanets) = planetExistsVerbose(sectorX, sectorY, sectorZ, system, planet);
+
+            if (!haveParent) {
+                return false;
+            }
+
+            // Get the planet's seed
+            seed = systemGenerator.getWorldSeed(seed, planet);
+
+            // Land exists if the planet isn't an AsteroidBelt
+            return systemGenerator.getPlanetClass(seed, planet, totalPlanets) != MacroverseSystemGenerator.WorldClass.AsteroidBelt;
+
+        } else {
+            // Make sure the moon exists and isn't a ring
+            MacroverseSystemGenerator.WorldClass planetClass;
+            (haveParent, seed, planetClass) = moonExistsVerbose(sectorX, sectorY, sectorZ, system, planet, moon);
+
+            if (!haveParent) {
+                return false;
+            }
+
+            // Get the moon's seed
+            seed = systemGenerator.getWorldSeed(seed, moon);
+
+            // Land exists if the moon isn't a Ring
+            return moonGenerator.getMoonClass(planetClass, seed, moon) != MacroverseSystemGenerator.WorldClass.Ring;
+        }
     }
 
 }

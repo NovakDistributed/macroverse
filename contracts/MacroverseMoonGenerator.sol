@@ -86,6 +86,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
 
     /**
      * Get the number of moons a planet has, using its class. Will sometimes return 0; there is no hasMoons boolean flag to check.
+     * The seed of each moon is obtained from the MacroverseSystemGenerator.
      */
     function getPlanetMoonCount(bytes32 planetSeed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (uint16) {
         RNG.RandNode memory node = RNG.RandNode(planetSeed).derive("mooncount");
@@ -114,6 +115,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
 
     /**
      * Get the class of a moon, given the moon's seed and the class of its parent planet.
+     * The seed of each moon is obtained from the MacroverseSystemGenerator.
      * The actual moon body properties (i.e. mass) are generated with the MacroverseSystemGenerator as if it were a planet.
      */
     function getMoonClass(MacroverseSystemGenerator.WorldClass parent, bytes32 moonSeed, uint16 moonNumber) public view onlyControlledAccess
