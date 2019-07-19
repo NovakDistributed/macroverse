@@ -233,19 +233,17 @@ contract MacroverseMoonGenerator is ControlledAccess {
         // Define maximum inclination in milliradians
         // 175 milliradians = ~ 10 degrees
         int88 maximum;
-        // Inclination is freer for moons than for planets
         if (class == MacroverseSystemGenerator.WorldClass.Asteroidal || class == MacroverseSystemGenerator.WorldClass.Cometary) {
             // Tiny captured things can be pretty free
             maximum = 850;
         } else if (class == MacroverseSystemGenerator.WorldClass.Lunar || class == MacroverseSystemGenerator.WorldClass.Europan) {
-            maximum = 200;
+            maximum = 100;
         } else if (class == MacroverseSystemGenerator.WorldClass.Terrestrial || class == MacroverseSystemGenerator.WorldClass.Panthalassic) {
-            maximum = 180;
+            maximum = 80;
         } else if (class == MacroverseSystemGenerator.WorldClass.Neptunian) {
-            maximum = 150;
+            maximum = 50;
         } else if (class == MacroverseSystemGenerator.WorldClass.Ring) {
-            // Rings can do almost anything they want (up to like 1.5 radians).
-            maximum = 1500;
+            maximum = 350;
         } else {
             // Not real!
             revert();
