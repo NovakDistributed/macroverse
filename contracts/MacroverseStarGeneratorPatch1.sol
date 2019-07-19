@@ -44,7 +44,12 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
      * What's the last fractional bit?
      */
     int128 constant REAL_HALF = REAL_ONE >> 1;
-    
+
+    /**
+     * It is useful to have Pi around.
+     * We can't pull it in from the library.
+     */
+    int128 constant REAL_PI = 3454217652358;
 
     /**
      * Deploy a new copy of the patch generator.
@@ -145,6 +150,35 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
         // Wikipedia says nobody knows the bounds for Sol, but let's say 0.75 to 2.0 AU to be nice and round and also sort of average
         realInnerRadius = RealMath.toReal(112198400000).mul(realScale);
         realOuterRadius = RealMath.toReal(299195700000).mul(realScale);
+    }
+
+    /**
+     * Get the Y and X axis angles for the rotational axis of the object, relative to galactic up.
+     *
+     * Defines a vector normal to the XY plane for the star system's local
+     * coordinates, relative to which orbital inclinations are measured.
+     *
+     * The object's rotation axis starts straight up towards galactic +Z.
+     * Then the object is rotated in Y, around the axis by the Y angle.
+     * Then it is rotated forward (what would be toward the viewer) in the
+     * object's transformed X by the X axis angle.
+     * Both angles are in radians.
+     * The X angle is never negative, because the Y angle would just be the opposite direction.
+     * It is also never greater than Pi, because otherwise we would just measure around the other way.
+     *
+     * Most users won't need this unless they want to be able to work out
+     * directions from things in one system to other systems.
+     */
+    function getObjectYXAxisAngles(bytes32 seed) public view onlyControlledAccess returns (int128 realYRadians, int128 realXRadians) {
+        // The Y angle should be uniform over all angles.
+        realYRadians = RNG.RandNode(seed).derive("axisy").getRealBetween(-REAL_PI, REAL_PI);
+
+        // The X angle will also be uniform from 0 to pi.
+        // This makes us pick a point in a flat 2d angle plane, so we will, on the sphere, have more density towards the poles.
+        // See http://corysimon.github.io/articles/uniformdistn-on-sphere/
+        // Being uniform on the sphere would require some trig, and non-uniformity makes sense since the galaxy has a preferred plane.
+        realXRadians = RNG.RandNode(seed).derive("axisx").getRealBetween(0, REAL_PI);
+        
     }
 
     

@@ -40,7 +40,25 @@ contract('MacroverseSystemGenerator', function(accounts) {
     
     assert.equal(failure_found, false, "Authorized query should succeed")
   })
-  
+ 
+  it("should have Y and X Euler angles for the fred system", async function() {
+    let instance = await MacroverseStarGeneratorPatch1.deployed();
+    let [eulerYReal, eulerXReal] = (await instance.getObjectYXAxisAngles('fred'))
+    let eulerY = mv.fromReal(eulerYReal)
+    let eulerX = mv.fromReal(eulerXReal)
+    
+    // Y angle (applied first) must be from -pi to pi
+    assert.isAbove(eulerY, -Math.PI);
+    assert.isBelow(eulerY, Math.PI);
+
+    // X angle (applied second) must be from 0 to pi
+    assert.isAbove(eulerX, 0);
+    assert.isBelow(eulerX, Math.PI);
+
+    // We don't pretend to be uniform. We will over-represent upwards (+Z) and downwards poles.
+
+  })
+
   it("should have 8 planets in the fred system", async function() {
     let instance = await MacroverseStarGeneratorPatch1.deployed()
     let count = (await instance.getObjectPlanetCount.call('fred', mv.objectClass['MainSequence'], mv.spectralType['TypeG'])).toNumber()

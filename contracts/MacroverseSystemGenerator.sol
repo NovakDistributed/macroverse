@@ -368,8 +368,8 @@ contract MacroverseSystemGenerator is ControlledAccess {
     
     /**
      * Get the longitude of the ascending node for a planet or moon. For
-     * planets, this is the angle from galactic +X to ascending node. For
-     * moons, we use galactic +X transformed into the planet's equatorial plane
+     * planets, this is the angle from system +X to ascending node. For
+     * moons, we use system +X transformed into the planet's equatorial plane
      * by the equatorial plane/rotation axis angles.
      */ 
     function getWorldLan(bytes32 seed) public view onlyControlledAccess returns (int128) {
@@ -379,7 +379,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
     }
     
     /**
-     * Get the inclination (angle from galactic XZ plane to orbital plane at the ascending node) for a planet.
+     * Get the inclination (angle from system XZ plane to orbital plane at the ascending node) for a planet.
      * For a moon, this is done in the moon generator instead.
      * Inclination is always positive. If it were negative, the ascending node would really be the descending node.
      * Result is a real in radians.
@@ -470,7 +470,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
         // The Y angle should be uniform over all angles.
         realYRadians = RNG.RandNode(seed).derive("axisy").getRealBetween(-REAL_PI, REAL_PI);
 
-        // The Z angle will be mostly small positive or negative, with some sideways and some near Pi/2 (meaning retrograde rotation)
+        // The X angle will be mostly small positive or negative, with some sideways and some near Pi/2 (meaning retrograde rotation)
         int16 tilt_die = RNG.RandNode(seed).derive("tilt").d(1, 6, 0);
         
         // Start with low tilt, right side up
