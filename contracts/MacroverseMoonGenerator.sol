@@ -89,26 +89,38 @@ contract MacroverseMoonGenerator is ControlledAccess {
      * The seed of each moon is obtained from the MacroverseSystemGenerator.
      */
     function getPlanetMoonCount(bytes32 planetSeed, MacroverseSystemGenerator.WorldClass class) public view onlyControlledAccess returns (uint16) {
-        RNG.RandNode memory node = RNG.RandNode(planetSeed).derive("mooncount");
-        
-        uint16 limit;
+        // We will roll n of this kind of die and subtract n to get our moon count
+        int8 die;
+        int8 n = 2;
+        // We can also divide by this
+        int8 divisor = 1;
 
         if (class == MacroverseSystemGenerator.WorldClass.Lunar || class == MacroverseSystemGenerator.WorldClass.Europan) {
-            limit = 3;
+            die = 2;
+            divisor = 2;
+            // (2d2 - 2) / 2 = 25% chance of 1, 75% chance of 0
         } else if (class == MacroverseSystemGenerator.WorldClass.Terrestrial || class == MacroverseSystemGenerator.WorldClass.Panthalassic) {
-            limit = 4;
+            die = 3;
+            // 2d3-2: https://www.wolframalpha.com/input/?i=roll+2d3
         } else if (class == MacroverseSystemGenerator.WorldClass.Neptunian) {
-            limit = 6;
+            die = 8;
+            n = 2;
+            divisor = 2;
         } else if (class == MacroverseSystemGenerator.WorldClass.Jovian) {
-            limit = 8;
+            die = 6;
+            n = 3;
+            divisor = 2;
         } else if (class == MacroverseSystemGenerator.WorldClass.AsteroidBelt) {
-            limit = 0;
+            // Just no moons here
+            return 0;
         } else {
             // Not real!
             revert();
         }
         
-        uint16 roll = uint16(node.getIntBetween(0, int88(limit + 1)));
+        RNG.RandNode memory node = RNG.RandNode(planetSeed).derive("mooncount");
+
+        uint16 roll = uint16(node.d(n, die, -n) / int88(divisor));
         
         return roll;
     }
@@ -130,7 +142,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
 
         RNG.RandNode memory moonNode = RNG.RandNode(moonSeed);
 
-        if (moonNumber == 0 && moonNode.derive("ring").d(1, 100, 0) < 15) {
+        if (moonNumber == 0 && moonNode.derive("ring").d(1, 100, 0) < 20) {
             // This should be a ring
             return MacroverseSystemGenerator.WorldClass.Ring;
         }
@@ -150,8 +162,8 @@ contract MacroverseMoonGenerator is ControlledAccess {
             rankInType++;
         }
 
-        // Roll a lower rank. Bias towards the center.
-        uint lowerRank = uint(moonNode.derive("rank").d(2, int8(rankInType), -2) / 2);
+        // Roll a lower rank. Bias upward by subtracting 1 instead of 2, so we more or less round up.
+        uint lowerRank = uint(moonNode.derive("rank").d(2, int8(rankInType), -1) / 2);
 
         // Determine the type of the moon (0=rock, 1=ice)
         uint moonType = crossType ? parentType : (parentType + 1) % 2;

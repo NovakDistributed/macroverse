@@ -43,10 +43,10 @@ contract('MacroverseMoonGenerator', function(accounts) {
     assert.equal(failure_found, false, "Authorized query should succeed")
   })
   
-  it("should have some moons around our test planet", async function() {
+  it("should have a moon around our test planet", async function() {
     let instance = await MacroverseMoonGenerator.deployed()
     let count = (await instance.getPlanetMoonCount.call(TEST_SEED, TEST_CLASS)).toNumber()
-    assert.equal(count, 4);
+    assert.equal(count, 1);
   
   })
 
