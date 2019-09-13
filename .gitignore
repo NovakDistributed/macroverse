@@ -1,4 +1,6 @@
 *~
 *.swp
 build/contracts/*.json
-
+.env
+keystore/*
+node_modules/*
