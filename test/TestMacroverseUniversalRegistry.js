@@ -523,5 +523,79 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await instance.cancel(data_hash, {from: accounts[1]})
   })
 
+  it("should prohibit revealing for a sector", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    let mrv = await MRVToken.deployed()
+
+    // Approve the deposit tokens
+    await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[0]))
+
+    // This is land on a ring
+    let to_claim = mv.keypathToToken('0.0.0')
+    let nonce = 0xDEADBEEF9001
+    let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
+
+    // Commit for it with loads of money
+    await instance.commit(data_hash, await mrv.balanceOf.call(accounts[0]))
+
+    // Advance time for 2 days to mature the commitment
+    await mv.advanceTime(60 * 24 * 2)
+
+    // Now try revealing. It should fail.
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed entire sector")
+
+    // Clean up
+    await instance.cancel(data_hash)
+  })
+
+  it("should report a sensible set of minimum creation deposits", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    
+    let star_keypath = '0.0.0.0'
+    let star_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(star_keypath))).toNumber()
+    console.log('Star cost: ' + web3.fromWei(star_cost, 'ether') + ' MRV')
+    assert.equal(star_cost, web3.toWei(1000, "ether"), "star cost is incorrect")
+
+    let planet_keypath = star_keypath + '.0'
+    let planet_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(planet_keypath))).toNumber()
+    console.log('Planet cost: ' + web3.fromWei(planet_cost, 'ether') + ' MRV')
+    assert.equal(planet_cost, web3.toWei(100, "ether"), "planet cost is incorrect")
+
+    let moon_keypath = planet_keypath + '.0'
+    let moon_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(moon_keypath))).toNumber()
+    console.log('Moon cost: ' + web3.fromWei(moon_cost, 'ether') + ' MRV')
+    assert.equal(moon_cost, web3.toWei(25, "ether"), "moon cost is incorrect")
+
+    for (let i = 1; i < 28; i++) {
+      // Try all the land subdivisions with at least one land number
+      let planet_land_keypath = planet_keypath + '.-1'
+      for(let j = 0; j < i; j++) {
+        planet_land_keypath = planet_land_keypath + '.0'
+      }
+
+      // Compute area in Earth acres (126 billion overall)
+      let earth_total_acres = 126000000000
+
+      let planet_land_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(planet_land_keypath))).toNumber()
+      let planet_land_area = earth_total_acres / 2 / Math.pow(4, i)
+      console.log('Planet land level ' + i + ' cost: ' +
+        web3.fromWei(planet_land_cost, 'ether') + ' MRV @ ' + planet_land_area + ' Earth-acres or ' +
+        web3.fromWei(planet_land_cost/planet_land_area, "ether") + " MRV per acre on Earth")
+      assert.equal(planet_land_cost, Math.trunc(web3.toWei(100 / Math.pow(2, i + 1)), "ether"), "planet land cost is incorrect")
+      
+      let moon_land_keypath = moon_keypath
+      for(let j = 0; j < i; j++) {
+        moon_land_keypath = moon_land_keypath + '.0'
+      }
+
+      let moon_land_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(moon_land_keypath))).toNumber()
+      console.log('Moon land level ' + i + ' cost: ' +
+        web3.fromWei(moon_land_cost, 'ether') + ' MRV')
+      assert.equal(moon_land_cost, Math.trunc(web3.toWei(25 / Math.pow(2, i + 1)), "ether"), "moon land cost is incorrect")
+    }
+
+    
+  })
+
 
 })

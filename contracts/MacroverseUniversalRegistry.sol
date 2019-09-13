@@ -422,15 +422,21 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
             return minSystemDepositInAtomicUnits.div(10);
         } else if (token_type == TOKEN_TYPE_MOON) {
             // For moons, the deposit is a smaller fraction
-            return minSystemDepositInAtomicUnits.div(30);
+            return minSystemDepositInAtomicUnits.div(40);
         } else {
             // It must be land
             
             // For land, the deposit is smaller and cuts in half with each level of subdivision (starting at 1).
+
+            // Base on the cost of the whole body
+            // For moons we pay this fraction of the star system cost
+            // For planets we pay more (divide less)
+            uint256 whole_cost = minSystemDepositInAtomicUnits.div((token.getTokenMoon() == MOON_NONE) ? 10 : 40);
+
             // So all the small claims is twice as expensive as the big claim.
             uint256 subdivisions = token.getTokenTrixelCount();
-            return minSystemDepositInAtomicUnits.div(30) >> subdivisions;
-            // TODO: Look at and balance the exact relationships between planet, moon, and whole-surface claim costs.
+            // Divide by an extra 2 at first because the first level has 8 trixels and not 4.
+            return whole_cost >> (subdivisions + 1);
         }
     }
 
