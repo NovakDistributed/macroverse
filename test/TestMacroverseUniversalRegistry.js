@@ -4,6 +4,15 @@ let MRVToken = artifacts.require("MRVToken");
 // Load the Macroverse module JavaScript
 let mv = require('../src')
 
+async function assert_throws(promise, message) {
+  try {
+    await promise
+    assert.ok(false, message)
+  } catch {
+    // OK
+  }
+}
+
 contract('MacroverseUniversalRegistry', function(accounts) {
   it("should allow committing", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
@@ -56,20 +65,66 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let to_claim = mv.keypathToToken('0.0.0.0')
     let nonce = 0xDEAD
     
-    await instance.reveal(to_claim, nonce).then(function() {
-      assert.ok(false, "Revealed too early")
-    }).catch(function() {
-      assert.ok(true, "Early reveal rejected")
-    })
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed too early")
 
     let balance = (await instance.balanceOf(accounts[0])).toNumber();
     assert.equal(balance, 0, "Claimant got a token anyway")
 
     // ownerOf throws for nonexistent tokens, it doesn't say they're owned by nobody.
-    // There's no way to poll existence either I don't think.
+    assert.equal(await instance.exists(to_claim), false, "Token shouldn't exist after too-early reveal")
   })
 
-  it("should allow revealing later", async function() {
+  it("should prohibit revealing at the right time but with too low a deposit", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+
+    // Remember our commitment from the last test?
+    let to_claim = mv.keypathToToken('0.0.0.0')
+    let nonce = 0xDEAD
+    
+    // Advance time for 2 days which should be enough
+    await mv.advanceTime(60 * 24 * 2)
+
+    assert.equal(await instance.exists(to_claim), false, "Token exists too early")
+
+    // We're also going to test price adjustments
+
+    let saw_event = false
+    let new_price = undefined
+
+    // Watch price adjust events
+    let filter = instance.DepositScaleChange({}, { fromBlock: 'latest', toBlock: 'latest' })
+    filter.watch((error, event_report) => {
+      if (event_report.event == 'DepositScaleChange') {
+        // Remember we saw the change
+        saw_event = true
+        // And what we changed to
+        new_price = event_report.args.new_min_system_deposit_in_atomic_units.toNumber()
+      }
+    })
+
+    // Adjust the price up
+    await instance.setMinimumSystemDeposit(web3.toWei(1001, "ether"))
+
+    filter.stopWatching()
+
+    assert.equal(saw_event, true, "We got the first expected price change event")
+    assert.equal(new_price, web3.toWei(1001, "ether"), "We got the first expected new price")
+
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed with too small deposit")
+
+    // Adjust the price back down
+    await instance.setMinimumSystemDeposit(web3.toWei(1000, "ether"))
+    // TODO: somehow this doesn't fire the event right away. It comes in later.
+
+    let balance = (await instance.balanceOf(accounts[0])).toNumber();
+    assert.equal(balance, 0, "Claimant got a token anyway")
+
+    // ownerOf throws for nonexistent tokens, it doesn't say they're owned by nobody.
+
+    assert.equal(await instance.exists(to_claim), false, "Token shouldn't exist after too-cheap reveal")
+  })
+
+  it("should allow revealing at the right time", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
 
     let to_claim = mv.keypathToToken('0.0.0.0')
@@ -77,8 +132,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     assert.equal(await instance.exists(to_claim), false, "Token exists too early");
     
-    // Advance time for 2 days which should be enough
-    await mv.advanceTime(60 * 24 * 2)
+    // Time has already been advanced
 
     // Wait for the reveal to try to happen
     await instance.reveal(to_claim, nonce)
@@ -128,14 +182,10 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
-    await instance.reveal(to_claim, nonce).then(function() {
-      assert.ok(false, "Revealed conflicting claim")
-    }).catch(function() {
-      assert.ok(true, "Conflicting reveal rejected")
-    })
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed conflicting claim")
   })
 
-  it("should prohibit canceling commitments made by others commitment", async function() {
+  it("should prohibit canceling commitments made by others", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
 
     // We don't even have a way to address other people's commitments unless we can collide hashes.
@@ -144,12 +194,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let nonce = 0xDEAD2 
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
 
-    await instance.cancel(data_hash, {from: accounts[1]}).then(function() {
-      assert.ok(false, "Canceled someone's claim")
-    }).catch(function() {
-      assert.ok(true, "Non-owner cancel rejected")
-    })
-    
+    await assert_throws(instance.cancel(data_hash, {from: accounts[1]}), "Canceled someone's claim")
   })
 
   it("should allow canceling your own commitment that you failed to reveal", async function() {
@@ -166,6 +211,46 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4000, "ether"), "Our deposit was refunded")
     
+  })
+
+  it("should prohibit revealing expired commitments", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    let mrv = await MRVToken.deployed()
+
+    // Try to get some land
+    let to_claim = mv.keypathToToken('0.1.2.0.0.-1.7.2.2.2')
+    let nonce = 0xDEADBEEF 
+    let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
+    
+    let saw_event = false
+
+    // Watch commit events
+    let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
+    filter.watch((error, event_report) => {
+      if (event_report.event == 'Commit' && event_report.args.owner == accounts[0] && event_report.args.hash == data_hash) {
+        // Remember we saw the hash
+        saw_event = true
+      }
+    })
+
+    // Commit for it
+    await instance.commit(data_hash, web3.toWei(1000, "ether"))
+
+    // Don't care about events after that
+    filter.stopWatching()
+
+    assert.equal(saw_event, true, "We got the expected commitment hash in an event")
+
+    // Advance time for 20 days which should be enough
+    await mv.advanceTime(60 * 24 * 20)
+
+    // Now try revealing. It should fail.
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed expired claim")
+
+    assert.equal(await instance.exists(to_claim), false, "Token shouldn't exist after expired reveal")
+
+    // Now cancel the commitment
+    await instance.cancel(data_hash)
   })
 
   it("should prohibit revealing for a child token of a token owned by someone else", async function() {
@@ -206,11 +291,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
-    await instance.reveal(to_claim, nonce).then(function() {
-      assert.ok(false, "Revealed unauthorized subclaim")
-    }).catch(function() {
-      assert.ok(true, "Subclaim reveal rejected")
-    })
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed unauthorized subclaim")
 
     // We leave the commitment outstanding for a later test
   })
@@ -220,11 +301,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     let token = mv.keypathToToken('0.0.0.0')
 
-    await instance.release(token, {from: accounts[1]}).then(function() {
-      assert.ok(false, "Released someone's claim")
-    }).catch(function() {
-      assert.ok(true, "Non-owner release rejected")
-    })
+    await assert_throws(instance.release(token, {from: accounts[1]}), "Released someone's claim")
     
   })
 
@@ -236,11 +313,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // ERC-721 weirdly has no transfer, only transferFrom. Probably because
     // that's easier to prove correctness for by inspection.
 
-    await instance.transferFrom(accounts[0], accounts[1], token, {from: accounts[1]}).then(function() {
-      assert.ok(false, "Moved someone's token")
-    }).catch(function() {
-      assert.ok(true, "Non-owner move rejected")
-    })
+    await assert_throws(instance.transferFrom(accounts[0], accounts[1], token, {from: accounts[1]}), "Moved someone's token")
     
   })
 
@@ -327,11 +400,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
-    await instance.reveal(to_claim, nonce).then(function() {
-      assert.ok(false, "Revealed land subplot")
-    }).catch(function() {
-      assert.ok(true, "Subplot reveal rejected")
-    })
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed land subplot")
 
     // Clean up
     await instance.cancel(data_hash, {from: accounts[1]})
@@ -356,11 +425,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
-    await instance.reveal(to_claim, nonce).then(function() {
-      assert.ok(false, "Revealed land superplot")
-    }).catch(function() {
-      assert.ok(true, "Superplot reveal rejected")
-    })
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed land superplot")
 
     // Clean up
     await instance.cancel(data_hash, {from: accounts[1]})
@@ -427,11 +492,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
-    await instance.reveal(to_claim, nonce).then(function() {
-      assert.ok(false, "Revealed asteroid belt land")
-    }).catch(function() {
-      assert.ok(true, "Asteroid belt land reveal rejected")
-    })
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed asteroid belt land")
 
     // Clean up
     await instance.cancel(data_hash, {from: accounts[1]})
@@ -456,11 +517,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await mv.advanceTime(60 * 24 * 2)
 
     // Now try revealing. It should fail.
-    await instance.reveal(to_claim, nonce).then(function() {
-      assert.ok(false, "Revealed ring land")
-    }).catch(function() {
-      assert.ok(true, "Ring land reveal rejected")
-    })
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed ring land")
 
     // Clean up
     await instance.cancel(data_hash, {from: accounts[1]})
