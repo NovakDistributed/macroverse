@@ -316,7 +316,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
         }
         
         // Otherwise, we can fill the order entirely, so make the tokens and put them in the specified account.
-        // TODO: This has been updated for OZ 2.0; the deployed onctract on chain does NOT use the OZ minting logic.
+        // TODO: This has been updated for OZ 2.0; the deployed contract on chain does NOT use the OZ minting logic.
         // In particular, it did not emit transfer events for minted tokens, which confuses some blockchain viewers.
         _mint(recipient, tokens);
         
