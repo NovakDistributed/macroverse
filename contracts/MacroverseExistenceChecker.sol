@@ -9,6 +9,7 @@ import "./MacroverseStarGenerator.sol";
 import "./MacroverseStarGeneratorPatch1.sol";
 import "./MacroverseSystemGenerator.sol";
 import "./MacroverseMoonGenerator.sol";
+import "./Macroverse.sol";
 
 /**
  * The MacroverseExistenceChecker queries Macroverse generator contracts to
@@ -138,7 +139,7 @@ contract MacroverseExistenceChecker {
      * generated about it for re-use.
      */
     function moonExistsVerbose(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 system, uint16 planet, uint16 moon) public view returns (bool exists,
-        bytes32 planetSeed, MacroverseSystemGenerator.WorldClass planetClass) {
+        bytes32 planetSeed, Macroverse.WorldClass planetClass) {
         
         (bool havePlanet, bytes32 systemSeed, uint16 totalPlanets) = planetExistsVerbose(sectorX, sectorY, sectorZ, system, planet);
 
@@ -249,11 +250,11 @@ contract MacroverseExistenceChecker {
             seed = systemGenerator.getWorldSeed(seed, planet);
 
             // Land exists if the planet isn't an AsteroidBelt
-            return systemGenerator.getPlanetClass(seed, planet, totalPlanets) != MacroverseSystemGenerator.WorldClass.AsteroidBelt;
+            return systemGenerator.getPlanetClass(seed, planet, totalPlanets) != Macroverse.WorldClass.AsteroidBelt;
 
         } else {
             // Make sure the moon exists and isn't a ring
-            MacroverseSystemGenerator.WorldClass planetClass;
+            Macroverse.WorldClass planetClass;
             (haveParent, seed, planetClass) = moonExistsVerbose(sectorX, sectorY, sectorZ, system, planet, moon);
 
             if (!haveParent) {
@@ -264,7 +265,7 @@ contract MacroverseExistenceChecker {
             seed = systemGenerator.getWorldSeed(seed, moon);
 
             // Land exists if the moon isn't a Ring
-            return moonGenerator.getMoonClass(planetClass, seed, moon) != MacroverseSystemGenerator.WorldClass.Ring;
+            return moonGenerator.getMoonClass(planetClass, seed, moon) != Macroverse.WorldClass.Ring;
         }
     }
 
