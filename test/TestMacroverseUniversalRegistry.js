@@ -1,4 +1,5 @@
 let MacroverseUniversalRegistry = artifacts.require("MacroverseUniversalRegistry");
+let MacroverseRealEstate = artifacts.require("MacroverseRealEstate");
 let MRVToken = artifacts.require("MRVToken");
 
 // Load the Macroverse module JavaScript
@@ -60,6 +61,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
   it("should prohibit revealing too soon", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
+    let backend = await MacroverseRealEstate.deployed()
 
     // Remember our commitment from the last test?
     let to_claim = mv.keypathToToken('0.0.0.0')
@@ -67,15 +69,16 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed too early")
 
-    let balance = (await instance.balanceOf(accounts[0])).toNumber();
+    let balance = (await backend.balanceOf(accounts[0])).toNumber();
     assert.equal(balance, 0, "Claimant got a token anyway")
 
     // ownerOf throws for nonexistent tokens, it doesn't say they're owned by nobody.
-    assert.equal(await instance.exists(to_claim), false, "Token shouldn't exist after too-early reveal")
+    assert.equal(await backend.exists(to_claim), false, "Token shouldn't exist after too-early reveal")
   })
 
   it("should prohibit revealing at the right time but with too low a deposit", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
+    let backend = await MacroverseRealEstate.deployed()
 
     // Remember our commitment from the last test?
     let to_claim = mv.keypathToToken('0.0.0.0')
@@ -84,7 +87,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Advance time for 2 days which should be enough
     await mv.advanceTime(60 * 24 * 2)
 
-    assert.equal(await instance.exists(to_claim), false, "Token exists too early")
+    assert.equal(await backend.exists(to_claim), false, "Token exists too early")
 
     // We're also going to test price adjustments
 
@@ -116,21 +119,22 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await instance.setMinimumSystemDeposit(web3.toWei(1000, "ether"))
     // TODO: somehow this doesn't fire the event right away. It comes in later.
 
-    let balance = (await instance.balanceOf(accounts[0])).toNumber();
+    let balance = (await backend.balanceOf(accounts[0])).toNumber();
     assert.equal(balance, 0, "Claimant got a token anyway")
 
     // ownerOf throws for nonexistent tokens, it doesn't say they're owned by nobody.
 
-    assert.equal(await instance.exists(to_claim), false, "Token shouldn't exist after too-cheap reveal")
+    assert.equal(await backend.exists(to_claim), false, "Token shouldn't exist after too-cheap reveal")
   })
 
   it("should allow revealing at the right time", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
+    let backend = await MacroverseRealEstate.deployed()
 
     let to_claim = mv.keypathToToken('0.0.0.0')
     let nonce = 0xDEAD
 
-    assert.equal(await instance.exists(to_claim), false, "Token exists too early");
+    assert.equal(await backend.exists(to_claim), false, "Token exists too early");
     
     // Time has already been advanced
 
@@ -138,11 +142,11 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await instance.reveal(to_claim, nonce)
 
     // Get the owner of the token we got
-    let token_owner = await instance.ownerOf(to_claim)
+    let token_owner = await backend.ownerOf(to_claim)
 
     // Make sure we own the token
     assert.equal(token_owner, accounts[0], "Token not owned by claimant");
-    assert.equal(await instance.exists(to_claim), true, "Token not created");
+    assert.equal(await backend.exists(to_claim), true, "Token not created");
   })
 
   it("should prohibit revealing for an already owned thing", async function() {
@@ -215,6 +219,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
   it("should prohibit revealing expired commitments", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
+    let backend = await MacroverseRealEstate.deployed()
     let mrv = await MRVToken.deployed()
 
     // Try to get some land
@@ -247,7 +252,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Now try revealing. It should fail.
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed expired claim")
 
-    assert.equal(await instance.exists(to_claim), false, "Token shouldn't exist after expired reveal")
+    assert.equal(await backend.exists(to_claim), false, "Token shouldn't exist after expired reveal")
 
     // Now cancel the commitment
     await instance.cancel(data_hash)
@@ -306,26 +311,26 @@ contract('MacroverseUniversalRegistry', function(accounts) {
   })
 
   it("should prohibit transfering other people's things", async function() {
-    let instance = await MacroverseUniversalRegistry.deployed()
+    let backend = await MacroverseRealEstate.deployed()
 
     let token = mv.keypathToToken('0.0.0.0')
 
     // ERC-721 weirdly has no transfer, only transferFrom. Probably because
     // that's easier to prove correctness for by inspection.
 
-    await assert_throws(instance.transferFrom(accounts[0], accounts[1], token, {from: accounts[1]}), "Moved someone's token")
+    await assert_throws(backend.transferFrom(accounts[0], accounts[1], token, {from: accounts[1]}), "Moved someone's token")
     
   })
 
   it("should allow transfering owned things", async function() {
-    let instance = await MacroverseUniversalRegistry.deployed()
+    let backend = await MacroverseRealEstate.deployed()
 
     let token = mv.keypathToToken('0.0.0.0')
 
-    await instance.transferFrom(accounts[0], accounts[1], token, {from: accounts[0]})
+    await backend.transferFrom(accounts[0], accounts[1], token, {from: accounts[0]})
 
     // Get the owner of the token
-    let token_owner = await instance.ownerOf(token)
+    let token_owner = await backend.ownerOf(token)
 
     // Make sure we own the token
     assert.equal(token_owner, accounts[1], "Token owned by recipient");
@@ -334,6 +339,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
   it("should permit revealing for a child token of a token owned by us", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
+    let backend = await MacroverseRealEstate.deployed()
     let mrv = await MRVToken.deployed()
 
     // Try to get a child (some land on a planet) of the token (system) we now own
@@ -344,7 +350,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await instance.reveal(to_claim, nonce, {from: accounts[1]})
 
     // Get the owner of the token'
-    let token_owner = await instance.ownerOf(to_claim)
+    let token_owner = await backend.ownerOf(to_claim)
 
     // Make sure we own the token
     assert.equal(token_owner, accounts[1], "Token owned by recipient");
@@ -433,6 +439,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
   it("should permit subdividing land", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
+    let backend = await MacroverseRealEstate.deployed()
 
     let parent_token = mv.keypathToToken('0.0.0.0.0.-1.7.2.2.2')
     let child_tokens = []
@@ -447,7 +454,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     for (let child of child_tokens) {
       // Get the owner of the token
-      let token_owner = await instance.ownerOf(child)
+      let token_owner = await backend.ownerOf(child)
 
       // Make sure we own the token
       assert.equal(token_owner, accounts[1], "Child token owned by subdivider");
@@ -456,6 +463,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
   it("should permit merging land", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
+    let backend = await MacroverseRealEstate.deployed()
 
     let parent_token = mv.keypathToToken('0.0.0.0.0.-1.7.2.2.2')
     let child_tokens = []
@@ -467,7 +475,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     await instance.combineLand(child_tokens[0], child_tokens[1], child_tokens[2], child_tokens[3], 0, {from: accounts[1]})
 
     // Get the owner of the token
-    let token_owner = await instance.ownerOf(parent_token)
+    let token_owner = await backend.ownerOf(parent_token)
 
     // Make sure we own the token
     assert.equal(token_owner, accounts[1], "Parent token owned by merger");

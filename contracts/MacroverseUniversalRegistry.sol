@@ -3,17 +3,18 @@ pragma solidity ^0.4.24;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./HasNoEther.sol";
 import "./HasNoContracts.sol";
-import "openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
 import "./MacroverseNFTUtils.sol";
 import "./MacroverseExistenceChecker.sol";
+import "./MacroverseRealEstate.sol";
 
 /**
- * The MacroverseUniversalRegistry keeps track of who currently owns virtual
- * real estate in the Macroverse world, at all scales. It supersedes the
- * MacroverseStarRegistry.
+ * The MacroverseUniversalRegistry manages the creation and Macroverse-specific
+ * manipulation of non-fungible tokens (NFTs) representing virtual real estate,
+ * which are tracked by the MacroverseRealEstate contract.
  *
  * Ownership is based on a claim system, where unowned objects can be claimed
  * by people by putting up a deposit in MRV. The MRV deposit is returned when
@@ -97,7 +98,7 @@ import "./MacroverseExistenceChecker.sol";
  * tokens or ETH or contracts sent to this contract, in excess of the MRV
  * balance that this contract thinks it is supposed to have.
  */
-contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC721Full {
+contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
 
     using SafeMath for uint256;
     using MacroverseNFTUtils for uint256;
@@ -182,6 +183,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     // Contract state
     //////////////
 
+    // This is the backend contract that actually has the machinery to track token ownership
+    MacroverseRealEstate backend;
+
     /// This is the contract we check virtual real estate existence against;
     MacroverseExistenceChecker existenceChecker;
 
@@ -247,8 +251,10 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * Other deposit sizes will be calculated from that.
      * The given min wait time will be the required time you must wait after committing before revealing.
      */
-    constructor(address existence_checker_address, address deposit_token_address,
-        uint initial_min_system_deposit_in_atomic_units, uint commitment_min_wait) public ERC721Full("Macroverse Real Estate", "MRE") {
+    constructor(address backend_address, address existence_checker_address, address deposit_token_address,
+        uint initial_min_system_deposit_in_atomic_units, uint commitment_min_wait) {
+        // We can only use one backend for the lifetime of the contract, and we have to own it before it will work.
+        backend = MacroverseRealEstate(backend_address);
         // We can only use one existence checker for the lifetime of the contract.
         existenceChecker = MacroverseExistenceChecker(existence_checker_address);
         // We can only use one token for the lifetime of the contract.
@@ -352,7 +358,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
                 // Clear it
                 childTree[parent] = setBit(bitmap, child_index, false);
 
-                if (!_exists(parent)) {
+                if (!backend.exists(parent)) {
                     // Recurse up to maybe clean up the parent, if we were the
                     // last child and the parent doesn't exist as a token
                     // itself.
@@ -378,7 +384,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
         uint256 parent = token.parentOfToken();
 
-        if (_exists(parent)) {
+        if (backend.exists(parent)) {
             // We found a token that really exists
             return parent;
         }
@@ -396,8 +402,8 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * Children of system/planet/moon tokens can only be claimed if the claimer owns them or the owner allows homesteading.
      */
     function childrenClaimable(uint256 token, address claimant) public view returns (bool) {
-        require(_exists(token));
-        return !token.tokenIsLand() && (claimant == ownerOf(token) || tokenConfigs[token].homesteading);
+        require(backend.exists(token));
+        return !token.tokenIsLand() && (claimant == backend.ownerOf(token) || tokenConfigs[token].homesteading);
     }
 
     /**
@@ -446,7 +452,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function exists(uint256 token) public view returns (bool) {
         // Just wrap the private exists function
-        return _exists(token);
+        return backend.exists(token);
     }
 
 
@@ -563,7 +569,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         require(commitment.creationTime + commitmentMinWait < now, "Commitment too new");
 
         // Make sure the token doesn't already exists
-        require(!_exists(token), "Token already exists");
+        require(!backend.exists(token), "Token already exists");
 
         // Validate the token
         require(token.tokenIsCanonical(), "Token data mis-packed");
@@ -602,7 +608,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         emit Reveal(hash, token, msg.sender);
 
         // If we pass everything, mint the token
-        _mint(msg.sender, token);
+        backend.mint(msg.sender, token);
     }
 
     /**
@@ -611,7 +617,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function release(uint256 token) external {
         // Burn the token IFF it exists and is owned by msg.sender
-        _burn(msg.sender, token);
+        backend.burn(msg.sender, token);
 
         // Say the token was released
         emit Release(token, msg.sender);
@@ -640,7 +646,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      * Set whether homesteading is allowed under a token. The token must be owned by you, and must not be land.
      */
     function setHomesteading(uint256 token, bool value) external {
-        require(ownerOf(token) == msg.sender, "Token owner mismatch");
+        require(backend.ownerOf(token) == msg.sender, "Token owner mismatch");
         require(!token.tokenIsLand());
         
         // Find the token's config
@@ -663,7 +669,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function getHomesteading(uint256 token) external view returns (bool) {
         // Only existing non-land tokens with homesteading on can be homesteaded.
-        return (_exists(token) && !token.tokenIsLand() && tokenConfigs[token].homesteading); 
+        return (backend.exists(token) && !token.tokenIsLand() && tokenConfigs[token].homesteading); 
     }
 
     /**
@@ -673,7 +679,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
      */
     function getDeposit(uint256 token) external view returns (uint256) {
         // Only existing non-land tokens with homesteading on can be homesteaded.
-        if (!_exists(token)) {
+        if (!backend.exists(token)) {
             return 0;
         }
         return tokenConfigs[token].deposit;
@@ -690,7 +696,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
     function subdivideLand(uint256 parent, uint256 additional_deposit) external {
         // Make sure the parent is land owned by the caller.
         // If a token is owned, it must be canonical.
-        require(ownerOf(parent) == msg.sender, "Token owner mismatch");
+        require(backend.ownerOf(parent) == msg.sender, "Token owner mismatch");
 
         // Make sure the parent isn't maximally subdivided
         require(parent.getTokenType() != TOKEN_TYPE_LAND_MAX, "Land maximally subdivided");
@@ -725,7 +731,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         require(required_deposit <= deposit, "Deposit not sufficient");
 
         // Burn the parent
-        _burn(msg.sender, parent);
+        backend.burn(msg.sender, parent);
 
         // Clean up its config
         delete tokenConfigs[parent];
@@ -750,7 +756,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
             emit LandSplit(parent, children[i]);
 
             // And mint the child
-            _mint(msg.sender, children[i]);
+            backend.mint(msg.sender, children[i]);
         }
 
         // Set the parent's entry in the child tree to having all 4 children.
@@ -772,7 +778,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         
         for (uint256 i = 0; i < CHILDREN_PER_TRIXEL; i++) {
             // Make sure all the children are owned by the caller
-            require(ownerOf(children[i]) == msg.sender, "Token owner mismatch");
+            require(backend.ownerOf(children[i]) == msg.sender, "Token owner mismatch");
             // If a token is owned, it must be canonical.
 
             // Collect the deposit
@@ -810,7 +816,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
 
         for (i = 0; i < CHILDREN_PER_TRIXEL; i++) {
             // Burn the children
-            _burn(msg.sender, children[i]);
+            backend.burn(msg.sender, children[i]);
 
             // Clean up the config
             delete tokenConfigs[children[i]];
@@ -826,7 +832,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts, ERC
         });
 
         // Create the parent
-        _mint(msg.sender, parent);
+        backend.mint(msg.sender, parent);
 
         // Set the parent's entry in the child tree to having no children.
         // Its parent will still record its presence as an internal node.
