@@ -92,8 +92,8 @@
   ],
   "bytecode": "0x6080604052336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16600073ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a36000341415156100cf57600080fd5b610484806100de6000396000f30060806040526004361061006d576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063715018a61461007c5780638da5cb5b146100935780638f32d59b146100ea5780639f727c2714610119578063f2fde38b14610130575b34801561007957600080fd5b50005b34801561008857600080fd5b50610091610173565b005b34801561009f57600080fd5b506100a8610245565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3480156100f657600080fd5b506100ff61026e565b604051808215151515815260200191505060405180910390f35b34801561012557600080fd5b5061012e6102c5565b005b34801561013c57600080fd5b50610171600480360381019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061033f565b005b61017b61026e565b151561018657600080fd5b600073ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a360008060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614905090565b6102cd61026e565b15156102d857600080fd5b6102e0610245565b73ffffffffffffffffffffffffffffffffffffffff166108fc3073ffffffffffffffffffffffffffffffffffffffff16319081150290604051600060405180830381858888f1935050505015801561033c573d6000803e3d6000fd5b50565b61034761026e565b151561035257600080fd5b61035b8161035e565b50565b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415151561039a57600080fd5b8073ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a3806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505600a165627a7a7230582029c0ab11721cd5322dfd8dc4c2f9c19708107750aabe44d0cbafb598ea6812bc0029",
   "deployedBytecode": "0x60806040526004361061006d576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063715018a61461007c5780638da5cb5b146100935780638f32d59b146100ea5780639f727c2714610119578063f2fde38b14610130575b34801561007957600080fd5b50005b34801561008857600080fd5b50610091610173565b005b34801561009f57600080fd5b506100a8610245565b604051808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060405180910390f35b3480156100f657600080fd5b506100ff61026e565b604051808215151515815260200191505060405180910390f35b34801561012557600080fd5b5061012e6102c5565b005b34801561013c57600080fd5b50610171600480360381019080803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505061033f565b005b61017b61026e565b151561018657600080fd5b600073ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a360008060006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff16905090565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff163373ffffffffffffffffffffffffffffffffffffffff1614905090565b6102cd61026e565b15156102d857600080fd5b6102e0610245565b73ffffffffffffffffffffffffffffffffffffffff166108fc3073ffffffffffffffffffffffffffffffffffffffff16319081150290604051600060405180830381858888f1935050505015801561033c573d6000803e3d6000fd5b50565b61034761026e565b151561035257600080fd5b61035b8161035e565b50565b600073ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415151561039a57600080fd5b8073ffffffffffffffffffffffffffffffffffffffff166000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e060405160405180910390a3806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505600a165627a7a7230582029c0ab11721cd5322dfd8dc4c2f9c19708107750aabe44d0cbafb598ea6812bc0029",
-  "sourceMap": "526:793:3:-;;;518:10:16;509:6;;:19;;;;;;;;;;;;;;;;;;572:6;;;;;;;;;;;539:40;;568:1;539:40;;;;;;;;;;;;1008:1:3;995:9;:14;987:23;;;;;;;;526:793;;;;;;",
-  "deployedSourceMap": "526:793:3:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;526:793:3;;1273:127:16;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1273:127:16;;;;;;639:70;;8:9:-1;5:2;;;30:1;27;20:12;5:2;639:70:16;;;;;;;;;;;;;;;;;;;;;;;;;;;926:83;;8:9:-1;5:2;;;30:1;27;20:12;5:2;926:83:16;;;;;;;;;;;;;;;;;;;;;;;;;;;1224:93:3;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1224:93:3;;;;;;1561:101:16;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1561:101:16;;;;;;;;;;;;;;;;;;;;;;;;;;;;1273:127;824:9;:7;:9::i;:::-;816:18;;;;;;;;1367:1;1330:40;;1351:6;;;;;;;;;;;1330:40;;;;;;;;;;;;1393:1;1376:6;;:19;;;;;;;;;;;;;;;;;;1273:127::o;639:70::-;676:7;698:6;;;;;;;;;;;691:13;;639:70;:::o;926:83::-;965:4;998:6;;;;;;;;;;;984:20;;:10;:20;;;977:27;;926:83;:::o;1224:93:3:-;824:9:16;:7;:9::i;:::-;816:18;;;;;;;;1273:7:3;:5;:7::i;:::-;:16;;:39;1298:4;1290:21;;;1273:39;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;1273:39:3;1224:93::o;1561:101:16:-;824:9;:7;:9::i;:::-;816:18;;;;;;;;1629:28;1648:8;1629:18;:28::i;:::-;1561:101;:::o;1796:169::-;1885:1;1865:22;;:8;:22;;;;1857:31;;;;;;;;1928:8;1899:38;;1920:6;;;;;;;;;;;1899:38;;;;;;;;;;;;1952:8;1943:6;;:17;;;;;;;;;;;;;;;;;;1796:169;:::o",
+  "sourceMap": "526:793:3:-;;;518:10:20;509:6;;:19;;;;;;;;;;;;;;;;;;572:6;;;;;;;;;;;539:40;;568:1;539:40;;;;;;;;;;;;1008:1:3;995:9;:14;987:23;;;;;;;;526:793;;;;;;",
+  "deployedSourceMap": "526:793:3:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;526:793:3;;1273:127:20;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1273:127:20;;;;;;639:70;;8:9:-1;5:2;;;30:1;27;20:12;5:2;639:70:20;;;;;;;;;;;;;;;;;;;;;;;;;;;926:83;;8:9:-1;5:2;;;30:1;27;20:12;5:2;926:83:20;;;;;;;;;;;;;;;;;;;;;;;;;;;1224:93:3;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1224:93:3;;;;;;1561:101:20;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1561:101:20;;;;;;;;;;;;;;;;;;;;;;;;;;;;1273:127;824:9;:7;:9::i;:::-;816:18;;;;;;;;1367:1;1330:40;;1351:6;;;;;;;;;;;1330:40;;;;;;;;;;;;1393:1;1376:6;;:19;;;;;;;;;;;;;;;;;;1273:127::o;639:70::-;676:7;698:6;;;;;;;;;;;691:13;;639:70;:::o;926:83::-;965:4;998:6;;;;;;;;;;;984:20;;:10;:20;;;977:27;;926:83;:::o;1224:93:3:-;824:9:20;:7;:9::i;:::-;816:18;;;;;;;;1273:7:3;:5;:7::i;:::-;:16;;:39;1298:4;1290:21;;;1273:39;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;1273:39:3;1224:93::o;1561:101:20:-;824:9;:7;:9::i;:::-;816:18;;;;;;;;1629:28;1648:8;1629:18;:28::i;:::-;1561:101;:::o;1796:169::-;1885:1;1865:22;;:8;:22;;;;1857:31;;;;;;;;1928:8;1899:38;;1920:6;;;;;;;;;;;1899:38;;;;;;;;;;;;1952:8;1943:6;;:17;;;;;;;;;;;;;;;;;;1796:169;:::o",
   "source": "pragma solidity ^0.4.24;\nimport \"openzeppelin-solidity/contracts/ownership/Ownable.sol\";\n\n/**\n * @title Contracts that should not own Ether\n * @author Remco Bloemen <remco@2π.com>\n * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up\n * in the contract, it will allow the owner to reclaim this Ether.\n * @notice Ether can still be sent to this contract by:\n * calling functions labeled `payable`\n * `selfdestruct(contract_address)`\n * mining directly to the contract address\n */\ncontract HasNoEther is Ownable {\n  /**\n  * @dev Constructor that rejects incoming Ether\n  * The `payable` flag is added so we can access `msg.value` without compiler warning. If we\n  * leave out payable, then Solidity will allow inheriting contracts to implement a payable\n  * constructor. By doing it this way we prevent a payable constructor from working. Alternatively\n  * we could use assembly to access msg.value.\n  */\n  constructor() public payable {\n    require(msg.value == 0);\n  }\n  /**\n   * @dev Disallows direct send by setting a default function without the `payable` flag.\n   */\n  function() external {\n  }\n  /**\n   * @dev Transfer all Ether held by the contract to the owner.\n   */\n  function reclaimEther() external onlyOwner {\n    owner().transfer(address(this).balance);\n  }\n}\n\n/*\nThe MIT License (MIT)\n\nCopyright (c) 2016 Smart Contract Solutions, Inc.\n\nPermission is hereby granted, free of charge, to any person obtaining\na copy of this software and associated documentation files (the\n\"Software\"), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be included\nin all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n*/\n\n",
   "sourcePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/HasNoEther.sol",
   "ast": {
@@ -123,7 +123,7 @@
         "id": 92,
         "nodeType": "ImportDirective",
         "scope": 126,
-        "sourceUnit": 8580,
+        "sourceUnit": 8978,
         "src": "25:63:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -137,10 +137,10 @@
               "id": 93,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 8579,
+              "referencedDeclaration": 8977,
               "src": "549:7:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$8579",
+                "typeIdentifier": "t_contract$_Ownable_$8977",
                 "typeString": "contract Ownable"
               }
             },
@@ -150,7 +150,7 @@
           }
         ],
         "contractDependencies": [
-          8579
+          8977
         ],
         "contractKind": "contract",
         "documentation": "@title Contracts that should not own Ether\n@author Remco Bloemen <remco@2π.com>\n@dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up\nin the contract, it will allow the owner to reclaim this Ether.\n@notice Ether can still be sent to this contract by:\ncalling functions labeled `payable`\n`selfdestruct(contract_address)`\nmining directly to the contract address",
@@ -158,7 +158,7 @@
         "id": 125,
         "linearizedBaseContracts": [
           125,
-          8579
+          8977
         ],
         "name": "HasNoEther",
         "nodeType": "ContractDefinition",
@@ -192,7 +192,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 9830,
+                            "referencedDeclaration": 10228,
                             "src": "995:3:3",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -251,10 +251,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        9833,
-                        9834
+                        10231,
+                        10232
                       ],
-                      "referencedDeclaration": 9833,
+                      "referencedDeclaration": 10231,
                       "src": "987:7:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -363,7 +363,7 @@
                               "name": "this",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 9851,
+                              "referencedDeclaration": 10249,
                               "src": "1298:4:3",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_contract$_HasNoEther_$125",
@@ -436,7 +436,7 @@
                           "name": "owner",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8504,
+                          "referencedDeclaration": 8902,
                           "src": "1273:5:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -506,7 +506,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 8513,
+                  "referencedDeclaration": 8911,
                   "src": "1257:9:3",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -572,7 +572,7 @@
         "id": 92,
         "nodeType": "ImportDirective",
         "scope": 126,
-        "sourceUnit": 8580,
+        "sourceUnit": 8978,
         "src": "25:63:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -586,10 +586,10 @@
               "id": 93,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 8579,
+              "referencedDeclaration": 8977,
               "src": "549:7:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$8579",
+                "typeIdentifier": "t_contract$_Ownable_$8977",
                 "typeString": "contract Ownable"
               }
             },
@@ -599,7 +599,7 @@
           }
         ],
         "contractDependencies": [
-          8579
+          8977
         ],
         "contractKind": "contract",
         "documentation": "@title Contracts that should not own Ether\n@author Remco Bloemen <remco@2π.com>\n@dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up\nin the contract, it will allow the owner to reclaim this Ether.\n@notice Ether can still be sent to this contract by:\ncalling functions labeled `payable`\n`selfdestruct(contract_address)`\nmining directly to the contract address",
@@ -607,7 +607,7 @@
         "id": 125,
         "linearizedBaseContracts": [
           125,
-          8579
+          8977
         ],
         "name": "HasNoEther",
         "nodeType": "ContractDefinition",
@@ -641,7 +641,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 9830,
+                            "referencedDeclaration": 10228,
                             "src": "995:3:3",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -700,10 +700,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        9833,
-                        9834
+                        10231,
+                        10232
                       ],
-                      "referencedDeclaration": 9833,
+                      "referencedDeclaration": 10231,
                       "src": "987:7:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
@@ -812,7 +812,7 @@
                               "name": "this",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 9851,
+                              "referencedDeclaration": 10249,
                               "src": "1298:4:3",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_contract$_HasNoEther_$125",
@@ -885,7 +885,7 @@
                           "name": "owner",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8504,
+                          "referencedDeclaration": 8902,
                           "src": "1273:5:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_internal_view$__$returns$_t_address_$",
@@ -955,7 +955,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 8513,
+                  "referencedDeclaration": 8911,
                   "src": "1257:9:3",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -1000,5 +1000,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2019-09-20T03:20:53.777Z"
+  "updatedAt": "2019-10-11T04:51:42.020Z"
 }
