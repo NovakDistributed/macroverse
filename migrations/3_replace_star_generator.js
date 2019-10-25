@@ -10,7 +10,7 @@ module.exports = async function(deployer, network, accounts) {
   deployer.link(RealMath, MacroverseStarGenerator)
 
   // And deploy updated MacroverseStarGenerator with original parameters but new code.
-  await deployer.deploy(MacroverseStarGenerator, "FiatBlocks", MinimumBalanceAccessControl.address)
+  await deployer.deploy(MacroverseStarGenerator, "0x46696174426c6f636b73", MinimumBalanceAccessControl.address)
       
   
 };

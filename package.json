@@ -18,13 +18,13 @@
     },
     "main": "src/index.js",
     "dependencies": {
-        "bignumber.js": "2.0.7",
+        "bn.js": "^5.0.0",
         "degrees-radians": "^1.0.3",
         "dotenv": "^8.1.0",
         "openzeppelin-solidity": "^2.3.0",
         "radians-degrees": "^1.0.0",
         "truffle-keystore-provider": "^1.0.4",
-        "web3-utils": "^1.0.0-beta.37"
+        "web3-utils": "^1.2.2"
     },
     "license": "SEE LICENSE IN LICENSE",
     "scripts": {
