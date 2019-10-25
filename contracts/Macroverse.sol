@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 /**
  * Library which exists to hold types shared across the Macroverse ecosystem.

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
@@ -14,7 +14,7 @@ contract HasNoTokens is Ownable {
  /** 
   * @dev Reject all ERC23 compatible tokens
   */
-  function tokenFallback(address /* from_ */, uint256 /* value_ */, bytes /* data_ */) external pure {
+  function tokenFallback(address /* from_ */, uint256 /* value_ */, bytes calldata /* data_ */) external pure {
     revert();
   }
 
@@ -24,7 +24,7 @@ contract HasNoTokens is Ownable {
    */
   function reclaimToken(address tokenAddr) external onlyOwner {
     IERC20 tokenInst = IERC20(tokenAddr);
-    uint256 balance = tokenInst.balanceOf(this);
+    uint256 balance = tokenInst.balanceOf(address(this));
     tokenInst.transfer(owner(), balance);
   }
 }

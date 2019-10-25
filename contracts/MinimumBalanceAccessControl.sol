@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
@@ -25,7 +25,7 @@ contract MinimumBalanceAccessControl {
      * This means that any contract you use can make queries on your behalf, but that no contract with the minimum balance can proxy
      * queries for others.
      */
-    function allowQuery(address /* sender */, address origin) public constant returns (bool) {
+    function allowQuery(address /* sender */, address origin) public view returns (bool) {
         if (tokenAddress.balanceOf(origin) >= minBalanceInAtomicUnits) {
             return true;
         }

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./MRVToken.sol";
 
@@ -13,7 +13,7 @@ contract TestnetMRVToken is MRVToken {
      * Make a new TestnetMRVToken.
      * Passes through arguments to the base MRVToken constructor.
      */
-    constructor(address sendProceedsTo, address sendTokensTo) MRVToken(sendProceedsTo, sendTokensTo) public {
+    constructor(address payable sendProceedsTo, address sendTokensTo) MRVToken(sendProceedsTo, sendTokensTo) public {
         // Nothing to do!
     }
 

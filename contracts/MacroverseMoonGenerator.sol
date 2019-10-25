@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -81,7 +81,7 @@ contract MacroverseMoonGenerator is ControlledAccess {
     /**
      * Deploy a new copy of the MacroverseMoonGenerator.
      */
-    constructor(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
+    constructor(address accessControlAddress) ControlledAccess(accessControlAddress) public {
         // Nothing to do!
     }
 
@@ -207,19 +207,18 @@ contract MacroverseMoonGenerator is ControlledAccess {
             realPeriapsis = realPrevClearance + planetMoonScale.mul(REAL_HALF).mul(moonNode.derive("ringstart").getRealBetween(REAL_ONE, REAL_TWO));
             realApoapsis = realPeriapsis + realPeriapsis.mul(moonNode.derive("ringwidth").getRealBetween(REAL_HALF, REAL_TWO));
             realClearance = realApoapsis + planetMoonScale.mul(REAL_HALF).mul(moonNode.derive("ringclear").getRealBetween(REAL_HALF, REAL_TWO));
-            return;
+        } else {
+            // Otherwise just roll some stuff
+            realPeriapsis = realPrevClearance + planetMoonScale.mul(moonNode.derive("periapsis").getRealBetween(REAL_HALF, REAL_ONE));
+            realApoapsis = realPeriapsis.mul(moonNode.derive("apoapsis").getRealBetween(REAL_ONE, RealMath.fraction(120, 100)));
+
+            if (class == Macroverse.WorldClass.Asteroidal || class == Macroverse.WorldClass.Cometary) {
+                // Captured tiny things should be more eccentric
+                realApoapsis = realApoapsis + (realApoapsis - realPeriapsis).mul(REAL_TWO);
+            }
+
+            realClearance = realApoapsis.mul(moonNode.derive("clearance").getRealBetween(RealMath.fraction(110, 100), RealMath.fraction(130, 100)));
         }
-
-        // Otherwise just roll some stuff
-        realPeriapsis = realPrevClearance + planetMoonScale.mul(moonNode.derive("periapsis").getRealBetween(REAL_HALF, REAL_ONE));
-        realApoapsis = realPeriapsis.mul(moonNode.derive("apoapsis").getRealBetween(REAL_ONE, RealMath.fraction(120, 100)));
-
-        if (class == Macroverse.WorldClass.Asteroidal || class == Macroverse.WorldClass.Cometary) {
-            // Captured tiny things should be more eccentric
-            realApoapsis = realApoapsis + (realApoapsis - realPeriapsis).mul(REAL_TWO);
-        }
-
-        realClearance = realApoapsis.mul(moonNode.derive("clearance").getRealBetween(RealMath.fraction(110, 100), RealMath.fraction(130, 100)));
     }
 
     /**
