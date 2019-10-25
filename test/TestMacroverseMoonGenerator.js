@@ -6,7 +6,7 @@ let UnrestrictedAccessControl = artifacts.require('UnrestrictedAccessControl')
 let mv = require('../src')
 
 // Define the parameters of our test planet
-const TEST_SEED = 'natasha'
+const TEST_SEED = '0x6e617461736861'
 const TEST_CLASS = mv.worldClass['Terrestrial']
 
 contract('MacroverseMoonGenerator', function(accounts) {
@@ -74,15 +74,18 @@ contract('MacroverseMoonGenerator', function(accounts) {
       let moonMass = mv.fromReal(realMass)
       
       // Define the orbit shape
-      let [realPeriapsis, realApoapsis, newClearance] = await instance.getMoonOrbitDimensions.call(realMoonScale,
+      let orbitShape = await instance.getMoonOrbitDimensions.call(realMoonScale,
         moonSeed, moonClassNum, prevClearance)
+      console.log(orbitShape)
+      let [realPeriapsis, realApoapsis, newClearance] = [orbitShape[0], orbitShape[1], orbitShape[2]]
       prevClearance = newClearance
       
       // Compute useful versions of this in lunar distances
       let moonPeriapsis = mv.fromReal(realPeriapsis) / mv.LD;
       let moonApoapsis = mv.fromReal(realApoapsis) / mv.LD;
 
-      let [realSemimajor, realEccentricity] = await sysgen.convertOrbitShape.call(realPeriapsis, realApoapsis)
+      let converted = await sysgen.convertOrbitShape.call(realPeriapsis, realApoapsis)
+      let [realSemimajor, realEccentricity] = [converted[0], converted[1]]
       let moonEccentricity = mv.fromReal(realEccentricity);
       
       // Define the orbital plane. Make sure to convert everything to degrees for display.

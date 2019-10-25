@@ -5,6 +5,9 @@ var MacroverseExistenceChecker = artifacts.require("./MacroverseExistenceChecker
 var MacroverseUniversalRegistry = artifacts.require("./MacroverseUniversalRegistry.sol")
 var MacroverseRealEstate = artifacts.require("./MacroverseRealEstate.sol")
 
+// new Truffle doesn't give us free toWei
+const Web3Utils = require('web3-utils')
+
 module.exports = async function(deployer, network, accounts) {
 
   deployer.link(MacroverseNFTUtils, MacroverseUniversalRegistry)
@@ -18,7 +21,7 @@ module.exports = async function(deployer, network, accounts) {
   return deployer.deploy(MacroverseRealEstate).then(function() {
     return deployer.deploy(MacroverseUniversalRegistry, MacroverseRealEstate.address,
       MacroverseExistenceChecker.address, token_contract.address, 
-      web3.toWei(1000, "ether"), 60 * 60 * 24)
+      Web3Utils.toWei("1000", "ether"), 60 * 60 * 24)
   }).then(function() {
     return MacroverseRealEstate.deployed() 
   }).then(function(backend) {

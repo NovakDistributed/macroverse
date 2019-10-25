@@ -13,7 +13,7 @@ contract('MacroverseSystemGenerator', function(accounts) {
     
     let failure_found = false
     
-    await (instance.getWorldSeed.call('wombat', 5, {from: accounts[1]}).catch(async function () {
+    await (instance.getWorldSeed.call('0x776f6d626174', 5, {from: accounts[1]}).catch(async function () {
       failure_found = true
     }))
     
@@ -34,7 +34,7 @@ contract('MacroverseSystemGenerator', function(accounts) {
     
     let failure_found = false
     
-    await (instance.getWorldSeed.call('wombat', 5, {from: accounts[1]}).catch(async function () {
+    await (instance.getWorldSeed.call('0x776f6d626174', 5, {from: accounts[1]}).catch(async function () {
       failure_found = true
     }))
     
@@ -43,7 +43,7 @@ contract('MacroverseSystemGenerator', function(accounts) {
  
   it("should have Y and X Euler angles for the fred system", async function() {
     let instance = await MacroverseStarGeneratorPatch1.deployed();
-    let [eulerYReal, eulerXReal] = (await instance.getObjectYXAxisAngles('fred'))
+    let [eulerYReal, eulerXReal] = (await instance.getObjectYXAxisAngles('0x66726564'))
     let eulerY = mv.fromReal(eulerYReal)
     let eulerX = mv.fromReal(eulerXReal)
     
@@ -61,14 +61,14 @@ contract('MacroverseSystemGenerator', function(accounts) {
 
   it("should have 8 planets in the fred system", async function() {
     let instance = await MacroverseStarGeneratorPatch1.deployed()
-    let count = (await instance.getObjectPlanetCount.call('fred', mv.objectClass['MainSequence'], mv.spectralType['TypeG'])).toNumber()
+    let count = (await instance.getObjectPlanetCount.call('0x66726564', mv.objectClass['MainSequence'], mv.spectralType['TypeG'])).toNumber()
     assert.equal(count, 8);
   
   })
 
   it("should have a luminosity that is reasonable", async function() {
     let instance = await MacroverseStarGeneratorPatch1.deployed()
-    let luminosity = mv.fromReal(await instance.getObjectLuminosity.call('fred', mv.objectClass['MainSequence'], mv.toReal(1.0)))
+    let luminosity = mv.fromReal(await instance.getObjectLuminosity.call('0x66726564', mv.objectClass['MainSequence'], mv.toReal(1.0)))
     // Luminosities are randomized to between 95% and 105% of expected
     assert.isAbove(luminosity, 0.95)
     assert.isBelow(luminosity, 1.05)
@@ -91,14 +91,14 @@ contract('MacroverseSystemGenerator', function(accounts) {
   it("should have a Terrestrial planet first", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
     
-    let planetSeed = await instance.getWorldSeed.call('fred', 0)
+    let planetSeed = await instance.getWorldSeed.call('0x66726564', 0)
     let planetClass = mv.worldClasses[(await instance.getPlanetClass.call(planetSeed, 0, 8)).toNumber()]
     assert.equal(planetClass, 'Terrestrial')
   })
   
   it("should be a super-earth", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
-    let planetSeed = await instance.getWorldSeed.call('fred', 0)
+    let planetSeed = await instance.getWorldSeed.call('0x66726564', 0)
     let planetClassNum = mv.worldClass['Terrestrial']
     let planetMass = mv.fromReal(await instance.getWorldMass.call(planetSeed, planetClassNum))
     
@@ -109,12 +109,12 @@ contract('MacroverseSystemGenerator', function(accounts) {
   it("should have an orbit from about 0.24 to 0.29 AU", async function() {
     let instance = await MacroverseSystemGenerator.deployed()
     let stargen_patch = await MacroverseStarGeneratorPatch1.deployed()
-    let planetSeed = await instance.getWorldSeed.call('fred', 0)
+    let planetSeed = await instance.getWorldSeed.call('0x66726564', 0)
     let planetClassNum = mv.worldClass['Terrestrial']
     let parentClassNum = mv.objectClass['MainSequence']
     let parentTypeNum = mv.spectralType['TypeG']
     let parentRealMass = mv.toReal(1.0)
-    let parentRealLuminosity = await stargen_patch.getObjectLuminosity.call('fred', parentClassNum, parentRealMass)
+    let parentRealLuminosity = await stargen_patch.getObjectLuminosity.call('0x66726564', parentClassNum, parentRealMass)
 
     let [realHabStart, realHabEnd] = await stargen_patch.getObjectHabitableZone.call(parentRealLuminosity)
 
@@ -136,12 +136,12 @@ contract('MacroverseSystemGenerator', function(accounts) {
   
     let instance = await MacroverseSystemGenerator.deployed()
     let stargen_patch = await MacroverseStarGeneratorPatch1.deployed()
-    let planetSeed = await instance.getWorldSeed.call('fred', 0)
+    let planetSeed = await instance.getWorldSeed.call('0x66726564', 0)
     let planetClassNum = mv.worldClass['Terrestrial']
     let parentClassNum = mv.objectClass['MainSequence']
     let parentTypeNum = mv.spectralType['TypeG']
     let parentRealMass = mv.toReal(1.0)
-    let parentRealLuminosity = await stargen_patch.getObjectLuminosity.call('fred', parentClassNum, parentRealMass)
+    let parentRealLuminosity = await stargen_patch.getObjectLuminosity.call('0x66726564', parentClassNum, parentRealMass)
 
     let [realHabStart, realHabEnd] = await stargen_patch.getObjectHabitableZone.call(parentRealLuminosity)
 
@@ -167,21 +167,21 @@ contract('MacroverseSystemGenerator', function(accounts) {
     let totalGas = 0
 
     let parentRealMass = mv.toReal(1.0)
-    let parentRealLuminosity = await stargen_patch.getObjectLuminosity.call('fred', parentClassNum, parentRealMass)
-    totalGas += await stargen_patch.getObjectLuminosity.estimateGas('fred', parentClassNum, parentRealMass)
+    let parentRealLuminosity = await stargen_patch.getObjectLuminosity.call('0x66726564', parentClassNum, parentRealMass)
+    totalGas += await stargen_patch.getObjectLuminosity.estimateGas('0x66726564', parentClassNum, parentRealMass)
 
     let [realHabStart, realHabEnd] = await stargen_patch.getObjectHabitableZone.call(parentRealLuminosity)
     totalGas += await stargen_patch.getObjectHabitableZone.estimateGas(parentRealLuminosity)
 
-    let count = (await stargen_patch.getObjectPlanetCount.call('fred', parentClassNum, parentTypeNum)).toNumber()
-    totalGas += await stargen_patch.getObjectPlanetCount.estimateGas('fred', parentClassNum, parentTypeNum)
+    let count = (await stargen_patch.getObjectPlanetCount.call('0x66726564', parentClassNum, parentTypeNum)).toNumber()
+    totalGas += await stargen_patch.getObjectPlanetCount.estimateGas('0x66726564', parentClassNum, parentTypeNum)
     
     var prevClearance = mv.toReal(0)
     
     for (let i = 0; i < count; i++) {
       // Define the planet
-      let planetSeed = await instance.getWorldSeed.call('fred', i)
-      totalGas += await instance.getWorldSeed.estimateGas('fred', i)
+      let planetSeed = await instance.getWorldSeed.call('0x66726564', i)
+      totalGas += await instance.getWorldSeed.estimateGas('0x66726564', i)
       let planetClassNum = (await instance.getPlanetClass.call(planetSeed, i, count)).toNumber()
       totalGas += await instance.getPlanetClass.estimateGas(planetSeed, i, count)
       let realMass = await instance.getWorldMass.call(planetSeed, planetClassNum)

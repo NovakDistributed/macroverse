@@ -4,11 +4,7 @@
 // defining JS equivalents or counterparts to some of the on-chain Solidity
 // code.
 
-const BigNumber = require('bignumber.js')
-
-// We set our BigNumber to be useful for token numbering and addresses.
-// And also for nonce generation
-BigNumber.config({ EXPONENTIAL_AT: 256, CRYPTO: true })
+const BigNumber = require('bn.js')
 
 // We need this for the Solidity-alike hashing functions
 const Web3Utils = require('web3-utils')
@@ -16,11 +12,11 @@ const Web3Utils = require('web3-utils')
 var mv = module.exports
 
 mv.REAL_FBITS = 40
-mv.REAL_ONE = (new BigNumber(2)).pow(mv.REAL_FBITS)
+mv.REAL_ONE = (new BigNumber(2)).pow(new BigNumber(mv.REAL_FBITS))
 
 mv.fromReal = function(real) {
   // Convert from 40 bit fixed point
-  return real.dividedBy(mv.REAL_ONE).toNumber()
+  return real.div(mv.REAL_ONE).toNumber()
 }
 
 mv.toReal = function(float) {
@@ -34,10 +30,8 @@ mv.toReal = function(float) {
     throw new Error("Magnitude of " + float + " is too large for 88 bit signed int!")
   }
   
-  // Make sure to convert to a string because the bignumber library gets upset
-  // when you use more than 15 digits and are an actual number. See
-  // <https://github.com/MikeMcl/bignumber.js/issues/11>
-  return mv.REAL_ONE.times(float.toString())
+  // Go via string to not spook the big number library about precision loss
+  return mv.REAL_ONE.mul(new BigNumber(float.toString()))
 }
 
 // Convert from float radians to float degrees.
@@ -208,7 +202,7 @@ mv.unsignedToSigned = function(number, width) {
 mv.shift = function(number, shiftBits) {
   if (shiftBits >= 0) {
     // Shift left
-    return number.times(new BigNumber(2).pow(shiftBits))
+    return number.mul(new BigNumber(2).pow(shiftBits))
   } else {
     // Shift right
     return number.div(new BigNumber(2).pow(-shiftBits))

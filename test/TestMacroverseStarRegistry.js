@@ -11,13 +11,13 @@ contract('MacroverseStarRegistry', function(accounts) {
     // to reduce approved amount to 0 defore approving any more.
     await token.approve(MacroverseStarRegistry.address, await token.balanceOf.call(accounts[0]))
     
-    await instance.claimOwnership("COOL_STAR_9000", await token.balanceOf.call(accounts[0]) ).then(function () {
+    await instance.claimOwnership("0xDEADBEEF", await token.balanceOf.call(accounts[0]) ).then(function () {
       assert.ok(false, "Successfully claimed star on deactivated registry")
     }).catch(async function () {
       assert.ok(true, "Failed to claim star on deactivated registry")
     })
     
-    assert.equal(await instance.ownerOf.call("COOL_STAR_9000"), 0, "The star is still unowned")
+    assert.equal(await instance.ownerOf.call("0xDEADBEEF"), 0, "The star is still unowned")
     
   })
 })
