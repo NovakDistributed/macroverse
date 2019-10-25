@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -53,7 +53,7 @@ contract MacroverseStarGenerator is ControlledAccess {
      * Deploy a new copy of the Macroverse generator contract. Use the given seed to generate a galaxy, down to the star level.
      * Use the contract at the given address to regulate access.
      */
-    constructor(bytes32 baseSeed, address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
+    constructor(bytes32 baseSeed, address accessControlAddress) ControlledAccess(accessControlAddress) public {
         root = RNG.RandNode(baseSeed);
     }
     

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./AccessControl.sol";
 import "./ControlledAccess.sol";
@@ -32,7 +32,7 @@ contract MacroverseSystemGenerator is ControlledAccess {
     /**
      * Deploy a new copy of the MacroverseSystemGenerator.
      */
-    constructor(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
+    constructor(address accessControlAddress) ControlledAccess(accessControlAddress) public {
         // Nothing to do!
     }
     

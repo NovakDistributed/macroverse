@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 /**
  * Interface for an access control strategy for Macrtoverse contracts.

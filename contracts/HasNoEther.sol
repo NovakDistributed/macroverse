@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /**
@@ -31,7 +31,9 @@ contract HasNoEther is Ownable {
    * @dev Transfer all Ether held by the contract to the owner.
    */
   function reclaimEther() external onlyOwner {
-    owner().transfer(address(this).balance);
+    // For some reason Ownable doesn't insist that the owner is payable.
+    // This makes it payable.
+    address(uint160(owner())).transfer(address(this).balance);
   }
 }
 

@@ -21,7 +21,7 @@
         "bignumber.js": "2.0.7",
         "degrees-radians": "^1.0.3",
         "dotenv": "^8.1.0",
-        "openzeppelin-solidity": "^2.0.0",
+        "openzeppelin-solidity": "^2.3.0",
         "radians-degrees": "^1.0.0",
         "truffle-keystore-provider": "^1.0.4",
         "web3-utils": "^1.0.0-beta.37"

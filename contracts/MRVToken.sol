@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
@@ -65,7 +65,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     // Crowdsale Parameters
     
     // Where will funds collected during the crowdsale be sent?
-    address beneficiary;
+    address payable beneficiary;
     // How many MRV can be sold in the crowdsale?
     uint public maxCrowdsaleSupplyInWholeTokens;
     // How many whole tokens are reserved for the beneficiary?
@@ -93,7 +93,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     * Deploy a new MRVToken contract, paying crowdsale proceeds to the given address,
     * and awarding reserved tokens to the other given address.
     */
-    constructor(address sendProceedsTo, address sendTokensTo) public {
+    constructor(address payable sendProceedsTo, address sendTokensTo) public {
         // Proceeds of the crowdsale go here.
         beneficiary = sendProceedsTo;
         
@@ -128,7 +128,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     * tokens remaining to be bought, your transaction will be rolled back and you will
     * get no tokens and waste your gas.
     */
-    function() public payable onlyDuringCrowdsale {
+    function() external payable onlyDuringCrowdsale {
         createTokens(msg.sender);
     }
     
@@ -196,14 +196,14 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     /**
      * Determine if the crowdsale should open by timer.
      */
-    function openTimerElapsed() public constant returns (bool) {
+    function openTimerElapsed() public view returns (bool) {
         return (openTimer != 0 && now > openTimer);
     }
     
     /**
      * Determine if the crowdsale should close by timer.
      */
-    function closeTimerElapsed() public constant returns (bool) {
+    function closeTimerElapsed() public view returns (bool) {
         return (closeTimer != 0 && now > closeTimer);
     }
     
@@ -233,7 +233,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     /**
      * Determine if the crowdsale is currently happening.
      */
-    function isCrowdsaleActive() public constant returns (bool) {
+    function isCrowdsaleActive() public view returns (bool) {
         // The crowdsale is happening if it is open or due to open, and it isn't closed or due to close.
         return ((crowdsaleStarted || openTimerElapsed()) && !(crowdsaleEnded || closeTimerElapsed()));
     }
@@ -363,7 +363,8 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      */
     function reclaimEther() external onlyOwner {
         // Send the ETH. Make sure it worked.
-        assert(owner().send(address(this).balance));
+        // Go through uint160 to make owner payable
+        assert(address(uint160(owner())).send(address(this).balance));
     }
 
     // TODO: the following two functions do NOT exist in the on-chain mainnet

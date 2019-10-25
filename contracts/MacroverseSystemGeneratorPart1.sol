@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -203,7 +203,7 @@ library MacroverseSystemGeneratorPart1 {
      * clearance (i.e. distance from star that the planet has cleared out) of
      * the previous planet.
      */
-    function getPlanetPeriapsis(int128 realInnerRadius, int128 /* realOuterRadius */, RNG.RandNode planetNode, Macroverse.WorldClass class, int128 realPrevClearance)
+    function getPlanetPeriapsis(int128 realInnerRadius, int128 /* realOuterRadius */, RNG.RandNode memory planetNode, Macroverse.WorldClass class, int128 realPrevClearance)
         internal pure returns (int128) {
         
         // We're going to sample 2 values and take the minimum, to get a nicer distribution than uniform.
@@ -245,7 +245,7 @@ library MacroverseSystemGeneratorPart1 {
      * Decide what the planet's orbit's apoapsis is, in meters.
      * This is the second statistic about the orbit to be generated.
      */
-    function getPlanetApoapsis(int128 realInnerRadius, int128 /* realOuterRadius */, RNG.RandNode planetNode, Macroverse.WorldClass class, int128 realPeriapsis)
+    function getPlanetApoapsis(int128 realInnerRadius, int128 /* realOuterRadius */, RNG.RandNode memory planetNode, Macroverse.WorldClass class, int128 realPeriapsis)
         internal pure returns (int128) {
         
         RNG.RandNode memory node1 = planetNode.derive("apoapsis");
@@ -284,7 +284,7 @@ library MacroverseSystemGeneratorPart1 {
     /**
      * Decide how far out the cleared band after the planet's orbit is.
      */
-    function getPlanetClearance(int128 realInnerRadius, int128 /* realOuterRadius */, RNG.RandNode planetNode, Macroverse.WorldClass class, int128 realApoapsis)
+    function getPlanetClearance(int128 realInnerRadius, int128 /* realOuterRadius */, RNG.RandNode memory planetNode, Macroverse.WorldClass class, int128 realApoapsis)
         internal pure returns (int128) {
         
         RNG.RandNode memory node1 = planetNode.derive("cleared");

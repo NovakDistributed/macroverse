@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./HasNoEther.sol";
@@ -252,7 +252,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
      * The given min wait time will be the required time you must wait after committing before revealing.
      */
     constructor(address backend_address, address existence_checker_address, address deposit_token_address,
-        uint initial_min_system_deposit_in_atomic_units, uint commitment_min_wait) {
+        uint initial_min_system_deposit_in_atomic_units, uint commitment_min_wait) public {
         // We can only use one backend for the lifetime of the contract, and we have to own it before it will work.
         backend = MacroverseRealEstate(backend_address);
         // We can only use one existence checker for the lifetime of the contract.
@@ -477,7 +477,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         expectedDepositBalance = expectedDepositBalance.add(deposit);
 
         // Make sure we can take the deposit
-        require(depositTokenContract.transferFrom(msg.sender, this, deposit), "Deposit not approved");
+        require(depositTokenContract.transferFrom(msg.sender, address(this), deposit), "Deposit not approved");
 
         // Compute the commitment key
         bytes32 commitment_key = keccak256(abi.encodePacked(hash, msg.sender));
@@ -709,7 +709,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         expectedDepositBalance = expectedDepositBalance.add(additional_deposit);
 
         // Make sure we can take the deposit
-        require(depositTokenContract.transferFrom(msg.sender, this, additional_deposit), "Deposit not approved");
+        require(depositTokenContract.transferFrom(msg.sender, address(this), additional_deposit), "Deposit not approved");
 
         // Add in the new deposit
         deposit = deposit.add(additional_deposit);
@@ -743,7 +743,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         uint256 split_evenly = deposit.div(CHILDREN_PER_TRIXEL);
         uint256 extra = deposit.mod(CHILDREN_PER_TRIXEL);
         child_deposits[0] = child_deposits[0].add(extra);
-        for (i = 0; i < CHILDREN_PER_TRIXEL; i++) {
+        for (uint256 i = 0; i < CHILDREN_PER_TRIXEL; i++) {
             child_deposits[i] = child_deposits[i].add(split_evenly);
 
             // Now we can make the child token config
@@ -797,7 +797,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         
         // Make sure they are all children of the same parent
         uint256 parent = children[0].parentOfToken();
-        for (i = 1; i < CHILDREN_PER_TRIXEL; i++) {
+        for (uint256 i = 1; i < CHILDREN_PER_TRIXEL; i++) {
             require(children[i].parentOfToken() == parent, "Parent not shared");
         }
         
@@ -814,7 +814,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
             require(parent_deposit >= getMinDepositToCreate(parent), "Deposit not sufficient");
         }
 
-        for (i = 0; i < CHILDREN_PER_TRIXEL; i++) {
+        for (uint256 i = 0; i < CHILDREN_PER_TRIXEL; i++) {
             // Burn the children
             backend.burn(msg.sender, children[i]);
 
@@ -867,7 +867,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         IERC20 other = IERC20(otherToken);
         
         // We will send our whole balance
-        uint excessBalance = other.balanceOf(this);
+        uint excessBalance = other.balanceOf(address(this));
         
         // Unless we're talking about the MRV token
         if (address(other) == address(depositTokenContract)) {

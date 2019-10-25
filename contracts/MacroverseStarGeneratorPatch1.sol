@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.2;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -55,7 +55,7 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
      * Deploy a new copy of the patch generator.
      * Use the contract at the given address to regulate access.
      */
-    constructor(address accessControlAddress) ControlledAccess(AccessControl(accessControlAddress)) public {
+    constructor(address accessControlAddress) ControlledAccess(accessControlAddress) public {
         // Nothing to do!
     }
 
