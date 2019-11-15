@@ -1,9 +1,11 @@
-let MacroverseUniversalRegistry = artifacts.require("MacroverseUniversalRegistry");
-let MacroverseRealEstate = artifacts.require("MacroverseRealEstate");
-let MRVToken = artifacts.require("MRVToken");
+let MacroverseUniversalRegistry = artifacts.require("MacroverseUniversalRegistry")
+let MacroverseRealEstate = artifacts.require("MacroverseRealEstate")
+let MRVToken = artifacts.require("MRVToken")
 
 // Load the Macroverse module JavaScript
 let mv = require('../src')
+
+const Web3Utils = require('web3-utils')
 
 async function assert_throws(promise, message) {
   try {
@@ -19,8 +21,10 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let instance = await MacroverseUniversalRegistry.deployed()
     let mrv = await MRVToken.deployed()
 
-    assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(5000, "ether"), "We start with the expected amount of MRV for the test")
-    
+    console.log('Check starting balance')
+    assert.equal((await mrv.balanceOf.call(accounts[0])), Web3Utils.toWei("5000", "ether"), "We start with the expected amount of MRV for the test")
+    console.log('Checked starting balance')
+
     // Approve the deposit tokens
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[0]))
 
@@ -34,28 +38,29 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Compute a hash
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
 
-    let saw_event = false
+    // Setting up an asynchronous watch on events is hard because we have to wait for it to actually connect.
+    // We only get 'connected' on the event's EventEmitter in like v1.2.3 or something and who knows what Truffle ships
+    // Also waiting for an event is harder than waiting for a promise.
+    // So we do the thing and poll for events after instead.
 
-    // Watch commit events
-    let filter = instance.Commit({}, { fromBlock: 'latest', toBlock: 'latest'})
-    filter.watch((error, event_report) => { 
+    let since = web3.eth.getBlock('latest').number
+
+    // Commit for it
+    await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"))
+
+    let saw_event = false
+    for (let event_report of await instance.getPastEvents('Commit', {fromBlock: since})) {
       if (event_report.event == 'Commit' && event_report.args.owner == accounts[0] && event_report.args.hash == data_hash) {
         // We did a commit.
         saw_event = true
       }
-      // TODO: For some reason this fires twice with the same event...
-    })
-
-    // Commit for it
-    await instance.commit(data_hash, web3.toWei(1000, "ether"))
-
-    // Don't care about events after that
-    filter.stopWatching();
+    }
 
     assert.equal(saw_event, true, "We got the expected commitment hash in an event")
 
     // We should have less money now
-    assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4000, "ether"), "We lost the expected amount of MRV to the deposit")
+    assert.equal((await mrv.balanceOf.call(accounts[0])), Web3Utils.toWei("4000", "ether"), "We lost the expected amount of MRV to the deposit")
+
 
   })
 
@@ -69,7 +74,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed too early")
 
-    let balance = (await backend.balanceOf(accounts[0])).toNumber();
+    let balance = (await backend.balanceOf(accounts[0]));
     assert.equal(balance, 0, "Claimant got a token anyway")
 
     // ownerOf throws for nonexistent tokens, it doesn't say they're owned by nobody.
@@ -101,25 +106,25 @@ contract('MacroverseUniversalRegistry', function(accounts) {
         // Remember we saw the change
         saw_event = true
         // And what we changed to
-        new_price = event_report.args.new_min_system_deposit_in_atomic_units.toNumber()
+        new_price = event_report.args.new_min_system_deposit_in_atomic_units
       }
     })
 
     // Adjust the price up
-    await instance.setMinimumSystemDeposit(web3.toWei(1001, "ether"))
+    await instance.setMinimumSystemDeposit(Web3Utils.toWei("1001", "ether"))
 
     filter.stopWatching()
 
     assert.equal(saw_event, true, "We got the first expected price change event")
-    assert.equal(new_price, web3.toWei(1001, "ether"), "We got the first expected new price")
+    assert.equal(new_price, Web3Utils.toWei("1001", "ether"), "We got the first expected new price")
 
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed with too small deposit")
 
     // Adjust the price back down
-    await instance.setMinimumSystemDeposit(web3.toWei(1000, "ether"))
+    await instance.setMinimumSystemDeposit(Web3Utils.toWei("1000", "ether"))
     // TODO: somehow this doesn't fire the event right away. It comes in later.
 
-    let balance = (await backend.balanceOf(accounts[0])).toNumber();
+    let balance = (await backend.balanceOf(accounts[0]))
     assert.equal(balance, 0, "Claimant got a token anyway")
 
     // ownerOf throws for nonexistent tokens, it doesn't say they're owned by nobody.
@@ -173,14 +178,14 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     })
 
     // Commit for it
-    await instance.commit(data_hash, web3.toWei(1000, "ether"))
+    await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"))
 
     // Don't care about events after that
     filter.stopWatching()
 
     assert.equal(saw_event, true, "We got the expected commitment hash in an event")
 
-    assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(3000, "ether"), "We lost the expected amount of MRV to the deposit")
+    assert.equal((await mrv.balanceOf.call(accounts[0])), Web3Utils.toWei("3000", "ether"), "We lost the expected amount of MRV to the deposit")
 
     // Advance time for 2 days to mature the commitment
     await mv.advanceTime(60 * 24 * 2)
@@ -213,7 +218,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     assert.ok(true, "Cancel transaction goes through")
 
-    assert.equal((await mrv.balanceOf.call(accounts[0])).toNumber(), web3.toWei(4000, "ether"), "Our deposit was refunded")
+    assert.equal((await mrv.balanceOf.call(accounts[0])), Web3Utils.toWei("4000", "ether"), "Our deposit was refunded")
     
   })
 
@@ -239,7 +244,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     })
 
     // Commit for it
-    await instance.commit(data_hash, web3.toWei(1000, "ether"))
+    await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"))
 
     // Don't care about events after that
     filter.stopWatching()
@@ -263,7 +268,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let mrv = await MRVToken.deployed()
 
     // Get and approve the deposit tokens (plus 100 to pass the minimum balance control)
-    await mrv.transfer(accounts[1], web3.toWei(1100, "ether"))
+    await mrv.transfer(accounts[1], Web3Utils.toWei("1100", "ether"))
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
 
     // Try to get a child (some land on a planet) of the token (system) we already claimed for account 0
@@ -283,14 +288,14 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     })
 
     // Commit for it
-    await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
+    await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"), {from: accounts[1]})
 
     // Don't care about events after that
     filter.stopWatching()
 
     assert.equal(saw_event, true, "We got the expected commitment hash in an event")
 
-    assert.equal((await mrv.balanceOf.call(accounts[1])).toNumber(), web3.toWei(100, "ether"), "We lost the expected amount of MRV to the deposit")
+    assert.equal((await mrv.balanceOf.call(accounts[1])), Web3Utils.toWei("100", "ether"), "We lost the expected amount of MRV to the deposit")
 
     // Advance time for 2 days to mature the commitment
     await mv.advanceTime(60 * 24 * 2)
@@ -372,7 +377,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
       if (event_report.event == 'Release' && event_report.args.former_owner == accounts[1]) {
         // We did a release.
         // Remember the token we released
-        released = event_report.args.token.toNumber()
+        released = event_report.args.token
       }
 
     })
@@ -384,7 +389,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     assert.equal(released, token, "Token not released")
 
     // We should have less money now
-    assert.equal((await mrv.balanceOf.call(accounts[1])).toNumber(), startBalance.plus(web3.toWei(1000, "ether")), "We got the expected amount of MRV back from the deposit")
+    assert.equal((await mrv.balanceOf.call(accounts[1])), startBalance.plus(Web3Utils.toWei("1000", "ether")), "We got the expected amount of MRV back from the deposit")
   })
 
   it("should prohibit revealing for a child token of owned land", async function() {
@@ -400,7 +405,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
     
     // Commit for it
-    await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
+    await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"), {from: accounts[1]})
 
     // Advance time for 2 days to mature the commitment
     await mv.advanceTime(60 * 24 * 2)
@@ -425,7 +430,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
 
     // Commit for it
-    await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
+    await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"), {from: accounts[1]})
 
     // Advance time for 2 days to mature the commitment
     await mv.advanceTime(60 * 24 * 2)
@@ -494,7 +499,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
 
     // Commit for it
-    await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
+    await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"), {from: accounts[1]})
 
     // Advance time for 2 days to mature the commitment
     await mv.advanceTime(60 * 24 * 2)
@@ -519,7 +524,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let data_hash = mv.hashTokenAndNonce(to_claim, nonce)
 
     // Commit for it
-    await instance.commit(data_hash, web3.toWei(1000, "ether"), {from: accounts[1]})
+    await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"), {from: accounts[1]})
 
     // Advance time for 2 days to mature the commitment
     await mv.advanceTime(60 * 24 * 2)
@@ -560,19 +565,19 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let instance = await MacroverseUniversalRegistry.deployed()
     
     let star_keypath = '0.0.0.0'
-    let star_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(star_keypath))).toNumber()
+    let star_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(star_keypath)))
     console.log('Star cost: ' + web3.fromWei(star_cost, 'ether') + ' MRV')
-    assert.equal(star_cost, web3.toWei(1000, "ether"), "star cost is incorrect")
+    assert.equal(star_cost, Web3Utils.toWei("1000", "ether"), "star cost is incorrect")
 
     let planet_keypath = star_keypath + '.0'
-    let planet_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(planet_keypath))).toNumber()
+    let planet_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(planet_keypath)))
     console.log('Planet cost: ' + web3.fromWei(planet_cost, 'ether') + ' MRV')
-    assert.equal(planet_cost, web3.toWei(100, "ether"), "planet cost is incorrect")
+    assert.equal(planet_cost, Web3Utils.toWei("100", "ether"), "planet cost is incorrect")
 
     let moon_keypath = planet_keypath + '.0'
-    let moon_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(moon_keypath))).toNumber()
+    let moon_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(moon_keypath)))
     console.log('Moon cost: ' + web3.fromWei(moon_cost, 'ether') + ' MRV')
-    assert.equal(moon_cost, web3.toWei(25, "ether"), "moon cost is incorrect")
+    assert.equal(moon_cost, Web3Utils.toWei("25", "ether"), "moon cost is incorrect")
 
     for (let i = 1; i < 28; i++) {
       // Try all the land subdivisions with at least one land number
@@ -584,22 +589,22 @@ contract('MacroverseUniversalRegistry', function(accounts) {
       // Compute area in Earth acres (126 billion overall)
       let earth_total_acres = 126000000000
 
-      let planet_land_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(planet_land_keypath))).toNumber()
+      let planet_land_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(planet_land_keypath)))
       let planet_land_area = earth_total_acres / 2 / Math.pow(4, i)
       console.log('Planet land level ' + i + ' cost: ' +
         web3.fromWei(planet_land_cost, 'ether') + ' MRV @ ' + planet_land_area + ' Earth-acres or ' +
-        web3.fromWei(planet_land_cost/planet_land_area, "ether") + " MRV per acre on Earth")
-      assert.equal(planet_land_cost, Math.trunc(web3.toWei(100 / Math.pow(2, i + 1)), "ether"), "planet land cost is incorrect")
+        web3.fromWei(planet_land_cost, "ether")/planet_land_area + " MRV per acre on Earth")
+      assert.equal(planet_land_cost, Math.trunc(Web3Utils.toWei((100 / Math.pow(2, i + 1))).toString(), "ether"), "planet land cost is incorrect")
       
       let moon_land_keypath = moon_keypath
       for(let j = 0; j < i; j++) {
         moon_land_keypath = moon_land_keypath + '.0'
       }
 
-      let moon_land_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(moon_land_keypath))).toNumber()
+      let moon_land_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(moon_land_keypath)))
       console.log('Moon land level ' + i + ' cost: ' +
         web3.fromWei(moon_land_cost, 'ether') + ' MRV')
-      assert.equal(moon_land_cost, Math.trunc(web3.toWei(25 / Math.pow(2, i + 1)), "ether"), "moon land cost is incorrect")
+      assert.equal(Web3Utils.fromWei(moon_land_cost, "ether"), Math.trunc(25 / Math.pow(2, i + 1)), "moon land cost is incorrect")
     }
 
     

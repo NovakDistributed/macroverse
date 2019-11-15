@@ -1,13 +1,13 @@
-var MRVToken = artifacts.require("MRVToken");
+var MRVToken = artifacts.require("MRVToken")
 
-const Web3Utils = require('web3-utils');
+const Web3Utils = require('web3-utils')
 
 // Load the Macroverse module JavaScript
 let mv = require('../src')
 
 contract('MRVToken', function(accounts) {
   it("should start inactive", async function() {
-    let instance = await MRVToken.deployed();
+    let instance = await MRVToken.deployed()
     
     assert.equal((await instance.isCrowdsaleActive.call()), false, "The crowdsale is initially not started")
   })

@@ -11,6 +11,8 @@ contract('RealMath', function(accounts) {
       let roundtrip = mv.fromReal(real)
       assert.approximately(roundtrip, val, epsilon, "Converting to and from reals in JS works")
     }
+
+    assert.equal(mv.fromReal(mv.REAL_ONE), 1, "Converting known real to number produces expected value")
   })
 
   it("should do multiplication", async function() {
