@@ -43,9 +43,9 @@ contract('MacroverseSystemGenerator', function(accounts) {
  
   it("should have Y and X Euler angles for the fred system", async function() {
     let instance = await MacroverseStarGeneratorPatch1.deployed();
-    let [eulerYReal, eulerXReal] = (await instance.getObjectYXAxisAngles('0x66726564'))
-    let eulerY = mv.fromReal(eulerYReal)
-    let eulerX = mv.fromReal(eulerXReal)
+    let realAngles = (await instance.getObjectYXAxisAngles('0x66726564'))
+    let eulerY = mv.fromReal(realAngles[0])
+    let eulerX = mv.fromReal(realAngles[1])
     
     // Y angle (applied first) must be from -pi to pi
     assert.isAbove(eulerY, -Math.PI);
@@ -76,10 +76,10 @@ contract('MacroverseSystemGenerator', function(accounts) {
 
   it("should have a habitable zone that is reasonable", async function() {
     let instance = await MacroverseStarGeneratorPatch1.deployed()
-    let [realHabStart, realHabEnd] = await instance.getObjectHabitableZone.call(mv.toReal(1.0))
+    let realBounds = await instance.getObjectHabitableZone.call(mv.toReal(1.0))
 
-    let habStart = mv.fromReal(realHabStart)
-    let habEnd = mv.fromReal(realHabEnd)
+    let habStart = mv.fromReal(realBounds[0])
+    let habEnd = mv.fromReal(realBounds[1])
 
     // This should scale with the square root of the luminosity (so we scale the bounds)
     assert.isAbove(habStart / mv.AU, 0.75 * Math.sqrt(0.95))
@@ -116,10 +116,11 @@ contract('MacroverseSystemGenerator', function(accounts) {
     let parentRealMass = mv.toReal(1.0)
     let parentRealLuminosity = await stargen_patch.getObjectLuminosity.call('0x66726564', parentClassNum, parentRealMass)
 
-    let [realHabStart, realHabEnd] = await stargen_patch.getObjectHabitableZone.call(parentRealLuminosity)
+    let realBounds = await stargen_patch.getObjectHabitableZone.call(parentRealLuminosity)
 
-    let [realPeriapsis, realApoapsis, realClearance] = await instance.getPlanetOrbitDimensions.call(realHabStart, realHabEnd,
+    let realOrbit = await instance.getPlanetOrbitDimensions.call(realBounds[0], realBounds[1],
       planetSeed, planetClassNum, mv.toReal(0))
+    let [realPeriapsis, realApoapsis, realClearance] = [realOrbit[0], realOrbit[1], realOrbit[2]]
     
     assert.isAbove(mv.fromReal(realPeriapsis) / mv.AU, 0.24)
     assert.isBelow(mv.fromReal(realPeriapsis) / mv.AU, 0.25)
@@ -143,12 +144,14 @@ contract('MacroverseSystemGenerator', function(accounts) {
     let parentRealMass = mv.toReal(1.0)
     let parentRealLuminosity = await stargen_patch.getObjectLuminosity.call('0x66726564', parentClassNum, parentRealMass)
 
-    let [realHabStart, realHabEnd] = await stargen_patch.getObjectHabitableZone.call(parentRealLuminosity)
+    let realBounds = await stargen_patch.getObjectHabitableZone.call(parentRealLuminosity)
 
-    let [realPeriapsis, realApoapsis, realClearance] = await instance.getPlanetOrbitDimensions.call(realHabStart, realHabEnd,
+    let realOrbit = await instance.getPlanetOrbitDimensions.call(realBounds[0], realBounds[1],
       planetSeed, planetClassNum, mv.toReal(0))
+    let [realPeriapsis, realApoapsis, realClearance] = [realOrbit[0], realOrbit[1], realOrbit[2]]
     
-    let [realSemimajor, realEccentricity] = await instance.convertOrbitShape.call(realPeriapsis, realApoapsis)
+    let realShape = await instance.convertOrbitShape.call(realPeriapsis, realApoapsis)
+    let [realSemimajor, realEccentricity] = [realShape[0], realShape[1]]
     
     assert.isAbove(mv.fromReal(realSemimajor) / mv.AU, 0.27)
     assert.isBelow(mv.fromReal(realSemimajor) / mv.AU, 0.28)
@@ -170,7 +173,9 @@ contract('MacroverseSystemGenerator', function(accounts) {
     let parentRealLuminosity = await stargen_patch.getObjectLuminosity.call('0x66726564', parentClassNum, parentRealMass)
     totalGas += await stargen_patch.getObjectLuminosity.estimateGas('0x66726564', parentClassNum, parentRealMass)
 
-    let [realHabStart, realHabEnd] = await stargen_patch.getObjectHabitableZone.call(parentRealLuminosity)
+    let realBounds = await stargen_patch.getObjectHabitableZone.call(parentRealLuminosity)
+    let [realHabStart, realHabEnd] = [realBounds[0], realBounds[1]]
+
     totalGas += await stargen_patch.getObjectHabitableZone.estimateGas(parentRealLuminosity)
 
     let count = (await stargen_patch.getObjectPlanetCount.call('0x66726564', parentClassNum, parentTypeNum)).toNumber()
@@ -189,8 +194,9 @@ contract('MacroverseSystemGenerator', function(accounts) {
       let planetMass = mv.fromReal(realMass)
       
       // Define the orbit shape
-      let [realPeriapsis, realApoapsis, newClearance] = await instance.getPlanetOrbitDimensions.call(realHabStart, realHabEnd,
+      let realOrbit = await instance.getPlanetOrbitDimensions.call(realHabStart, realHabEnd,
         planetSeed, planetClassNum, prevClearance)
+      let [realPeriapsis, realApoapsis, newClearance] = [realOrbit[0], realOrbit[1], realOrbit[2]]
       totalGas += await instance.getPlanetOrbitDimensions.estimateGas(realHabStart, realHabEnd,
         planetSeed, planetClassNum, prevClearance)
       prevClearance = newClearance
@@ -198,7 +204,8 @@ contract('MacroverseSystemGenerator', function(accounts) {
       let planetPeriapsis = mv.fromReal(realPeriapsis) / mv.AU;
       let planetApoapsis = mv.fromReal(realApoapsis) / mv.AU;
       
-      let [realSemimajor, realEccentricity] = await instance.convertOrbitShape.call(realPeriapsis, realApoapsis)
+      let realShape = await instance.convertOrbitShape.call(realPeriapsis, realApoapsis)
+      let [realSemimajor, realEccentricity] = [realShape[0], realShape[1]]
       totalGas += await instance.convertOrbitShape.estimateGas(realPeriapsis, realApoapsis)
       let planetEccentricity = mv.fromReal(realEccentricity);
       
@@ -227,10 +234,10 @@ contract('MacroverseSystemGenerator', function(accounts) {
 
       if (!isTidallyLocked) {
         // Define the spin parameters
-        let [realYAngle, realXAngle] = await instance.getWorldYXAxisAngles(planetSeed)
+        let realAngles = await instance.getWorldYXAxisAngles(planetSeed)
         totalGas += await instance.getWorldYXAxisAngles.estimateGas(planetSeed) 
-        yAngle = mv.fromReal(realYAngle)
-        xAngle = mv.fromReal(realXAngle)
+        yAngle = mv.fromReal(realAngles[0])
+        xAngle = mv.fromReal(realAngles[1])
 
         let realSpinRate = await instance.getWorldSpinRate(planetSeed)
         totalGas += await instance.getWorldSpinRate.estimateGas(planetSeed) 
