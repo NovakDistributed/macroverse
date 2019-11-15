@@ -1,5 +1,7 @@
 var MRVToken = artifacts.require("MRVToken");
 
+const Web3Utils = require('web3-utils');
+
 // Load the Macroverse module JavaScript
 let mv = require('../src')
 
@@ -13,7 +15,7 @@ contract('MRVToken', function(accounts) {
   it("should grant 5000 MRV to the beneficiary", async function() {
     let instance = await MRVToken.deployed();
     let account = accounts[0]
-    assert.equal((await instance.balanceOf.call(account)).toNumber(), web3.toWei(5000, "ether"), "The beneficiary has 5000 MRV before the crowdsale starts")
+    assert.equal((await instance.balanceOf.call(account)), Web3Utils.toWei("5000", "ether"), "The beneficiary has 5000 MRV before the crowdsale starts")
   })
   
   it("should reject attempts by random people to start the crowdsale", async function() { 
@@ -151,10 +153,10 @@ contract('MRVToken', function(accounts) {
     assert.equal((await instance.isCrowdsaleActive.call()), true, "The crowdsale is now open")
 
     // Buy tokens
-    await instance.sendTransaction({from: accounts[1], value: web3.toWei(1, "ether")})
+    await instance.sendTransaction({from: accounts[1], value: Web3Utils.toWei("1", "ether")})
     
     // See if we got them
-    assert.equal((await instance.balanceOf.call(accounts[1])).toNumber(), web3.toWei(5000, "ether"), "Tokens can be bought")
+    assert.equal((await instance.balanceOf.call(accounts[1])), Web3Utils.toWei("5000", "ether"), "Tokens can be bought")
   })
   
   it("should not let random people set the stop timer", async function() {
@@ -220,7 +222,7 @@ contract('MRVToken', function(accounts) {
     await mv.advanceTime(51)
     
     // Fail to get tokens
-    await instance.sendTransaction({from: accounts[2], value: web3.toWei(1, "ether")}).then(function () {
+    await instance.sendTransaction({from: accounts[2], value: Web3Utils.toWei("1", "ether")}).then(function () {
       assert.ok(false, "Successfully bought after close")
     }).catch(async function () {
       assert.equal((await instance.balanceOf.call(accounts[2])).toNumber(), 0, "Failed to buy after close")
@@ -275,16 +277,16 @@ contract('MRVToken', function(accounts) {
     assert.equal(await instance.isCrowdsaleActive.call(), true, "The crowdsale starts")
     
     // We may have some MRV already.
-    let initialBalance = (await instance.balanceOf.call(account)).toNumber();
+    let initialBalance = (await instance.balanceOf.call(account));
     
     // Buy tokens
-    await instance.sendTransaction({from: account, value: web3.toWei(1, "ether")})
+    await instance.sendTransaction({from: account, value: Web3Utils.toWei("1", "ether")})
     
     // How many MRV do we have now?
-    let finalBalance = (await instance.balanceOf.call(account)).toNumber();
+    let finalBalance = (await instance.balanceOf.call(account));
     
     // See if we got them
-    assert.equal(finalBalance - initialBalance, web3.toWei(5000, "ether"), "The correct number of tokens are issued")
+    assert.equal(finalBalance - initialBalance, Web3Utils.toWei("5000", "ether"), "The correct number of tokens are issued")
   })
   
   it("should not allow decimals to be changed before the crowdsale ends", async function() {
@@ -338,19 +340,19 @@ contract('MRVToken', function(accounts) {
     await instance.openCrowdsale()
     
     // We may have some MRV already.
-    let initialBalance = (await instance.balanceOf.call(account)).toNumber();
+    let initialBalance = (await instance.balanceOf.call(account));
     
     // Buy tokens
-    await instance.sendTransaction({from: account, value: web3.toWei(CROWDSALE_MAX_TOKENS/5000, "ether")})
+    await instance.sendTransaction({from: account, value: Web3Utils.toWei((CROWDSALE_MAX_TOKENS/5000).toString(), "ether")})
     
     // See if we got them
-    assert.equal((await instance.balanceOf.call(account)).toNumber() - initialBalance, web3.toWei(CROWDSALE_MAX_TOKENS, "ether"), "All tokens can be issued")
+    assert.equal((await instance.balanceOf.call(account)) - initialBalance, Web3Utils.toWei(CROWDSALE_MAX_TOKENS.toString(), "ether"), "All tokens can be issued")
     
     // Fail to get any more
-    await instance.sendTransaction({from: account, value: web3.toWei(2/5000, "ether")}).then(function () {
+    await instance.sendTransaction({from: account, value: Web3Utils.toWei((2/5000).toString(), "ether")}).then(function () {
       assert.ok(false, "Successfully bought excess tokens")
     }).catch(async function () {
-      assert.equal((await instance.balanceOf.call(account)).toNumber() - initialBalance, web3.toWei(CROWDSALE_MAX_TOKENS, "ether"), "No more tokens than the max can be issued")
+      assert.equal((await instance.balanceOf.call(account)) - initialBalance, Web3Utils.toWei(CROWDSALE_MAX_TOKENS.toString(), "ether"), "No more tokens than the max can be issued")
     })
     
     

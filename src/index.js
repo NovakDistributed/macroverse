@@ -367,7 +367,7 @@ mv.keypathIsLand = function(keypath) {
 // Only works on Truffle testnet, but we use it in some tests.
 mv.advanceTime = function(minutes) {
   return new Promise(function (resolve, reject) {
-    web3.currentProvider.sendAsync({
+    web3.currentProvider.send({
       jsonrpc: "2.0",
       method: "evm_increaseTime",
       params: [60 * minutes],
