@@ -76,7 +76,9 @@ contract('MacroverseMoonGenerator', function(accounts) {
       // Define the orbit shape
       let orbitShape = await instance.getMoonOrbitDimensions.call(realMoonScale,
         moonSeed, moonClassNum, prevClearance)
-      console.log(orbitShape)
+      console.log('Periapsis: ', mv.fromReal(orbitShape.realPeriapsis))
+      console.log('Apoapsis: ', mv.fromReal(orbitShape.realApoapsis))
+      console.log('Clearance: ', mv.fromReal(orbitShape.realClearance))
       let [realPeriapsis, realApoapsis, newClearance] = [orbitShape[0], orbitShape[1], orbitShape[2]]
       prevClearance = newClearance
       

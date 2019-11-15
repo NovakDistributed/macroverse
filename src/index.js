@@ -15,8 +15,11 @@ mv.REAL_FBITS = 40
 mv.REAL_ONE = (new BigNumber(2)).pow(new BigNumber(mv.REAL_FBITS))
 
 mv.fromReal = function(real) {
-  // Convert from 40 bit fixed point
-  return real.div(mv.REAL_ONE).toNumber()
+  // Break up real and fractional parts
+  let ipart = parseInt(real.div(mv.REAL_ONE).toString())
+  let fpart = parseInt(real.mod(mv.REAL_ONE).toString())
+  // Do the actual conversion  from 40 bit fixed point in floats
+  return ipart + fpart / Math.pow(2, mv.REAL_FBITS)
 }
 
 mv.toReal = function(float) {
@@ -29,9 +32,34 @@ mv.toReal = function(float) {
   if (Math.log2(Math.abs(float)) >= 87) {
     throw new Error("Magnitude of " + float + " is too large for 88 bit signed int!")
   }
+
+  // Split into integer and fractional parts, upshift, and convert to digit strings
+  let ipart = toDigits(Math.trunc(float))
+  let fpart = toDigits((float - Math.trunc(float)) * Math.pow(2, mv.REAL_FBITS))
   
-  // Go via string to not spook the big number library about precision loss
-  return mv.REAL_ONE.mul(new BigNumber(float.toString()))
+  // Build the BigNumber
+  return mv.REAL_ONE.mul(new BigNumber(ipart)).add(new BigNumber(fpart))
+}
+
+// Spit out all the digits (losing precision) for a float beyond the 20
+// <num>.toFixed natively gives us.
+// Taken from https://stackoverflow.com/a/1685917
+function toDigits(x) {
+  if (Math.abs(x) < 1.0) {
+    let e = parseInt(x.toString().split('e-')[1])
+    if (e) {
+        x *= Math.pow(10,e-1)
+        x = '0.' + (new Array(e)).join('0') + x.toString().substring(2)
+    }
+  } else {
+    let e = parseInt(x.toString().split('+')[1])
+    if (e > 20) {
+        e -= 20;
+        x /= Math.pow(10,e);
+        x += (new Array(e+1)).join('0')
+    }
+  }
+  return x
 }
 
 // Convert from float radians to float degrees.
@@ -176,7 +204,8 @@ mv.getClaimKey = function(commitment_hash, owner_address) {
 // Convert a signed number to an unsigned bit pattern BigNumber of the same bit width.
 mv.signedToUnsigned = function(number, width) {
   number = new BigNumber(number)
-  if (number.lt(0)) {
+  width = new BigNumber(width)
+  if (number.ltn(0)) {
     // Compute a two's complement representation.
     // Add our negative number to (i.e. subtract from) 2^width
     return new BigNumber(2).pow(width).add(number)
@@ -188,10 +217,11 @@ mv.signedToUnsigned = function(number, width) {
 // Convert an unsigned bit pattern to a signed BigNumber of the same bit width.
 mv.unsignedToSigned = function(number, width) {
   number = new BigNumber(number)
-  let highBit = new BigNumber(2).pow(width - 1)
+  width = new BigNumber(width)
+  let highBit = new BigNumber(2).pow(width.sub(new BigNumber(1)))
   if (highBit.lte(number)) {
     // Number should be negative. Subtract the offset.
-    return number.sub(highBit.mul(2))
+    return number.sub(highBit.mul(new BigNumber(2)))
   } else {
     return number
   }
@@ -199,13 +229,16 @@ mv.unsignedToSigned = function(number, width) {
 
 // We need a function to bit-shift bignums. A positive shift shifts left.
 // Only works correctly (real bitwise shift) on unsigned numbers.
+// Bits can't be a BigNumber.
 mv.shift = function(number, shiftBits) {
+  // Make sure arguments have the methods BN requires
+  number = new BigNumber(number)
   if (shiftBits >= 0) {
     // Shift left
-    return number.mul(new BigNumber(2).pow(shiftBits))
+    return number.shln(shiftBits)
   } else {
     // Shift right
-    return number.div(new BigNumber(2).pow(-shiftBits))
+    return number.shrn(shiftBits)
   }
 }
 
@@ -222,31 +255,31 @@ mv.keypathToToken = function(keypath) {
   }
 
   // Fill in the sector x, y, z
-  token = token.plus(mv.shift(mv.signedToUnsigned(parts[0], mv.TOKEN_SECTOR_X_BITS), mv.TOKEN_SECTOR_X_SHIFT))
-  token = token.plus(mv.shift(mv.signedToUnsigned(parts[1], mv.TOKEN_SECTOR_Y_BITS), mv.TOKEN_SECTOR_Y_SHIFT))
-  token = token.plus(mv.shift(mv.signedToUnsigned(parts[2], mv.TOKEN_SECTOR_Z_BITS), mv.TOKEN_SECTOR_Z_SHIFT))
+  token = token.add(mv.shift(mv.signedToUnsigned(parts[0], mv.TOKEN_SECTOR_X_BITS), mv.TOKEN_SECTOR_X_SHIFT))
+  token = token.add(mv.shift(mv.signedToUnsigned(parts[1], mv.TOKEN_SECTOR_Y_BITS), mv.TOKEN_SECTOR_Y_SHIFT))
+  token = token.add(mv.shift(mv.signedToUnsigned(parts[2], mv.TOKEN_SECTOR_Z_BITS), mv.TOKEN_SECTOR_Z_SHIFT))
 
   if (parts.length < 4) {
     // It's a sector (not a real token that can be claimed)
-    token = token.plus(new BigNumber(mv.TOKEN_TYPE_SECTOR))
+    token = token.add(new BigNumber(mv.TOKEN_TYPE_SECTOR))
     return token
   }
 
   // Otherwise it has a star number (non-negative)
-  token = token.plus(mv.shift(new BigNumber(parts[3]), mv.TOKEN_SYSTEM_SHIFT))
+  token = token.add(mv.shift(new BigNumber(parts[3]), mv.TOKEN_SYSTEM_SHIFT))
 
   if (parts.length < 5) {
     // It's a real system token. Return it as one.
-    token = token.plus(new BigNumber(mv.TOKEN_TYPE_SYSTEM))
+    token = token.add(new BigNumber(mv.TOKEN_TYPE_SYSTEM))
     return token
   }
 
   // Otherwise it has a planet number (non-negative)
-  token = token.plus(mv.shift(new BigNumber(parts[4]), mv.TOKEN_PLANET_SHIFT))
+  token = token.add(mv.shift(new BigNumber(parts[4]), mv.TOKEN_PLANET_SHIFT))
 
   if (parts.length < 6) {
     // It's a real planet token. Return it as one.
-    token = token.plus(new BigNumber(mv.TOKEN_TYPE_PLANET))
+    token = token.add(new BigNumber(mv.TOKEN_TYPE_PLANET))
     return token
   }
 
@@ -254,27 +287,27 @@ mv.keypathToToken = function(keypath) {
   // TODO: should we use a different signifier for land?
   if (parts[5] == -1) {
     // Planet land. Mark it as no moon.
-    token = token.plus(mv.shift(new BigNumber(mv.MOON_NONE), mv.TOKEN_MOON_SHIFT))
+    token = token.add(mv.shift(new BigNumber(mv.MOON_NONE), mv.TOKEN_MOON_SHIFT))
   } else {
     // A moon or moon land. Store the moon number.
-    token = token.plus(mv.shift(new BigNumber(parts[5]), mv.TOKEN_MOON_SHIFT))
+    token = token.add(mv.shift(new BigNumber(parts[5]), mv.TOKEN_MOON_SHIFT))
   }
 
   if (parts.length < 7) {
     // It's just the moon. This isn't a legit token if this is supposed to be planet land.
     // TODO: catch that.
-    token = token.plus(new BigNumber(mv.TOKEN_TYPE_MOON))
+    token = token.add(new BigNumber(mv.TOKEN_TYPE_MOON))
     return token
   }
 
   // Otherwise this is land. Go through and translate the remaining parts directly into trixel numbers
   for (let trixel_index = 0; trixel_index < mv.TOKEN_TRIXEL_FIELD_COUNT && trixel_index + 6 < parts.length; trixel_index++) {
     // For each trixel we can have, add it in
-    token = token.plus(mv.shift(new BigNumber(parts[trixel_index + 6]), mv.TOKEN_TRIXEL_SHIFT + mv.TOKEN_TRIXEL_EACH_BITS * trixel_index));
+    token = token.add(mv.shift(new BigNumber(parts[trixel_index + 6]), mv.TOKEN_TRIXEL_SHIFT + mv.TOKEN_TRIXEL_EACH_BITS * trixel_index));
   }
 
   // Set the type to the appropriate granularity of land
-  token = token.plus(new BigNumber(mv.TOKEN_TYPE_LAND_MIN + (parts.length - 7)))
+  token = token.add(new BigNumber(mv.TOKEN_TYPE_LAND_MIN + (parts.length - 7)))
     
   // Spit out the constructed token
   return token
@@ -282,11 +315,13 @@ mv.keypathToToken = function(keypath) {
 }
 
 // To parse tokens we need a way to get bit ranges
+// lowest and count cannot be BigNumbers
 mv.getBits = function(num, lowest, count) {
-  // Divide by 2^lowest, integral
-  let cutoff = num.dividedToIntegerBy(new BigNumber(2).pow(lowest))
-  // Then mod by 2^count
-  return cutoff.modulo(new BigNumber(2).pow(count))
+  num = new BigNumber(num)
+  // Shift off the too-low bits
+  let cutoff = num.shrn(lowest)
+  // Then mask off bits at count or higher
+  return cutoff.maskn(count)
 }
 
 // And we have a function to convert tokens to keypaths

@@ -4,6 +4,15 @@ var RealMath = artifacts.require("RealMath")
 let mv = require('../src')
 
 contract('RealMath', function(accounts) {
+  it("should come with working accessory functions", async function() {
+    let epsilon = 1/Math.pow(2, 40)
+    for (let val of [0, 1, -1, 0.1, -0.1, 1.1, -1.1, 1e14, -1e14, 3.14159, 1e14 + 0.1, 1e14 - 0.1, -1e14 - 0.1, -1e14 + 0.1, 1e-10, -1e-10]) {
+      let real = mv.toReal(val)
+      let roundtrip = mv.fromReal(real)
+      assert.approximately(roundtrip, val, epsilon, "Converting to and from reals in JS works")
+    }
+  })
+
   it("should do multiplication", async function() {
     let instance = await RealMath.deployed()
     

@@ -182,7 +182,8 @@ contract('MacroverseStarGenerator', function(accounts) {
         let seed = await instance.getSectorObjectSeed.call(0, 0, 0, star)
         
         // Decide on a position
-        let [ x, y, z] = await instance.getObjectPosition.call(seed)
+        let pos = await instance.getObjectPosition.call(seed)
+        let [ x, y, z] = [pos[0], pos[1], pos[2]]
         x = mv.fromReal(x)
         y = mv.fromReal(y)
         z = mv.fromReal(z)
