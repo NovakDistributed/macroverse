@@ -4,7 +4,7 @@
 // defining JS equivalents or counterparts to some of the on-chain Solidity
 // code.
 
-const BigNumber = require('bn.js')
+const BN = require('bn.js')
 
 // We need this for the Solidity-alike hashing functions
 const Web3Utils = require('web3-utils')
@@ -12,7 +12,7 @@ const Web3Utils = require('web3-utils')
 var mv = module.exports
 
 mv.REAL_FBITS = 40
-mv.REAL_ONE = (new BigNumber(2)).pow(new BigNumber(mv.REAL_FBITS))
+mv.REAL_ONE = (new BN(2)).pow(new BN(mv.REAL_FBITS))
 
 mv.fromReal = function(real) {
   // Break up real and fractional parts
@@ -37,8 +37,8 @@ mv.toReal = function(float) {
   let ipart = toDigits(Math.trunc(float))
   let fpart = toDigits((float - Math.trunc(float)) * Math.pow(2, mv.REAL_FBITS))
   
-  // Build the BigNumber
-  return mv.REAL_ONE.mul(new BigNumber(ipart)).add(new BigNumber(fpart))
+  // Build the BN
+  return mv.REAL_ONE.mul(new BN(ipart)).add(new BN(fpart))
 }
 
 // Spit out all the digits (losing precision) for a float beyond the 20
@@ -187,10 +187,10 @@ mv.MOON_NONE = 0xFFFF
 // This is hardcoded in the registry, but the maturation time is configurable at registry deployment.
 mv.COMMITMENT_MAX_WAIT_FACTOR = 7
 
-// We have a function to properly hash a number or BigNumber or 0x string token number and nonce, for making claims
+// We have a function to properly hash a number or BN or 0x string token number and nonce, for making claims
 mv.hashTokenAndNonce = function(token, nonce) {
-    token = new BigNumber(token)
-    nonce = new BigNumber(nonce)
+    token = new BN(token)
+    nonce = new BN(nonce)
     
     // Bignums are hashed as uint256 if positive
     return Web3Utils.soliditySha3(token, nonce)
@@ -201,27 +201,27 @@ mv.getClaimKey = function(commitment_hash, owner_address) {
     return Web3Utils.soliditySha3(commitment_hash, owner_address)
 }
 
-// Convert a signed number to an unsigned bit pattern BigNumber of the same bit width.
+// Convert a signed number to an unsigned bit pattern BN of the same bit width.
 mv.signedToUnsigned = function(number, width) {
-  number = new BigNumber(number)
-  width = new BigNumber(width)
+  number = new BN(number)
+  width = new BN(width)
   if (number.ltn(0)) {
     // Compute a two's complement representation.
     // Add our negative number to (i.e. subtract from) 2^width
-    return new BigNumber(2).pow(width).add(number)
+    return new BN(2).pow(width).add(number)
   } else {
     return number
   }
 }
 
-// Convert an unsigned bit pattern to a signed BigNumber of the same bit width.
+// Convert an unsigned bit pattern to a signed BN of the same bit width.
 mv.unsignedToSigned = function(number, width) {
-  number = new BigNumber(number)
-  width = new BigNumber(width)
-  let highBit = new BigNumber(2).pow(width.sub(new BigNumber(1)))
+  number = new BN(number)
+  width = new BN(width)
+  let highBit = new BN(2).pow(width.sub(new BN(1)))
   if (highBit.lte(number)) {
     // Number should be negative. Subtract the offset.
-    return number.sub(highBit.mul(new BigNumber(2)))
+    return number.sub(highBit.mul(new BN(2)))
   } else {
     return number
   }
@@ -229,10 +229,10 @@ mv.unsignedToSigned = function(number, width) {
 
 // We need a function to bit-shift bignums. A positive shift shifts left.
 // Only works correctly (real bitwise shift) on unsigned numbers.
-// Bits can't be a BigNumber.
+// Bits can't be a BN.
 mv.shift = function(number, shiftBits) {
   // Make sure arguments have the methods BN requires
-  number = new BigNumber(number)
+  number = new BN(number)
   if (shiftBits >= 0) {
     // Shift left
     return number.shln(shiftBits)
@@ -246,7 +246,7 @@ mv.shift = function(number, shiftBits) {
 mv.keypathToToken = function(keypath) {
   let parts = keypath.split('.')
 
-  let token = new BigNumber(0)
+  let token = new BN(0)
 
   if (parts.length < 3) {
     // Token is invalid
@@ -261,25 +261,25 @@ mv.keypathToToken = function(keypath) {
 
   if (parts.length < 4) {
     // It's a sector (not a real token that can be claimed)
-    token = token.add(new BigNumber(mv.TOKEN_TYPE_SECTOR))
+    token = token.add(new BN(mv.TOKEN_TYPE_SECTOR))
     return token
   }
 
   // Otherwise it has a star number (non-negative)
-  token = token.add(mv.shift(new BigNumber(parts[3]), mv.TOKEN_SYSTEM_SHIFT))
+  token = token.add(mv.shift(new BN(parts[3]), mv.TOKEN_SYSTEM_SHIFT))
 
   if (parts.length < 5) {
     // It's a real system token. Return it as one.
-    token = token.add(new BigNumber(mv.TOKEN_TYPE_SYSTEM))
+    token = token.add(new BN(mv.TOKEN_TYPE_SYSTEM))
     return token
   }
 
   // Otherwise it has a planet number (non-negative)
-  token = token.add(mv.shift(new BigNumber(parts[4]), mv.TOKEN_PLANET_SHIFT))
+  token = token.add(mv.shift(new BN(parts[4]), mv.TOKEN_PLANET_SHIFT))
 
   if (parts.length < 6) {
     // It's a real planet token. Return it as one.
-    token = token.add(new BigNumber(mv.TOKEN_TYPE_PLANET))
+    token = token.add(new BN(mv.TOKEN_TYPE_PLANET))
     return token
   }
 
@@ -287,27 +287,27 @@ mv.keypathToToken = function(keypath) {
   // TODO: should we use a different signifier for land?
   if (parts[5] == -1) {
     // Planet land. Mark it as no moon.
-    token = token.add(mv.shift(new BigNumber(mv.MOON_NONE), mv.TOKEN_MOON_SHIFT))
+    token = token.add(mv.shift(new BN(mv.MOON_NONE), mv.TOKEN_MOON_SHIFT))
   } else {
     // A moon or moon land. Store the moon number.
-    token = token.add(mv.shift(new BigNumber(parts[5]), mv.TOKEN_MOON_SHIFT))
+    token = token.add(mv.shift(new BN(parts[5]), mv.TOKEN_MOON_SHIFT))
   }
 
   if (parts.length < 7) {
     // It's just the moon. This isn't a legit token if this is supposed to be planet land.
     // TODO: catch that.
-    token = token.add(new BigNumber(mv.TOKEN_TYPE_MOON))
+    token = token.add(new BN(mv.TOKEN_TYPE_MOON))
     return token
   }
 
   // Otherwise this is land. Go through and translate the remaining parts directly into trixel numbers
   for (let trixel_index = 0; trixel_index < mv.TOKEN_TRIXEL_FIELD_COUNT && trixel_index + 6 < parts.length; trixel_index++) {
     // For each trixel we can have, add it in
-    token = token.add(mv.shift(new BigNumber(parts[trixel_index + 6]), mv.TOKEN_TRIXEL_SHIFT + mv.TOKEN_TRIXEL_EACH_BITS * trixel_index));
+    token = token.add(mv.shift(new BN(parts[trixel_index + 6]), mv.TOKEN_TRIXEL_SHIFT + mv.TOKEN_TRIXEL_EACH_BITS * trixel_index));
   }
 
   // Set the type to the appropriate granularity of land
-  token = token.add(new BigNumber(mv.TOKEN_TYPE_LAND_MIN + (parts.length - 7)))
+  token = token.add(new BN(mv.TOKEN_TYPE_LAND_MIN + (parts.length - 7)))
     
   // Spit out the constructed token
   return token
@@ -315,9 +315,9 @@ mv.keypathToToken = function(keypath) {
 }
 
 // To parse tokens we need a way to get bit ranges
-// lowest and count cannot be BigNumbers
+// lowest and count cannot be BNs
 mv.getBits = function(num, lowest, count) {
-  num = new BigNumber(num)
+  num = new BN(num)
   // Shift off the too-low bits
   let cutoff = num.shrn(lowest)
   // Then mask off bits at count or higher
@@ -326,8 +326,8 @@ mv.getBits = function(num, lowest, count) {
 
 // And we have a function to convert tokens to keypaths
 mv.tokenToKeypath = function(token) {
-  // Tolerate string tokens by converting to BigNumber
-  token = new BigNumber(token)
+  // Tolerate string tokens by converting to BN
+  token = new BN(token)
   
   let type = mv.getBits(token, 0, 5).toNumber()
 
@@ -381,9 +381,9 @@ mv.tokenToKeypath = function(token) {
   return keypath
 }
 
-// Generate a BigNumber nonce with 77 digits of entropy (a bit under 256 bits)
+// Generate a BN nonce with 77 digits of entropy (a bit under 256 bits)
 mv.generateNonce = function() {
-  return BigNumber.random(77).mul(new BigNumber(10).pow(77))
+  return BN.random(77).mul(new BN(10).pow(77))
 }
 
 // Determine if a keypath is land
