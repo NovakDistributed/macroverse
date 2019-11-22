@@ -155,7 +155,8 @@ contract('OrbitalMechanics', function(accounts) {
     let central_mass = 1.0
 
     // Decide what time it is
-    let mv_time = mv.yearsSinceEpoch(web3.eth.getBlock(web3.eth.blockNumber).timestamp)
+    let block = await web3.eth.getBlock(web3.eth.blockNumber)
+    let mv_time = mv.yearsSinceEpoch(block.timestamp)
     console.log("The time is " + mv_time + " years since Macroverse epoch")
 
     // Convert to real
@@ -182,7 +183,8 @@ contract('OrbitalMechanics', function(accounts) {
     totalGas += await instance.computeTrueAnomaly.estimateGas(real_eccentric_anomaly, real_eccentricity)
     let real_radius = await instance.computeRadius.call(real_true_anomaly, real_semimajor_meters, real_eccentricity)
     totalGas += await instance.computeRadius.estimateGas(real_true_anomaly, real_semimajor_meters, real_eccentricity)
-    let [real_x, real_y, real_z] = await instance.computeCartesianOffset.call(real_radius, real_true_anomaly, real_lan, real_inclination, real_aop)
+    let offset = await instance.computeCartesianOffset.call(real_radius, real_true_anomaly, real_lan, real_inclination, real_aop)
+    let [real_x, real_y, real_z] = [offset[0], offset[1], offset[2]]
     totalGas += await instance.computeCartesianOffset.estimateGas(real_radius, real_true_anomaly, real_lan, real_inclination, real_aop)
 
     console.log("Planet currently at <" + mv.fromReal(real_x) + "," + mv.fromReal(real_y) + "," + mv.fromReal(real_z) + "> computed for " + totalGas + " gas")
