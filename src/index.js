@@ -189,11 +189,17 @@ mv.COMMITMENT_MAX_WAIT_FACTOR = 7
 
 // We have a function to properly hash a number or BN or 0x string token number and nonce, for making claims
 mv.hashTokenAndNonce = function(token, nonce) {
-    token = new BN(token)
+  token = new BN(token)
+  if (typeof nonce == 'string' && nonce.startsWith('0x')) {
+    // It is in hex. Parse to BN as base 16 without 0x.
+    nonce = new BN(nonce.substr(2), 16)
+  } else {
+    // Hope we can just parse it.
     nonce = new BN(nonce)
+  }
     
-    // Bignums are hashed as uint256 if positive
-    return Web3Utils.soliditySha3(token, nonce)
+  // Bignums are hashed as uint256 if positive
+  return Web3Utils.soliditySha3(token, nonce)
 }
 
 // We have a function to properly hash a token-and-nonce hash and an address, to get the key to look up a claim
@@ -242,7 +248,8 @@ mv.shift = function(number, shiftBits) {
   }
 }
 
-// We have a function to convert from keypaths for objects to tokens
+// We have a function to convert from keypaths for objects to tokens.
+// Tokens are represented as stringified numbers.
 mv.keypathToToken = function(keypath) {
   let parts = keypath.split('.')
 
@@ -262,7 +269,7 @@ mv.keypathToToken = function(keypath) {
   if (parts.length < 4) {
     // It's a sector (not a real token that can be claimed)
     token = token.add(new BN(mv.TOKEN_TYPE_SECTOR))
-    return token
+    return token.toString()
   }
 
   // Otherwise it has a star number (non-negative)
@@ -271,7 +278,7 @@ mv.keypathToToken = function(keypath) {
   if (parts.length < 5) {
     // It's a real system token. Return it as one.
     token = token.add(new BN(mv.TOKEN_TYPE_SYSTEM))
-    return token
+    return token.toString()
   }
 
   // Otherwise it has a planet number (non-negative)
@@ -280,7 +287,7 @@ mv.keypathToToken = function(keypath) {
   if (parts.length < 6) {
     // It's a real planet token. Return it as one.
     token = token.add(new BN(mv.TOKEN_TYPE_PLANET))
-    return token
+    return token.toString()
   }
 
   // Otherwise it has a moon number, or -1 in the keypath to represent that it is land on a planet.
@@ -297,7 +304,7 @@ mv.keypathToToken = function(keypath) {
     // It's just the moon. This isn't a legit token if this is supposed to be planet land.
     // TODO: catch that.
     token = token.add(new BN(mv.TOKEN_TYPE_MOON))
-    return token
+    return token.toString()
   }
 
   // Otherwise this is land. Go through and translate the remaining parts directly into trixel numbers
@@ -310,7 +317,7 @@ mv.keypathToToken = function(keypath) {
   token = token.add(new BN(mv.TOKEN_TYPE_LAND_MIN + (parts.length - 7)))
     
   // Spit out the constructed token
-  return token
+  return token.toString()
 
 }
 
@@ -324,10 +331,11 @@ mv.getBits = function(num, lowest, count) {
   return cutoff.maskn(count)
 }
 
-// And we have a function to convert tokens to keypaths
+// And we have a function to convert tokens to keypaths.
+// Tokens may be strings or BNs.
 mv.tokenToKeypath = function(token) {
   // Tolerate string tokens by converting to BN
-  token = new BN(token)
+  token = new BN(token.toString())
   
   let type = mv.getBits(token, 0, 5).toNumber()
 
@@ -381,9 +389,21 @@ mv.tokenToKeypath = function(token) {
   return keypath
 }
 
-// Generate a BN nonce with 77 digits of entropy (a bit under 256 bits)
+// Generate a string nonce as a hex number (0x...) of up to 256 bits.
 mv.generateNonce = function() {
-  return BN.random(77).mul(new BN(10).pow(77))
+  if (typeof window !== 'undefined' && typeof window.crypto !== 'undefined') {
+    // Try the web crypto API
+    let nonce = new Uint8Array(32)
+    window.crypto.getRandomValues(nonce)
+    // Convert to hex string
+    // See https://stackoverflow.com/a/39225475
+    return '0x' + nonce.reduce((memo, i) => memo + ('0' + i.toString(16)).slice(-2), '')
+  } else {
+    // Try Node crypto
+    const crypto = require('crypto')
+    let nonce = crypto.randomBytes(32)
+    return '0x' + nonce.toString('hex')
+  }
 }
 
 // Determine if a keypath is land
