@@ -82,6 +82,65 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     assert.equal(await backend.exists(to_claim), false, "Token shouldn't exist after too-early reveal")
   })
 
+  it("should prohibit revealing at the right time if we up the wait", async function() {
+    let instance = await MacroverseUniversalRegistry.deployed()
+    let backend = await MacroverseRealEstate.deployed()
+
+    // Remember our commitment from the last test?
+    let to_claim = mv.keypathToToken('0.0.0.0')
+    let nonce = 0xDEAD
+
+    // Advance time for 10 minutes which should be enough
+    await mv.advanceTime(10)
+
+    let since = web3.eth.getBlock('latest').number
+
+    // But up the wait so it is now still to early
+    await instance.setCommitmentMinWait(20 * 60)
+
+    let saw_event = false
+    let new_wait = undefined
+    for (let event_report of await instance.getPastEvents('CommitmentMinWaitChange', {fromBlock: since})) {
+      if (event_report.event == 'CommitmentMinWaitChange') {
+        // Remember we saw the change
+        saw_event = true
+        // And what we changed to
+        new_wait = event_report.args.new_commitment_min_wait_in_seconds
+      }
+    }
+
+    assert.equal(saw_event, true, "We got the first expected wait change event")
+    assert.equal(new_wait, 20 * 60, "We got the first expected new wait")
+    
+    await assert_throws(instance.reveal(to_claim, nonce), "Revealed too early")
+
+    let balance = (await backend.balanceOf(accounts[0]));
+    assert.equal(balance, 0, "Claimant got a token anyway")
+
+    // ownerOf throws for nonexistent tokens, it doesn't say they're owned by nobody.
+    assert.equal(await backend.exists(to_claim), false, "Token shouldn't exist after too-early reveal")
+
+    // Now change the wait back, but leave it the right time for the next test
+
+    since = web3.eth.getBlock('latest').number
+    saw_event = false
+    new_wait = undefined
+
+    await instance.setCommitmentMinWait(5 * 60)
+
+    for (let event_report of await instance.getPastEvents('CommitmentMinWaitChange', {fromBlock: since})) {
+      if (event_report.event == 'CommitmentMinWaitChange') {
+        // Remember we saw the change
+        saw_event = true
+        // And what we changed to
+        new_wait = event_report.args.new_commitment_min_wait_in_seconds
+      }
+    }
+
+    assert.equal(saw_event, true, "We got the second expected wait change event")
+    assert.equal(new_wait, 5 * 60, "We got the second expected new wait")
+  })
+
   it("should prohibit revealing at the right time but with too low a deposit", async function() {
     let instance = await MacroverseUniversalRegistry.deployed()
     let backend = await MacroverseRealEstate.deployed()
@@ -90,9 +149,6 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let to_claim = mv.keypathToToken('0.0.0.0')
     let nonce = 0xDEAD
     
-    // Advance time for 2 days which should be enough
-    await mv.advanceTime(60 * 24 * 2)
-
     assert.equal(await backend.exists(to_claim), false, "Token exists too early")
 
     // We're also going to test price adjustments
@@ -181,8 +237,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     assert.equal((await mrv.balanceOf.call(accounts[0])), Web3Utils.toWei("3000", "ether"), "We lost the expected amount of MRV to the deposit")
 
-    // Advance time for 2 days to mature the commitment
-    await mv.advanceTime(60 * 24 * 2)
+    // Advance time for 10 minutes to mature the commitment
+    await mv.advanceTime(10)
 
     // Now try revealing. It should fail.
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed conflicting claim")
@@ -242,7 +298,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     assert.equal(saw_event, true, "We got the expected commitment hash in an event")
 
     // Advance time for 20 days which should be enough
-    await mv.advanceTime(60 * 24 * 20)
+    await mv.advanceTime(100)
 
     // Now try revealing. It should fail.
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed expired claim")
@@ -283,8 +339,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     assert.equal((await mrv.balanceOf.call(accounts[1])), Web3Utils.toWei("100", "ether"), "We lost the expected amount of MRV to the deposit")
 
-    // Advance time for 2 days to mature the commitment
-    await mv.advanceTime(60 * 24 * 2)
+    // Advance time for 10 minutes to mature the commitment
+    await mv.advanceTime(10)
 
     // Now try revealing. It should fail.
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed unauthorized subclaim")
@@ -395,8 +451,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Commit for it
     await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"), {from: accounts[1]})
 
-    // Advance time for 2 days to mature the commitment
-    await mv.advanceTime(60 * 24 * 2)
+    // Advance time for 10 minutes to mature the commitment
+    await mv.advanceTime(10)
 
     // Now try revealing. It should fail.
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed land subplot")
@@ -420,8 +476,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Commit for it
     await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"), {from: accounts[1]})
 
-    // Advance time for 2 days to mature the commitment
-    await mv.advanceTime(60 * 24 * 2)
+    // Advance time for 10 minutes to mature the commitment
+    await mv.advanceTime(10)
 
     // Now try revealing. It should fail.
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed land superplot")
@@ -489,8 +545,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Commit for it
     await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"), {from: accounts[1]})
 
-    // Advance time for 2 days to mature the commitment
-    await mv.advanceTime(60 * 24 * 2)
+    // Advance time for 10 minutes to mature the commitment
+    await mv.advanceTime(10)
 
     // Now try revealing. It should fail.
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed asteroid belt land")
@@ -514,8 +570,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Commit for it
     await instance.commit(data_hash, Web3Utils.toWei("1000", "ether"), {from: accounts[1]})
 
-    // Advance time for 2 days to mature the commitment
-    await mv.advanceTime(60 * 24 * 2)
+    // Advance time for 10 minutes to mature the commitment
+    await mv.advanceTime(10)
 
     // Now try revealing. It should fail.
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed ring land")
@@ -539,8 +595,8 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Commit for it with loads of money
     await instance.commit(data_hash, await mrv.balanceOf.call(accounts[0]))
 
-    // Advance time for 2 days to mature the commitment
-    await mv.advanceTime(60 * 24 * 2)
+    // Advance time for 10 minutes to mature the commitment
+    await mv.advanceTime(10)
 
     // Now try revealing. It should fail.
     await assert_throws(instance.reveal(to_claim, nonce), "Revealed entire sector")

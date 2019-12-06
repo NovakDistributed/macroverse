@@ -178,6 +178,8 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
 
     /// Fired when the deposit scale for the registry is updated by the administrator.
     event DepositScaleChange(uint256 new_min_system_deposit_in_atomic_units);
+    /// Fired when the commitment min wait time is updated by the administrator.
+    event CommitmentMinWaitChange(uint256 new_commitment_min_wait_in_seconds);
 
     //////////////
     // Contract state
@@ -859,7 +861,17 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         minSystemDepositInAtomicUnits = new_minimum_deposit_in_atomic_units;
         emit DepositScaleChange(minSystemDepositInAtomicUnits);
     }
-    
+
+    /**
+     * Set the minimum wait time in seconds for waiting for commitments to
+     * mature and become revealable. The maximum time commitments have before
+     * they expire is also adjusted, as it is a multiple of this value.
+     */
+    function setCommitmentMinWait(uint256 new_commitment_min_wait_in_seconds) external onlyOwner {
+        commitmentMinWait = new_commitment_min_wait_in_seconds;
+        emit CommitmentMinWaitChange(commitmentMinWait);
+    }
+
     /**
      * Allow the owner to collect any non-MRV tokens, or any excess MRV, that ends up in this contract.
      */
