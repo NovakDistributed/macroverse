@@ -15,6 +15,9 @@ mv.REAL_FBITS = 40
 mv.REAL_ONE = (new BN(2)).pow(new BN(mv.REAL_FBITS))
 
 mv.fromReal = function(real) {
+  // Treat as a BigNumber
+  real = new BN(real.toString(10))
+
   // Break up real and fractional parts
   let ipart = parseInt(real.div(mv.REAL_ONE).toString())
   let fpart = parseInt(real.mod(mv.REAL_ONE).toString())
