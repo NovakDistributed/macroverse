@@ -32,8 +32,9 @@ module.exports = async function(deployer, network, accounts) {
 
   // Determine the token to use.
   // On testnet we want to launch one that lets anyone mint tokens for free
+  // Make sure to check startsWith to match the -fork network Truffle dry runs the migrations against.
   // TODO: Tests get upset if they try and test MRVToken but TestnetMRVToken was deployed instead.
-  let token_contract = (network == "rinkeby_infura" ? TestnetMRVToken : MRVToken)
+  let token_contract = (network.startsWith("rinkeby_infura") ? TestnetMRVToken : MRVToken)
   
   // Deploy the token
   await deployer.deploy(token_contract, beneficiary, tokenAccount).then(function() {

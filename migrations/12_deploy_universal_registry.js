@@ -14,7 +14,9 @@ module.exports = async function(deployer, network, accounts) {
 
   // Determine the token to use for the registry
   // On testnet we use one that lets anyone mint tokens for free
-  let token_contract = (network == "rinkeby_infura" ? TestnetMRVToken : MRVToken)
+  // This has to pick the same contract we deployed in 2_deploy_contracts.js,
+  // so it should mathc the code there.
+  let token_contract = (network.startsWith("rinkeby_infura") ? TestnetMRVToken : MRVToken)
 
   // Deploy the registry, using the existence checker and the existing token
   // and a starting min star deposit, with a 5 minute commitment maturation time.

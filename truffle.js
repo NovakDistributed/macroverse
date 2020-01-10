@@ -31,7 +31,7 @@ module.exports = {
        host: "localhost",
        port: 9545,
        network_id: "4447",
-       gas: 4700000,
+       gas: 8000000,
        gasPrice: 4000000000
     },
     live: {
@@ -39,7 +39,7 @@ module.exports = {
       host: "localhost",
       port: 8546,   // Different than the default
       from: "0x368651F6c2b3a7174ac30A5A062b65F2342Fb6F1",
-      gas: 4700000, // Knock down because it has to be les than block gas limit
+      gas: 8000000, // Knock down because it has to be les than block gas limit
       gasPrice: 4000000000 // Defaults to 100 gwei = 100 shannon = 100 billion, which is extremely high.
     },
     rinkeby_infura: {
@@ -50,7 +50,7 @@ module.exports = {
         // KEYSTORE_NAME is a file under that keystore directory
         return makeKeystoreProvider(env['KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'https://rinkeby.infura.io/v3/' + env['INFURA_PROJECT'])
       },
-      gas: 4700000, // Knock down because it has to be les than block gas limit
+      gas: 8000000, // Knock down because it has to be les than block gas limit
       gasPrice: 4000000000 // Defaults to 100 gwei = 100 shannon = 100 billion, which is extremely high.
     }
   },

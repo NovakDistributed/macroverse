@@ -1,3 +1,5 @@
 *~
 *.swp
-
+.env
+keystore/*
+node_modules/*

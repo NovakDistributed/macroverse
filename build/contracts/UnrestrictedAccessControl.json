@@ -1,15 +1,15 @@
 {
-  "contract_name": "UnrestrictedAccessControl",
+  "contractName": "UnrestrictedAccessControl",
   "abi": [
     {
       "constant": true,
       "inputs": [
         {
-          "name": "sender",
+          "name": "",
           "type": "address"
         },
         {
-          "name": "origin",
+          "name": "",
           "type": "address"
         }
       ],
@@ -21,18 +21,428 @@
         }
       ],
       "payable": false,
+      "stateMutability": "pure",
       "type": "function"
     }
   ],
-  "unlinked_binary": "0x60606040523415600b57fe5b5b60888061001a6000396000f300606060405263ffffffff60e060020a6000350416634af5fb0f81146020575bfe5b3415602757fe5b603f600160a060020a03600435811690602435166053565b604080519115158252519081900360200190f35b60015b929150505600a165627a7a723058203a1b78f6df06dfd5c9707dcee8b9d76db1b4b569961f8339599ceb9993ae44070029",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.8+commit.23d335f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowQuery\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"allowQuery(address,address)\":{\"notice\":\"Always approve access, ignoring the addresses passed in. Note that this raises solidity compiler warnings about unused variables.\"}},\"notice\":\"Represents an access control strategy where all requests are accepted.\"}},\"settings\":{\"compilationTarget\":{\"/Users/anovak/Documents/Workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":\"UnrestrictedAccessControl\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/anovak/Documents/Workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xb73144156419d9a5318081c9ae9d65b13da5e5e706a96c17c24c2173a6b31ecc\",\"urls\":[\"bzzr://67fff4064ba28bc0de8a8a40ba90cfdb243ca86d2046de2823c9c236595066ae\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":{\"keccak256\":\"0x0406209b279a116edbb549852e4ad573e0fcb3a5c0243c0ddc43b201a2ab8a7a\",\"urls\":[\"bzzr://27ab7e924b21ef555da0ffc14e2ec1bbdc4a8bc6cb046c28bf7c03a4bc876f43\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060de8061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80634af5fb0f14602d575b600080fd5b608c60048036036040811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505060a6565b604051808215151515815260200191505060405180910390f35b6000600190509291505056fea165627a7a723058200e0d2feec79bf8838e8ffc1f33ae7b71e98c44abd9ade9bbd27f5a976ebea2a10029",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80634af5fb0f14602d575b600080fd5b608c60048036036040811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505060a6565b604051808215151515815260200191505060405180910390f35b6000600190509291505056fea165627a7a723058200e0d2feec79bf8838e8ffc1f33ae7b71e98c44abd9ade9bbd27f5a976ebea2a10029",
+  "sourceMap": "138:322:24:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;138:322:24;;;;;;;",
+  "deployedSourceMap": "138:322:24:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;138:322:24;;;;;;;;;;;;;;;;;;;339:119;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;339:119:24;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;424:4;447;440:11;;339:119;;;;:::o",
+  "source": "pragma solidity ^0.5.2;\n\nimport \"./AccessControl.sol\";\n\n/**\n * Represents an access control strategy where all requests are accepted.\n */\ncontract UnrestrictedAccessControl {\n    /**\n     * Always approve access, ignoring the addresses passed in.\n     * Note that this raises solidity compiler warnings about unused variables.\n     */\n    function allowQuery(address /* sender */, address /* origin */) public pure returns (bool) {\n        return true;\n    }\n}\n",
+  "sourcePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/UnrestrictedAccessControl.sol",
+  "ast": {
+    "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/UnrestrictedAccessControl.sol",
+    "exportedSymbols": {
+      "UnrestrictedAccessControl": [
+        10141
+      ]
+    },
+    "id": 10142,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 10127,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:24"
+      },
+      {
+        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/AccessControl.sol",
+        "file": "./AccessControl.sol",
+        "id": 10128,
+        "nodeType": "ImportDirective",
+        "scope": 10142,
+        "sourceUnit": 12,
+        "src": "25:29:24",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": "Represents an access control strategy where all requests are accepted.",
+        "fullyImplemented": true,
+        "id": 10141,
+        "linearizedBaseContracts": [
+          10141
+        ],
+        "name": "UnrestrictedAccessControl",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 10139,
+              "nodeType": "Block",
+              "src": "430:28:24",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "74727565",
+                    "id": 10137,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "bool",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "447:4:24",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "value": "true"
+                  },
+                  "functionReturnParameters": 10136,
+                  "id": 10138,
+                  "nodeType": "Return",
+                  "src": "440:11:24"
+                }
+              ]
+            },
+            "documentation": "Always approve access, ignoring the addresses passed in.\nNote that this raises solidity compiler warnings about unused variables.",
+            "id": 10140,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "allowQuery",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 10133,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 10130,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 10140,
+                  "src": "359:7:24",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 10129,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "359:7:24",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 10132,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 10140,
+                  "src": "381:7:24",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 10131,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "381:7:24",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "358:44:24"
+            },
+            "returnParameters": {
+              "id": 10136,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 10135,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 10140,
+                  "src": "424:4:24",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 10134,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "424:4:24",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "423:6:24"
+            },
+            "scope": 10141,
+            "src": "339:119:24",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 10142,
+        "src": "138:322:24"
+      }
+    ],
+    "src": "0:461:24"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/UnrestrictedAccessControl.sol",
+    "exportedSymbols": {
+      "UnrestrictedAccessControl": [
+        10141
+      ]
+    },
+    "id": 10142,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 10127,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:24"
+      },
+      {
+        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/AccessControl.sol",
+        "file": "./AccessControl.sol",
+        "id": 10128,
+        "nodeType": "ImportDirective",
+        "scope": 10142,
+        "sourceUnit": 12,
+        "src": "25:29:24",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": "Represents an access control strategy where all requests are accepted.",
+        "fullyImplemented": true,
+        "id": 10141,
+        "linearizedBaseContracts": [
+          10141
+        ],
+        "name": "UnrestrictedAccessControl",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 10139,
+              "nodeType": "Block",
+              "src": "430:28:24",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "74727565",
+                    "id": 10137,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "bool",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "447:4:24",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "value": "true"
+                  },
+                  "functionReturnParameters": 10136,
+                  "id": 10138,
+                  "nodeType": "Return",
+                  "src": "440:11:24"
+                }
+              ]
+            },
+            "documentation": "Always approve access, ignoring the addresses passed in.\nNote that this raises solidity compiler warnings about unused variables.",
+            "id": 10140,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "allowQuery",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 10133,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 10130,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 10140,
+                  "src": "359:7:24",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 10129,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "359:7:24",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 10132,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 10140,
+                  "src": "381:7:24",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 10131,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "381:7:24",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "358:44:24"
+            },
+            "returnParameters": {
+              "id": 10136,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 10135,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 10140,
+                  "src": "424:4:24",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 10134,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "424:4:24",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "423:6:24"
+            },
+            "scope": 10141,
+            "src": "339:119:24",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 10142,
+        "src": "138:322:24"
+      }
+    ],
+    "src": "0:461:24"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.8+commit.23d335f2.Emscripten.clang"
+  },
   "networks": {
     "1": {
       "events": {},
       "links": {},
       "address": "0xd85ca484f03c686b8a85b195f4f5fc1753b7c826",
       "updated_at": 1498363737188
+    },
+    "4": {
+      "events": {},
+      "links": {},
+      "address": "0x002a7141bDd1078F82CB17954cff4225e78a3271",
+      "transactionHash": "0x19116ecad2123cc93026b1162a9c6f06a299eca61a6ab6db5d8f6b8a329c595b"
     }
   },
-  "schema_version": "0.0.5",
-  "updated_at": 1499407897112
+  "schemaVersion": "3.0.16",
+  "updatedAt": "2020-01-10T05:14:39.836Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {
+      "allowQuery(address,address)": {
+        "notice": "Always approve access, ignoring the addresses passed in. Note that this raises solidity compiler warnings about unused variables."
+      }
+    },
+    "notice": "Represents an access control strategy where all requests are accepted."
+  }
 }

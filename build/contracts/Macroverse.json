@@ -1,0 +1,252 @@
+{
+  "contractName": "Macroverse",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.8+commit.23d335f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{},\"notice\":\"Library which exists to hold types shared across the Macroverse ecosystem. Never actually needs to be linked into any dependents, since it has no functions.\"}},\"settings\":{\"compilationTarget\":{\"/Users/anovak/Documents/Workspace/macroverse/contracts/Macroverse.sol\":\"Macroverse\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/anovak/Documents/Workspace/macroverse/contracts/Macroverse.sol\":{\"keccak256\":\"0x436b59d21a8539dcc28db98437e5b31dc3a8c9e91b737196a1df62b9fb1f349c\",\"urls\":[\"bzzr://f67035333b551e7a65408d0d0a45ccb0ba7ad344b37f90bc66a0ef6fc8f879c9\"]}},\"version\":1}",
+  "bytecode": "0x604c6023600b82828239805160001a607314601657fe5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea165627a7a723058203dcaa0eefa37e23509ff1d865ad4b2aa5b95cc8d986741cf77e692e43e72cb720029",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea165627a7a723058203dcaa0eefa37e23509ff1d865ad4b2aa5b95cc8d986741cf77e692e43e72cb720029",
+  "sourceMap": "196:746:6:-;;132:2:-1;166:7;155:9;146:7;137:37;255:7;249:14;246:1;241:23;235:4;232:33;222:2;;269:9;222:2;293:9;290:1;283:20;323:4;314:7;306:22;347:7;338;331:24",
+  "deployedSourceMap": "196:746:6:-;;;;;;;;",
+  "source": "pragma solidity ^0.5.2;\n\n/**\n * Library which exists to hold types shared across the Macroverse ecosystem.\n * Never actually needs to be linked into any dependents, since it has no functions.\n */\nlibrary Macroverse {\n\n    /**\n     * Define different types of planet or moon.\n     * \n     * There are two main progressions:\n     * Asteroidal, Lunar, Terrestrial, Jovian are rocky things.\n     * Cometary, Europan, Panthalassic, Neptunian are icy/watery things, depending on temperature.\n     * The last thing in each series is the gas/ice giant.\n     *\n     * Asteroidal and Cometary are only valid for moons; we don't track such tiny bodies at system scale.\n     *\n     * We also have rings and asteroid belts. Rings can only be around planets, and we fake the Roche limit math we really should do.\n     * \n     */\n    enum WorldClass {Asteroidal, Lunar, Terrestrial, Jovian, Cometary, Europan, Panthalassic, Neptunian, Ring, AsteroidBelt}\n\n}\n",
+  "sourcePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/Macroverse.sol",
+  "ast": {
+    "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/Macroverse.sol",
+    "exportedSymbols": {
+      "Macroverse": [
+        703
+      ]
+    },
+    "id": 704,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 691,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:6"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "library",
+        "documentation": "Library which exists to hold types shared across the Macroverse ecosystem.\nNever actually needs to be linked into any dependents, since it has no functions.",
+        "fullyImplemented": true,
+        "id": 703,
+        "linearizedBaseContracts": [
+          703
+        ],
+        "name": "Macroverse",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "Macroverse.WorldClass",
+            "id": 702,
+            "members": [
+              {
+                "id": 692,
+                "name": "Asteroidal",
+                "nodeType": "EnumValue",
+                "src": "836:10:6"
+              },
+              {
+                "id": 693,
+                "name": "Lunar",
+                "nodeType": "EnumValue",
+                "src": "848:5:6"
+              },
+              {
+                "id": 694,
+                "name": "Terrestrial",
+                "nodeType": "EnumValue",
+                "src": "855:11:6"
+              },
+              {
+                "id": 695,
+                "name": "Jovian",
+                "nodeType": "EnumValue",
+                "src": "868:6:6"
+              },
+              {
+                "id": 696,
+                "name": "Cometary",
+                "nodeType": "EnumValue",
+                "src": "876:8:6"
+              },
+              {
+                "id": 697,
+                "name": "Europan",
+                "nodeType": "EnumValue",
+                "src": "886:7:6"
+              },
+              {
+                "id": 698,
+                "name": "Panthalassic",
+                "nodeType": "EnumValue",
+                "src": "895:12:6"
+              },
+              {
+                "id": 699,
+                "name": "Neptunian",
+                "nodeType": "EnumValue",
+                "src": "909:9:6"
+              },
+              {
+                "id": 700,
+                "name": "Ring",
+                "nodeType": "EnumValue",
+                "src": "920:4:6"
+              },
+              {
+                "id": 701,
+                "name": "AsteroidBelt",
+                "nodeType": "EnumValue",
+                "src": "926:12:6"
+              }
+            ],
+            "name": "WorldClass",
+            "nodeType": "EnumDefinition",
+            "src": "819:120:6"
+          }
+        ],
+        "scope": 704,
+        "src": "196:746:6"
+      }
+    ],
+    "src": "0:943:6"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/Macroverse.sol",
+    "exportedSymbols": {
+      "Macroverse": [
+        703
+      ]
+    },
+    "id": 704,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 691,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:6"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "library",
+        "documentation": "Library which exists to hold types shared across the Macroverse ecosystem.\nNever actually needs to be linked into any dependents, since it has no functions.",
+        "fullyImplemented": true,
+        "id": 703,
+        "linearizedBaseContracts": [
+          703
+        ],
+        "name": "Macroverse",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "canonicalName": "Macroverse.WorldClass",
+            "id": 702,
+            "members": [
+              {
+                "id": 692,
+                "name": "Asteroidal",
+                "nodeType": "EnumValue",
+                "src": "836:10:6"
+              },
+              {
+                "id": 693,
+                "name": "Lunar",
+                "nodeType": "EnumValue",
+                "src": "848:5:6"
+              },
+              {
+                "id": 694,
+                "name": "Terrestrial",
+                "nodeType": "EnumValue",
+                "src": "855:11:6"
+              },
+              {
+                "id": 695,
+                "name": "Jovian",
+                "nodeType": "EnumValue",
+                "src": "868:6:6"
+              },
+              {
+                "id": 696,
+                "name": "Cometary",
+                "nodeType": "EnumValue",
+                "src": "876:8:6"
+              },
+              {
+                "id": 697,
+                "name": "Europan",
+                "nodeType": "EnumValue",
+                "src": "886:7:6"
+              },
+              {
+                "id": 698,
+                "name": "Panthalassic",
+                "nodeType": "EnumValue",
+                "src": "895:12:6"
+              },
+              {
+                "id": 699,
+                "name": "Neptunian",
+                "nodeType": "EnumValue",
+                "src": "909:9:6"
+              },
+              {
+                "id": 700,
+                "name": "Ring",
+                "nodeType": "EnumValue",
+                "src": "920:4:6"
+              },
+              {
+                "id": 701,
+                "name": "AsteroidBelt",
+                "nodeType": "EnumValue",
+                "src": "926:12:6"
+              }
+            ],
+            "name": "WorldClass",
+            "nodeType": "EnumDefinition",
+            "src": "819:120:6"
+          }
+        ],
+        "scope": 704,
+        "src": "196:746:6"
+      }
+    ],
+    "src": "0:943:6"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.8+commit.23d335f2.Emscripten.clang"
+  },
+  "networks": {
+    "4": {
+      "events": {},
+      "links": {},
+      "address": "0xB6FB97DD5eEE2f93b2d22240805555cF44d0563E",
+      "transactionHash": "0x94e9f2843f2ea73f526c9cc5fbe984d070634a6ec05a5f1839e71439bec733fb"
+    }
+  },
+  "schemaVersion": "3.0.16",
+  "updatedAt": "2020-01-10T05:17:25.343Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {},
+    "notice": "Library which exists to hold types shared across the Macroverse ecosystem. Never actually needs to be linked into any dependents, since it has no functions."
+  }
+}
