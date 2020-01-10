@@ -20,10 +20,7 @@
     "dependencies": {
         "bn.js": "^5.0.0",
         "degrees-radians": "^1.0.3",
-        "dotenv": "^8.1.0",
-        "openzeppelin-solidity": "^2.3.0",
         "radians-degrees": "^1.0.0",
-        "truffle-keystore-provider": "^1.0.4",
         "web3-utils": "^1.2.2"
     },
     "license": "SEE LICENSE IN LICENSE",
@@ -31,6 +28,9 @@
         "prepack": "rm -f build/contracts/* && git checkout build/contracts"
     },
     "devDependencies": {
-        "eth-gas-reporter": "^0.1.12"
+        "eth-gas-reporter": "^0.1.12",
+        "truffle-keystore-provider": "^1.0.4",
+        "openzeppelin-solidity": "^2.3.0",
+        "dotenv": "^8.1.0"
     }
 }
