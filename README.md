@@ -24,7 +24,7 @@ Then install from source:
 ```
 git clone https://github.com/NovakDistributed/macroverse.git
 cd macroverse
-npm install
+npm install --dev
 ```
 
 And run the tests:
