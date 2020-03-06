@@ -13,10 +13,10 @@ Macroverse is a project of Novak Distributed. Macroverse is (C) 2017-2018 Novak 
 
 ## Installation
 
-Make sure you have the Truffle build tool:
+Make sure you have a compatible version of the Truffle build tool:
 
 ```
-npm install -g truffle
+npm install -g truffle@5.1.16
 ```
 
 Then install from source:

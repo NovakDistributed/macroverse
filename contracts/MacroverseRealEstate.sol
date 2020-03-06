@@ -1,8 +1,10 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.5.14;
 
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol";
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+
+import "./Strings.sol";
 
 /**
  * The MacroverseRealEstate contract keeps track of who currently owns virtual
@@ -44,6 +46,20 @@ contract MacroverseRealEstate is ERC721Full, Ownable {
      */
     function exists(uint256 tokenId) external view returns (bool) {
         return _exists(tokenId);
+    }
+
+    
+    /**
+     * Define the URI where information about an individual token can be obtained.
+     * Token is assumed to exist.
+     */
+    function tokenURI(uint256 tokenId) external view returns (string memory) {
+        uint chainId = 0;
+        assembly {
+            chainId := chainid
+        }
+        return string(abi.encodePacked("https://api.macroverse.io/vre/v1/chain/",
+            Strings.uint2str(chainId), "/token/", Strings.uint2str(tokenId)));
     }
 
     

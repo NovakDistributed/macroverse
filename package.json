@@ -31,7 +31,7 @@
     "devDependencies": {
         "dotenv": "^8.2.0",
         "eth-gas-reporter": "^0.2.14",
-        "openzeppelin-solidity": "^2.4.0",
+        "openzeppelin-solidity": "^2.5.0",
         "truffle-keystore-provider": "^1.0.4"
     }
 }
