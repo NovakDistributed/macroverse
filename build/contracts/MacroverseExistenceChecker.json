@@ -4,18 +4,22 @@
     {
       "inputs": [
         {
+          "internalType": "address",
           "name": "starGeneratorAddress",
           "type": "address"
         },
         {
+          "internalType": "address",
           "name": "starGeneratorPatchAddress",
           "type": "address"
         },
         {
+          "internalType": "address",
           "name": "systemGeneratorAddress",
           "type": "address"
         },
         {
+          "internalType": "address",
           "name": "moonGeneratorAddress",
           "type": "address"
         }
@@ -28,14 +32,17 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "int16",
           "name": "sectorX",
           "type": "int16"
         },
         {
+          "internalType": "int16",
           "name": "sectorY",
           "type": "int16"
         },
         {
+          "internalType": "int16",
           "name": "sectorZ",
           "type": "int16"
         }
@@ -43,6 +50,7 @@
       "name": "sectorExists",
       "outputs": [
         {
+          "internalType": "bool",
           "name": "",
           "type": "bool"
         }
@@ -55,18 +63,22 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "int16",
           "name": "sectorX",
           "type": "int16"
         },
         {
+          "internalType": "int16",
           "name": "sectorY",
           "type": "int16"
         },
         {
+          "internalType": "int16",
           "name": "sectorZ",
           "type": "int16"
         },
         {
+          "internalType": "uint16",
           "name": "system",
           "type": "uint16"
         }
@@ -74,6 +86,7 @@
       "name": "systemExists",
       "outputs": [
         {
+          "internalType": "bool",
           "name": "",
           "type": "bool"
         }
@@ -86,26 +99,32 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "int16",
           "name": "sectorX",
           "type": "int16"
         },
         {
+          "internalType": "int16",
           "name": "sectorY",
           "type": "int16"
         },
         {
+          "internalType": "int16",
           "name": "sectorZ",
           "type": "int16"
         },
         {
+          "internalType": "uint16",
           "name": "system",
           "type": "uint16"
         },
         {
+          "internalType": "uint16",
           "name": "planet",
           "type": "uint16"
         },
         {
+          "internalType": "uint16",
           "name": "moon",
           "type": "uint16"
         }
@@ -113,14 +132,17 @@
       "name": "moonExistsVerbose",
       "outputs": [
         {
+          "internalType": "bool",
           "name": "exists",
           "type": "bool"
         },
         {
+          "internalType": "bytes32",
           "name": "planetSeed",
           "type": "bytes32"
         },
         {
+          "internalType": "enum Macroverse.WorldClass",
           "name": "planetClass",
           "type": "uint8"
         }
@@ -133,22 +155,27 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "int16",
           "name": "sectorX",
           "type": "int16"
         },
         {
+          "internalType": "int16",
           "name": "sectorY",
           "type": "int16"
         },
         {
+          "internalType": "int16",
           "name": "sectorZ",
           "type": "int16"
         },
         {
+          "internalType": "uint16",
           "name": "system",
           "type": "uint16"
         },
         {
+          "internalType": "uint16",
           "name": "planet",
           "type": "uint16"
         }
@@ -156,6 +183,7 @@
       "name": "planetExists",
       "outputs": [
         {
+          "internalType": "bool",
           "name": "",
           "type": "bool"
         }
@@ -168,26 +196,32 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "int16",
           "name": "sectorX",
           "type": "int16"
         },
         {
+          "internalType": "int16",
           "name": "sectorY",
           "type": "int16"
         },
         {
+          "internalType": "int16",
           "name": "sectorZ",
           "type": "int16"
         },
         {
+          "internalType": "uint16",
           "name": "system",
           "type": "uint16"
         },
         {
+          "internalType": "uint16",
           "name": "planet",
           "type": "uint16"
         },
         {
+          "internalType": "uint16",
           "name": "moon",
           "type": "uint16"
         }
@@ -195,6 +229,7 @@
       "name": "moonExists",
       "outputs": [
         {
+          "internalType": "bool",
           "name": "",
           "type": "bool"
         }
@@ -207,6 +242,7 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "uint256",
           "name": "token",
           "type": "uint256"
         }
@@ -214,6 +250,7 @@
       "name": "exists",
       "outputs": [
         {
+          "internalType": "bool",
           "name": "",
           "type": "bool"
         }
@@ -223,15 +260,15 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.8+commit.23d335f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"sectorX\",\"type\":\"int16\"},{\"name\":\"sectorY\",\"type\":\"int16\"},{\"name\":\"sectorZ\",\"type\":\"int16\"},{\"name\":\"system\",\"type\":\"uint16\"}],\"name\":\"systemExists\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"sectorX\",\"type\":\"int16\"},{\"name\":\"sectorY\",\"type\":\"int16\"},{\"name\":\"sectorZ\",\"type\":\"int16\"}],\"name\":\"sectorExists\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"token\",\"type\":\"uint256\"}],\"name\":\"exists\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"sectorX\",\"type\":\"int16\"},{\"name\":\"sectorY\",\"type\":\"int16\"},{\"name\":\"sectorZ\",\"type\":\"int16\"},{\"name\":\"system\",\"type\":\"uint16\"},{\"name\":\"planet\",\"type\":\"uint16\"},{\"name\":\"moon\",\"type\":\"uint16\"}],\"name\":\"moonExists\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"sectorX\",\"type\":\"int16\"},{\"name\":\"sectorY\",\"type\":\"int16\"},{\"name\":\"sectorZ\",\"type\":\"int16\"},{\"name\":\"system\",\"type\":\"uint16\"},{\"name\":\"planet\",\"type\":\"uint16\"},{\"name\":\"moon\",\"type\":\"uint16\"}],\"name\":\"moonExistsVerbose\",\"outputs\":[{\"name\":\"exists\",\"type\":\"bool\"},{\"name\":\"planetSeed\",\"type\":\"bytes32\"},{\"name\":\"planetClass\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"sectorX\",\"type\":\"int16\"},{\"name\":\"sectorY\",\"type\":\"int16\"},{\"name\":\"sectorZ\",\"type\":\"int16\"},{\"name\":\"system\",\"type\":\"uint16\"},{\"name\":\"planet\",\"type\":\"uint16\"}],\"name\":\"planetExists\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"starGeneratorAddress\",\"type\":\"address\"},{\"name\":\"starGeneratorPatchAddress\",\"type\":\"address\"},{\"name\":\"systemGeneratorAddress\",\"type\":\"address\"},{\"name\":\"moonGeneratorAddress\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"constructor\":\"Deploy a new copy of the Macroverse Existence Checker.     * The given generator contracts will be queried.\",\"exists(uint256)\":{\"notice\":\"Determine if the thing referred to by the given packed NFT token number exists.     * Token is assumed to be canonical/valid. Use MacroverseNFTUtils tokenIsCanonical() to validate it first.\"},\"moonExists(int16,int16,int16,uint16,uint16,uint16)\":{\"notice\":\"Determine if the given moon exists.\"},\"moonExistsVerbose(int16,int16,int16,uint16,uint16,uint16)\":{\"notice\":\"Determine if the given moon exists, and if so returns some information generated about it for re-use.\"},\"planetExists(int16,int16,int16,uint16,uint16)\":{\"notice\":\"Determine if the given planet exists.\"},\"sectorExists(int16,int16,int16)\":{\"notice\":\"Return true if a sector with the given coordinates exists in the Macroverse universe, and false otherwise.\"},\"systemExists(int16,int16,int16,uint16)\":{\"notice\":\"Determine if the given system (which might be a star, black hole, etc.) exists in the given sector. If the sector doesn't exist, returns false.\"}},\"notice\":\"The MacroverseExistenceChecker queries Macroverse generator contracts to determine if a particular thing (e.g. the nth planet of such-and-such a star) exists in the Macroverse world. * It does not need to be ControlledAccess because the Macroverse contracts it calls into are. It does not have defenses against receiving stuck Ether and tokens because it is not intended to be involved in end-user token transactions in any capacity. * Serves as an example for how Macroverse can be queried from on-chain logic.\"}},\"settings\":{\"compilationTarget\":{\"/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseExistenceChecker.sol\":\"MacroverseExistenceChecker\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/anovak/Documents/Workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xb73144156419d9a5318081c9ae9d65b13da5e5e706a96c17c24c2173a6b31ecc\",\"urls\":[\"bzzr://67fff4064ba28bc0de8a8a40ba90cfdb243ca86d2046de2823c9c236595066ae\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/ControlledAccess.sol\":{\"keccak256\":\"0xf3ead47b94437ac2975671de3bd82d92abdc33b3d40813d9be0ad1b8607d4c36\",\"urls\":[\"bzzr://351081cbe90e8ff63953824b6a66632ccc6fb55cae58bc674c272f12afd62145\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/HasNoContracts.sol\":{\"keccak256\":\"0x78de034c0e6f5f332a7d9d2114c74762f1210e2e41996b7fb156491270a2afee\",\"urls\":[\"bzzr://2a31bb7d78455f8efa065120172a659e97e9878c201f266f17c5fa5ed8444662\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/HasNoEther.sol\":{\"keccak256\":\"0x4f526a038c289199802c58f2762a7898fde57b7c6d052fc04634e8877c03acbe\",\"urls\":[\"bzzr://9e0679829a80dbb1af3468578e31bcf394bf7ea738e633a84e18e8390bab6c39\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/Macroverse.sol\":{\"keccak256\":\"0x436b59d21a8539dcc28db98437e5b31dc3a8c9e91b737196a1df62b9fb1f349c\",\"urls\":[\"bzzr://f67035333b551e7a65408d0d0a45ccb0ba7ad344b37f90bc66a0ef6fc8f879c9\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseExistenceChecker.sol\":{\"keccak256\":\"0xaea6362e25b4368c9e2b7ba7a807540e6e9f404653bd4c0fefe189103a77807e\",\"urls\":[\"bzzr://8aa05884f48b0cfadf94e3beedd7793eb38369409bfcd7990967822bee12dc8a\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseMoonGenerator.sol\":{\"keccak256\":\"0xc4bd1ea078d5e8e4127188caa147167d80eab0719aecd7c97dd36d300558dd32\",\"urls\":[\"bzzr://2617d2ea070dcf6b0b77f0586093719425304cc020431789fc9c4a4d0b0c4d33\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseNFTUtils.sol\":{\"keccak256\":\"0x14df650436c60c34ed924703d8cd6989c8fcb06c05b3b1c3d36ac1971e126540\",\"urls\":[\"bzzr://c0abece552af531753c4661e90e055d970661b4f51b77f51a008b1f9df9c11e0\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseStarGenerator.sol\":{\"keccak256\":\"0xbbf3707778efa16003a0303ff4793cf9adb5f231d9819f2b33a2f45c69f44e76\",\"urls\":[\"bzzr://2f9f724540c28ca652c2b69edf89a0874129d3ca00a6e983ab3552781445ea5e\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseStarGeneratorPatch1.sol\":{\"keccak256\":\"0x4e65bc3c9c715aef7e32ef7e0be3adc839647ee7ba958b216c969b2ee24a612a\",\"urls\":[\"bzzr://e4333cdaa71ca5a32bfadb0e1d488e2ee93c021eeb358a929fe31df33f53facc\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseSystemGenerator.sol\":{\"keccak256\":\"0x7e74dccc972b1f19e36ed9d2e987121a485af2bbce004c2b4af18be67b94a812\",\"urls\":[\"bzzr://b26113fbdfb2b6f0b65cc179f41ea35adfea482889d3f49da24cd8d6fbdc2d36\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseSystemGeneratorPart1.sol\":{\"keccak256\":\"0xc719fe186b395cd4215d6faf8944660ee9c0372b6d976c10c75622c69a7a8e74\",\"urls\":[\"bzzr://aa88d22edd71be2052025ff89781cf1a9fd6b5187879fd4ecb7373263d21c149\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseSystemGeneratorPart2.sol\":{\"keccak256\":\"0x4d94f5c94473dcf0b098ea1ff0ebdfe9a256e6e152260b5c546a4df2888932e2\",\"urls\":[\"bzzr://1acc70cf28c1f3661902f6e5515def2fb8f61f79c812e50b61f036b8b0483e99\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/RNG.sol\":{\"keccak256\":\"0x0600e99f1ff9bccfef49ed0706fad5bf23e4be5b75edcdad851c81c9d815ea80\",\"urls\":[\"bzzr://41dd34052a549a6fd2b3009df943f79027ec36618931f0ccdefdde5b6e2da033\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/RealMath.sol\":{\"keccak256\":\"0x7d198f75e52726a1ac3551f2beab593a993b29b1159da49eb0e3b7772f6c4ffb\",\"urls\":[\"bzzr://aa1b87e2f3552b71d3b776eb2f26b1fa8b21c4666cd0404d63d09a46a6375597\"]},\"openzeppelin-solidity/contracts/GSN/Context.sol\":{\"keccak256\":\"0x90a3995645af7562d84b9d69363ffa5ae7217714ab61e951bf7bc450f40e4061\",\"urls\":[\"bzzr://51482c01bddf23793bddee43b60ab9578a62948a4f2082def24ea792a553b055\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xecd8ab29d9a5771c3964d0cd1788c4a5098a0081b20fb275da850a22b1c59806\",\"urls\":[\"bzzr://4950def18270142a78d503ef6b7b13bdb053f2f050cee50c883cd7cab2bb02d7\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5060405160808061136b8339810180604052608081101561003057600080fd5b8101908080519060200190929190805190602001909291908051906020019092919080519060200190929190505050836000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555082600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555081600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555080600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505050506111f6806101756000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c8063433b6c45146100675780634d063587146100d85780634f558e791461013b5780635bb5a2da14610181578063718501f11461020e578063dab38782146102b7575b600080fd5b6100be6004803603608081101561007d57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190505050610336565b604051808215151515815260200191505060405180910390f35b610121600480360360608110156100ee57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190505050610434565b604051808215151515815260200191505060405180910390f35b6101676004803603602081101561015157600080fd5b81019080803590602001909291905050506104e1565b604051808215151515815260200191505060405180910390f35b6101f4600480360360c081101561019757600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190803561ffff1690602001909291905050506109b4565b604051808215151515815260200191505060405180910390f35b610281600480360360c081101561022457600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190803561ffff1690602001909291905050506109d7565b60405180841515151581526020018381526020018260098111156102a157fe5b60ff168152602001935050505060405180910390f35b61031c600480360360a08110156102cd57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190505050610c77565b604051808215151515815260200191505060405180910390f35b6000610343858585610434565b610350576000905061042c565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663591b5a888686866040518463ffffffff1660e01b8152600401808460010b60010b81526020018360010b60010b81526020018260010b60010b8152602001935050505060206040518083038186803b1580156103e457600080fd5b505afa1580156103f8573d6000803e3d6000fd5b505050506040513d602081101561040e57600080fd5b810190808051906020019092919050505061ffff168261ffff161090505b949350505050565b600061271060010b8460010b131561044f57600090506104da565b61271060010b8360010b131561046857600090506104da565b61271060010b8260010b131561048157600090506104da565b61271060000360010b8460010b121561049d57600090506104da565b61271060000360010b8360010b12156104b957600090506104da565b61271060000360010b8260010b12156104d557600090506104da565b600190505b9392505050565b6000806104ed83610c98565b905060008060006104fd86610ca5565b925092509250600084141561052257610517838383610434565b9450505050506109af565b600061052d87610ce0565b905060018514156105505761054484848484610336565b955050505050506109af565b600061055b88610cfc565b9050600061056889610d1a565b9050600287141561058e576105808686868686610c77565b9750505050505050506109af565b60038714156105b3576105a58686868686866109b4565b9750505050505050506109af565b6105bc89610d3b565b6105c257fe5b60008061ffff80168361ffff1614156107c05760006105e48989898989610d63565b809350819450829550505050826106085760009a50505050505050505050506109af565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c1843683876040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b15801561068b57600080fd5b505afa15801561069f573d6000803e3d6000fd5b505050506040513d60208110156106b557600080fd5b810190808051906020019092919050505091506009808111156106d457fe5b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc841c1d8488856040518463ffffffff1660e01b8152600401808481526020018361ffff1661ffff1681526020018261ffff1661ffff168152602001935050505060206040518083038186803b15801561076757600080fd5b505afa15801561077b573d6000803e3d6000fd5b505050506040513d602081101561079157600080fd5b810190808051906020019092919050505060098111156107ad57fe5b14159a50505050505050505050506109af565b60006107d08989898989896109d7565b809350819450829550505050826107f45760009a50505050505050505050506109af565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c1843683866040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b15801561087757600080fd5b505afa15801561088b573d6000803e3d6000fd5b505050506040513d60208110156108a157600080fd5b81019080805190602001909291905050509150600860098111156108c157fe5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663a1ea93338385886040518463ffffffff1660e01b81526004018084600981111561092157fe5b60ff1681526020018381526020018261ffff1661ffff168152602001935050505060206040518083038186803b15801561095a57600080fd5b505afa15801561096e573d6000803e3d6000fd5b505050506040513d602081101561098457600080fd5b810190808051906020019092919050505060098111156109a057fe5b14159a50505050505050505050505b919050565b6000806109c58888888888886109d7565b50509050809150509695505050505050565b6000806000806000806109ed8c8c8c8c8c610d63565b92509250925082610a015760009550610c68565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c18436838a6040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b158015610a8457600080fd5b505afa158015610a98573d6000803e3d6000fd5b505050506040513d6020811015610aae57600080fd5b81019080805190602001909291905050509450600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc841c1d868a846040518463ffffffff1660e01b8152600401808481526020018361ffff1661ffff1681526020018261ffff1661ffff168152602001935050505060206040518083038186803b158015610b5457600080fd5b505afa158015610b68573d6000803e3d6000fd5b505050506040513d6020811015610b7e57600080fd5b810190808051906020019092919050505093506000600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16632b0837b487876040518363ffffffff1660e01b815260040180838152602001826009811115610bf857fe5b60ff1681526020019250505060206040518083038186803b158015610c1c57600080fd5b505afa158015610c30573d6000803e3d6000fd5b505050506040513d6020811015610c4657600080fd5b810190808051906020019092919050505090508061ffff168861ffff16109650505b50505096509650969350505050565b600080610c878787878787610d63565b505090508091505095945050505050565b6000601f82169050919050565b6000806000610cb58460056111b9565b9250610cc58460106005016111b9565b9150610cd784601080600501016111b9565b90509193909250565b6000610cf582601080601060050101016111b9565b9050919050565b6000610d13826010806010806005010101016111b9565b9050919050565b6000610d34826010806010806010600501010101016111b9565b9050919050565b600080610d4783610c98565b905060048110158015610d5b5750601f8111155b915050919050565b6000806000610d7488888888610336565b610d8157600092506111ae565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663ee8f5681898989896040518563ffffffff1660e01b8152600401808560010b60010b81526020018460010b60010b81526020018360010b60010b81526020018261ffff1661ffff16815260200194505050505060206040518083038186803b158015610e2557600080fd5b505afa158015610e39573d6000803e3d6000fd5b505050506040513d6020811015610e4f57600080fd5b8101908080519060200190929190505050915060008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16632b3a3d0a846040518263ffffffff1660e01b81526004018082815260200191505060206040518083038186803b158015610ed657600080fd5b505afa158015610eea573d6000803e3d6000fd5b505050506040513d6020811015610f0057600080fd5b8101908080519060200190929190505050905060008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663541a9fc185846040518363ffffffff1660e01b815260040180838152602001826005811115610f7957fe5b60ff1681526020019250505060206040518083038186803b158015610f9d57600080fd5b505afa158015610fb1573d6000803e3d6000fd5b505050506040513d6020811015610fc757600080fd5b810190808051906020019092919050505090506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663718909fd8584846040518463ffffffff1660e01b81526004018084815260200183600581111561103f57fe5b60ff16815260200182600781111561105357fe5b60ff168152602001935050505060206040518083038186803b15801561107857600080fd5b505afa15801561108c573d6000803e3d6000fd5b505050506040513d60208110156110a257600080fd5b8101908080519060200190929190505050156111a657600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663bfd4fac18584846040518463ffffffff1660e01b81526004018084815260200183600581111561111e57fe5b60ff16815260200182600781111561113257fe5b60ff168152602001935050505060206040518083038186803b15801561115757600080fd5b505afa15801561116b573d6000803e3d6000fd5b505050506040513d602081101561118157600080fd5b810190808051906020019092919050505092508261ffff168661ffff161094506111ab565b600094505b50505b955095509592505050565b60008160ff1683901c90509291505056fea165627a7a72305820eae6b22a2b579320586f895098972084bb9a362b9fdbca34d0f588d48380f8be0029",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100625760003560e01c8063433b6c45146100675780634d063587146100d85780634f558e791461013b5780635bb5a2da14610181578063718501f11461020e578063dab38782146102b7575b600080fd5b6100be6004803603608081101561007d57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190505050610336565b604051808215151515815260200191505060405180910390f35b610121600480360360608110156100ee57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190505050610434565b604051808215151515815260200191505060405180910390f35b6101676004803603602081101561015157600080fd5b81019080803590602001909291905050506104e1565b604051808215151515815260200191505060405180910390f35b6101f4600480360360c081101561019757600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190803561ffff1690602001909291905050506109b4565b604051808215151515815260200191505060405180910390f35b610281600480360360c081101561022457600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190803561ffff1690602001909291905050506109d7565b60405180841515151581526020018381526020018260098111156102a157fe5b60ff168152602001935050505060405180910390f35b61031c600480360360a08110156102cd57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190505050610c77565b604051808215151515815260200191505060405180910390f35b6000610343858585610434565b610350576000905061042c565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663591b5a888686866040518463ffffffff1660e01b8152600401808460010b60010b81526020018360010b60010b81526020018260010b60010b8152602001935050505060206040518083038186803b1580156103e457600080fd5b505afa1580156103f8573d6000803e3d6000fd5b505050506040513d602081101561040e57600080fd5b810190808051906020019092919050505061ffff168261ffff161090505b949350505050565b600061271060010b8460010b131561044f57600090506104da565b61271060010b8360010b131561046857600090506104da565b61271060010b8260010b131561048157600090506104da565b61271060000360010b8460010b121561049d57600090506104da565b61271060000360010b8360010b12156104b957600090506104da565b61271060000360010b8260010b12156104d557600090506104da565b600190505b9392505050565b6000806104ed83610c98565b905060008060006104fd86610ca5565b925092509250600084141561052257610517838383610434565b9450505050506109af565b600061052d87610ce0565b905060018514156105505761054484848484610336565b955050505050506109af565b600061055b88610cfc565b9050600061056889610d1a565b9050600287141561058e576105808686868686610c77565b9750505050505050506109af565b60038714156105b3576105a58686868686866109b4565b9750505050505050506109af565b6105bc89610d3b565b6105c257fe5b60008061ffff80168361ffff1614156107c05760006105e48989898989610d63565b809350819450829550505050826106085760009a50505050505050505050506109af565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c1843683876040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b15801561068b57600080fd5b505afa15801561069f573d6000803e3d6000fd5b505050506040513d60208110156106b557600080fd5b810190808051906020019092919050505091506009808111156106d457fe5b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc841c1d8488856040518463ffffffff1660e01b8152600401808481526020018361ffff1661ffff1681526020018261ffff1661ffff168152602001935050505060206040518083038186803b15801561076757600080fd5b505afa15801561077b573d6000803e3d6000fd5b505050506040513d602081101561079157600080fd5b810190808051906020019092919050505060098111156107ad57fe5b14159a50505050505050505050506109af565b60006107d08989898989896109d7565b809350819450829550505050826107f45760009a50505050505050505050506109af565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c1843683866040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b15801561087757600080fd5b505afa15801561088b573d6000803e3d6000fd5b505050506040513d60208110156108a157600080fd5b81019080805190602001909291905050509150600860098111156108c157fe5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663a1ea93338385886040518463ffffffff1660e01b81526004018084600981111561092157fe5b60ff1681526020018381526020018261ffff1661ffff168152602001935050505060206040518083038186803b15801561095a57600080fd5b505afa15801561096e573d6000803e3d6000fd5b505050506040513d602081101561098457600080fd5b810190808051906020019092919050505060098111156109a057fe5b14159a50505050505050505050505b919050565b6000806109c58888888888886109d7565b50509050809150509695505050505050565b6000806000806000806109ed8c8c8c8c8c610d63565b92509250925082610a015760009550610c68565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c18436838a6040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b158015610a8457600080fd5b505afa158015610a98573d6000803e3d6000fd5b505050506040513d6020811015610aae57600080fd5b81019080805190602001909291905050509450600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc841c1d868a846040518463ffffffff1660e01b8152600401808481526020018361ffff1661ffff1681526020018261ffff1661ffff168152602001935050505060206040518083038186803b158015610b5457600080fd5b505afa158015610b68573d6000803e3d6000fd5b505050506040513d6020811015610b7e57600080fd5b810190808051906020019092919050505093506000600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16632b0837b487876040518363ffffffff1660e01b815260040180838152602001826009811115610bf857fe5b60ff1681526020019250505060206040518083038186803b158015610c1c57600080fd5b505afa158015610c30573d6000803e3d6000fd5b505050506040513d6020811015610c4657600080fd5b810190808051906020019092919050505090508061ffff168861ffff16109650505b50505096509650969350505050565b600080610c878787878787610d63565b505090508091505095945050505050565b6000601f82169050919050565b6000806000610cb58460056111b9565b9250610cc58460106005016111b9565b9150610cd784601080600501016111b9565b90509193909250565b6000610cf582601080601060050101016111b9565b9050919050565b6000610d13826010806010806005010101016111b9565b9050919050565b6000610d34826010806010806010600501010101016111b9565b9050919050565b600080610d4783610c98565b905060048110158015610d5b5750601f8111155b915050919050565b6000806000610d7488888888610336565b610d8157600092506111ae565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663ee8f5681898989896040518563ffffffff1660e01b8152600401808560010b60010b81526020018460010b60010b81526020018360010b60010b81526020018261ffff1661ffff16815260200194505050505060206040518083038186803b158015610e2557600080fd5b505afa158015610e39573d6000803e3d6000fd5b505050506040513d6020811015610e4f57600080fd5b8101908080519060200190929190505050915060008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16632b3a3d0a846040518263ffffffff1660e01b81526004018082815260200191505060206040518083038186803b158015610ed657600080fd5b505afa158015610eea573d6000803e3d6000fd5b505050506040513d6020811015610f0057600080fd5b8101908080519060200190929190505050905060008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663541a9fc185846040518363ffffffff1660e01b815260040180838152602001826005811115610f7957fe5b60ff1681526020019250505060206040518083038186803b158015610f9d57600080fd5b505afa158015610fb1573d6000803e3d6000fd5b505050506040513d6020811015610fc757600080fd5b810190808051906020019092919050505090506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663718909fd8584846040518463ffffffff1660e01b81526004018084815260200183600581111561103f57fe5b60ff16815260200182600781111561105357fe5b60ff168152602001935050505060206040518083038186803b15801561107857600080fd5b505afa15801561108c573d6000803e3d6000fd5b505050506040513d60208110156110a257600080fd5b8101908080519060200190929190505050156111a657600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663bfd4fac18584846040518463ffffffff1660e01b81526004018084815260200183600581111561111e57fe5b60ff16815260200182600781111561113257fe5b60ff168152602001935050505060206040518083038186803b15801561115757600080fd5b505afa15801561116b573d6000803e3d6000fd5b505050506040513d602081101561118157600080fd5b810190808051906020019092919050505092508261ffff168661ffff161094506111ab565b600094505b50505b955095509592505050565b60008160ff1683901c90509291505056fea165627a7a72305820eae6b22a2b579320586f895098972084bb9a362b9fdbca34d0f588d48380f8be0029",
-  "sourceMap": "925:9583:7:-;;;2232:526;8:9:-1;5:2;;;30:1;27;20:12;5:2;2232:526:7;;;;;;;;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;2232:526:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2486:20;2446:13;;:61;;;;;;;;;;;;;;;;;;2568:25;2517:18;;:77;;;;;;;;;;;;;;;;;;2648:22;2604:15;;:67;;;;;;;;;;;;;;;;;;2721:20;2681:13;;:61;;;;;;;;;;;;;;;;;;2232:526;;;;925:9583;;;;;;",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.14+commit.01f1aaa4\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"starGeneratorAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"starGeneratorPatchAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"systemGeneratorAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"moonGeneratorAddress\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"token\",\"type\":\"uint256\"}],\"name\":\"exists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"},{\"internalType\":\"uint16\",\"name\":\"system\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"planet\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"moon\",\"type\":\"uint16\"}],\"name\":\"moonExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"},{\"internalType\":\"uint16\",\"name\":\"system\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"planet\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"moon\",\"type\":\"uint16\"}],\"name\":\"moonExistsVerbose\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"exists\",\"type\":\"bool\"},{\"internalType\":\"bytes32\",\"name\":\"planetSeed\",\"type\":\"bytes32\"},{\"internalType\":\"enum Macroverse.WorldClass\",\"name\":\"planetClass\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"},{\"internalType\":\"uint16\",\"name\":\"system\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"planet\",\"type\":\"uint16\"}],\"name\":\"planetExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"}],\"name\":\"sectorExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"},{\"internalType\":\"uint16\",\"name\":\"system\",\"type\":\"uint16\"}],\"name\":\"systemExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"constructor\":\"Deploy a new copy of the Macroverse Existence Checker.     * The given generator contracts will be queried.\",\"exists(uint256)\":{\"notice\":\"Determine if the thing referred to by the given packed NFT token number exists.     * Token is assumed to be canonical/valid. Use MacroverseNFTUtils tokenIsCanonical() to validate it first.\"},\"moonExists(int16,int16,int16,uint16,uint16,uint16)\":{\"notice\":\"Determine if the given moon exists.\"},\"moonExistsVerbose(int16,int16,int16,uint16,uint16,uint16)\":{\"notice\":\"Determine if the given moon exists, and if so returns some information generated about it for re-use.\"},\"planetExists(int16,int16,int16,uint16,uint16)\":{\"notice\":\"Determine if the given planet exists.\"},\"sectorExists(int16,int16,int16)\":{\"notice\":\"Return true if a sector with the given coordinates exists in the Macroverse universe, and false otherwise.\"},\"systemExists(int16,int16,int16,uint16)\":{\"notice\":\"Determine if the given system (which might be a star, black hole, etc.) exists in the given sector. If the sector doesn't exist, returns false.\"}},\"notice\":\"The MacroverseExistenceChecker queries Macroverse generator contracts to determine if a particular thing (e.g. the nth planet of such-and-such a star) exists in the Macroverse world. * It does not need to be ControlledAccess because the Macroverse contracts it calls into are. It does not have defenses against receiving stuck Ether and tokens because it is not intended to be involved in end-user token transactions in any capacity. * Serves as an example for how Macroverse can be queried from on-chain logic.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/MacroverseExistenceChecker.sol\":\"MacroverseExistenceChecker\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xb73144156419d9a5318081c9ae9d65b13da5e5e706a96c17c24c2173a6b31ecc\",\"urls\":[\"bzz-raw://9a300f85ad1673f454fdf492f29c50e3b0f1f12f178b5d3ce45f6a6724025395\",\"dweb:/ipfs/QmTPzViBHUXQ9TvWyWoNPKsRqfgbDpv8YfFproneZ8HcBw\"]},\"/z/home/anovak/workspace/macroverse/contracts/ControlledAccess.sol\":{\"keccak256\":\"0xf3ead47b94437ac2975671de3bd82d92abdc33b3d40813d9be0ad1b8607d4c36\",\"urls\":[\"bzz-raw://a8518a1d16b14ce6a9d6442faa186a5783af3eb7da97f7fa07f2ace6aa5bf374\",\"dweb:/ipfs/QmcE4dwfTFoy5po4RmtRLCHk28cCS6ptkaqeHHe3kffEAC\"]},\"/z/home/anovak/workspace/macroverse/contracts/HasNoContracts.sol\":{\"keccak256\":\"0x78de034c0e6f5f332a7d9d2114c74762f1210e2e41996b7fb156491270a2afee\",\"urls\":[\"bzz-raw://12e1fed74149a6d708e97ef36c1b694d1eb6d527017d57e3dbc1d8a786f8a4e7\",\"dweb:/ipfs/QmXeDcUADb41KBqAhH79VnkpTuD8x1EAPLAUiPfEnTnSaj\"]},\"/z/home/anovak/workspace/macroverse/contracts/HasNoEther.sol\":{\"keccak256\":\"0x4f526a038c289199802c58f2762a7898fde57b7c6d052fc04634e8877c03acbe\",\"urls\":[\"bzz-raw://a3a326f37569e3360452e812a41de796b92c1f453e5d85bc92899f3447fc762a\",\"dweb:/ipfs/QmSXDVttY8o1v5ZUkw6uSUXZSgmzRcV1BYeVzh869Ru6U1\"]},\"/z/home/anovak/workspace/macroverse/contracts/Macroverse.sol\":{\"keccak256\":\"0x436b59d21a8539dcc28db98437e5b31dc3a8c9e91b737196a1df62b9fb1f349c\",\"urls\":[\"bzz-raw://095d95011a3470f94a580c2df9e1eae9417635936fb46091300c790adde4c87c\",\"dweb:/ipfs/QmXtYQ1nezRHMNP3rBRAVcY5sP8YCfh3txG4eE8FAhGZEV\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseExistenceChecker.sol\":{\"keccak256\":\"0xaea6362e25b4368c9e2b7ba7a807540e6e9f404653bd4c0fefe189103a77807e\",\"urls\":[\"bzz-raw://6c5c5d675ed39fc3bf9ae81ba2878381a9354db786059c0f2f7680b2f869fe9d\",\"dweb:/ipfs/QmVvy3hDknkqjX4KcaXAaUNKTpnMpGduJmVWLoEaYmP7sA\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseMoonGenerator.sol\":{\"keccak256\":\"0xc4bd1ea078d5e8e4127188caa147167d80eab0719aecd7c97dd36d300558dd32\",\"urls\":[\"bzz-raw://e0ae7eb81807f22e83d60f8c81e20d43ee4fe10c62d74e0ca90a938d254d93b1\",\"dweb:/ipfs/QmaSBqFzwTsnm5GLaJFG5mxpmDEvGM4mc4fYXNDvidHvHg\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseNFTUtils.sol\":{\"keccak256\":\"0x14df650436c60c34ed924703d8cd6989c8fcb06c05b3b1c3d36ac1971e126540\",\"urls\":[\"bzz-raw://f750df11fe702bf5e1cc053e0684d4b1f6c6ade1d4cc2bf176b0b31db67fb8be\",\"dweb:/ipfs/QmbusYnBqTXg3YDmyANhLq4SVo7pgdFRV89pk6LYHLhF5D\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseStarGenerator.sol\":{\"keccak256\":\"0xbbf3707778efa16003a0303ff4793cf9adb5f231d9819f2b33a2f45c69f44e76\",\"urls\":[\"bzz-raw://66c5c2c6ca9c6d8293006cf8abf50f37f97763fa99f0de4ca9ab221365a10fa1\",\"dweb:/ipfs/QmSrjhxexZsW7qEvFbfbViVa1bX5t61iyK59nNk9vo6qDp\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseStarGeneratorPatch1.sol\":{\"keccak256\":\"0x4e65bc3c9c715aef7e32ef7e0be3adc839647ee7ba958b216c969b2ee24a612a\",\"urls\":[\"bzz-raw://c4b2899cbbb217a1bcf2a7cc9332ddc8190fc652047d06b3601caec7882bf105\",\"dweb:/ipfs/QmYhtM5LuZXbVxtcQAXnXCpjnpFXnAhE3hnbmGyGXc6nGu\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGenerator.sol\":{\"keccak256\":\"0x7e74dccc972b1f19e36ed9d2e987121a485af2bbce004c2b4af18be67b94a812\",\"urls\":[\"bzz-raw://2b9174cfc283ff4fdc9e9c04c293251aa33be0f833cb6e94567d1797bdeeeb3b\",\"dweb:/ipfs/QmV9Dy6AqinudrECikhPqp7gsZmhX2vGmBsx7ujyKSP83D\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGeneratorPart1.sol\":{\"keccak256\":\"0xc719fe186b395cd4215d6faf8944660ee9c0372b6d976c10c75622c69a7a8e74\",\"urls\":[\"bzz-raw://1b3b892c4b2f6ac478d5025c99e8430584fed049ab7c949503d0977ee7a2eb45\",\"dweb:/ipfs/QmRE15ZCGTKW8PHuo1MYrvvtRgLP34V791VuvNXMomrLwu\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGeneratorPart2.sol\":{\"keccak256\":\"0x4d94f5c94473dcf0b098ea1ff0ebdfe9a256e6e152260b5c546a4df2888932e2\",\"urls\":[\"bzz-raw://7210bb152ff1b314aa68c046d6e836f985851bb654abd33f95ac08a237911e97\",\"dweb:/ipfs/QmW8mQEjKdBT2tGkmhzs9m62gurqSaS151mmNndi9xYYox\"]},\"/z/home/anovak/workspace/macroverse/contracts/RNG.sol\":{\"keccak256\":\"0x0600e99f1ff9bccfef49ed0706fad5bf23e4be5b75edcdad851c81c9d815ea80\",\"urls\":[\"bzz-raw://bb20e2ff2f1bfed5774d286b58e9b88ba3323236b4ca96bf2ae1f4771d29a8e5\",\"dweb:/ipfs/QmZZMr39TJ8J3TZ3kAvC1R6MBctdHVkhSHZ4maBViyU2vc\"]},\"/z/home/anovak/workspace/macroverse/contracts/RealMath.sol\":{\"keccak256\":\"0x7d198f75e52726a1ac3551f2beab593a993b29b1159da49eb0e3b7772f6c4ffb\",\"urls\":[\"bzz-raw://1eae1200b9ad98b6266cb16db0ff9e5062fa70a9dda8dde71f07f58a7fc01335\",\"dweb:/ipfs/QmQJGyVwpdYH1fQsmy2Bxdp3KyMiwobLArnPH9BZPZzERX\"]},\"openzeppelin-solidity/contracts/GSN/Context.sol\":{\"keccak256\":\"0x90a3995645af7562d84b9d69363ffa5ae7217714ab61e951bf7bc450f40e4061\",\"urls\":[\"bzz-raw://216ef9d6b614db4eb46970b4e84903f2534a45572dd30a79f0041f1a5830f436\",\"dweb:/ipfs/QmNPrJ4MWKUAWzKXpUqeyKRUfosaoANZAqXgvepdrCwZAG\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0x6fb9d7889769d7cc161225f9ef7a90e468ba9788b253816f8d8b6894d3472c24\",\"urls\":[\"bzz-raw://cf4c00fc3c37cc5acf0c82ec6fd97bab67d72c2567fdc0ebf023d9c09b30a08e\",\"dweb:/ipfs/Qmb7TChG6DsEDX7LooJ4vmxot19f7VXX8S1zUGPeJTWbwZ\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506040516113773803806113778339818101604052608081101561003357600080fd5b8101908080519060200190929190805190602001909291908051906020019092919080519060200190929190505050836000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555082600160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555081600260006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555080600360006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550505050506111ff806101786000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c8063433b6c45146100675780634d063587146100d85780634f558e791461013b5780635bb5a2da14610181578063718501f11461020e578063dab38782146102b7575b600080fd5b6100be6004803603608081101561007d57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190505050610336565b604051808215151515815260200191505060405180910390f35b610121600480360360608110156100ee57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190505050610434565b604051808215151515815260200191505060405180910390f35b6101676004803603602081101561015157600080fd5b81019080803590602001909291905050506104e1565b604051808215151515815260200191505060405180910390f35b6101f4600480360360c081101561019757600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190803561ffff1690602001909291905050506109b4565b604051808215151515815260200191505060405180910390f35b610281600480360360c081101561022457600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190803561ffff1690602001909291905050506109d7565b60405180841515151581526020018381526020018260098111156102a157fe5b60ff168152602001935050505060405180910390f35b61031c600480360360a08110156102cd57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190505050610c77565b604051808215151515815260200191505060405180910390f35b6000610343858585610434565b610350576000905061042c565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663591b5a888686866040518463ffffffff1660e01b8152600401808460010b60010b81526020018360010b60010b81526020018260010b60010b8152602001935050505060206040518083038186803b1580156103e457600080fd5b505afa1580156103f8573d6000803e3d6000fd5b505050506040513d602081101561040e57600080fd5b810190808051906020019092919050505061ffff168261ffff161090505b949350505050565b600061271060010b8460010b131561044f57600090506104da565b61271060010b8360010b131561046857600090506104da565b61271060010b8260010b131561048157600090506104da565b61271060000360010b8460010b121561049d57600090506104da565b61271060000360010b8360010b12156104b957600090506104da565b61271060000360010b8260010b12156104d557600090506104da565b600190505b9392505050565b6000806104ed83610c98565b905060008060006104fd86610ca5565b925092509250600084141561052257610517838383610434565b9450505050506109af565b600061052d87610ce0565b905060018514156105505761054484848484610336565b955050505050506109af565b600061055b88610cfc565b9050600061056889610d1a565b9050600287141561058e576105808686868686610c77565b9750505050505050506109af565b60038714156105b3576105a58686868686866109b4565b9750505050505050506109af565b6105bc89610d3b565b6105c257fe5b60008061ffff80168361ffff1614156107c05760006105e48989898989610d63565b809350819450829550505050826106085760009a50505050505050505050506109af565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c1843683876040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b15801561068b57600080fd5b505afa15801561069f573d6000803e3d6000fd5b505050506040513d60208110156106b557600080fd5b810190808051906020019092919050505091506009808111156106d457fe5b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc841c1d8488856040518463ffffffff1660e01b8152600401808481526020018361ffff1661ffff1681526020018261ffff1661ffff168152602001935050505060206040518083038186803b15801561076757600080fd5b505afa15801561077b573d6000803e3d6000fd5b505050506040513d602081101561079157600080fd5b810190808051906020019092919050505060098111156107ad57fe5b14159a50505050505050505050506109af565b60006107d08989898989896109d7565b809350819450829550505050826107f45760009a50505050505050505050506109af565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c1843683866040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b15801561087757600080fd5b505afa15801561088b573d6000803e3d6000fd5b505050506040513d60208110156108a157600080fd5b81019080805190602001909291905050509150600860098111156108c157fe5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663a1ea93338385886040518463ffffffff1660e01b81526004018084600981111561092157fe5b60ff1681526020018381526020018261ffff1661ffff168152602001935050505060206040518083038186803b15801561095a57600080fd5b505afa15801561096e573d6000803e3d6000fd5b505050506040513d602081101561098457600080fd5b810190808051906020019092919050505060098111156109a057fe5b14159a50505050505050505050505b919050565b6000806109c58888888888886109d7565b50509050809150509695505050505050565b6000806000806000806109ed8c8c8c8c8c610d63565b92509250925082610a015760009550610c68565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c18436838a6040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b158015610a8457600080fd5b505afa158015610a98573d6000803e3d6000fd5b505050506040513d6020811015610aae57600080fd5b81019080805190602001909291905050509450600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc841c1d868a846040518463ffffffff1660e01b8152600401808481526020018361ffff1661ffff1681526020018261ffff1661ffff168152602001935050505060206040518083038186803b158015610b5457600080fd5b505afa158015610b68573d6000803e3d6000fd5b505050506040513d6020811015610b7e57600080fd5b810190808051906020019092919050505093506000600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16632b0837b487876040518363ffffffff1660e01b815260040180838152602001826009811115610bf857fe5b60ff1681526020019250505060206040518083038186803b158015610c1c57600080fd5b505afa158015610c30573d6000803e3d6000fd5b505050506040513d6020811015610c4657600080fd5b810190808051906020019092919050505090508061ffff168861ffff16109650505b50505096509650969350505050565b600080610c878787878787610d63565b505090508091505095945050505050565b6000601f82169050919050565b6000806000610cb58460056111b9565b9250610cc58460106005016111b9565b9150610cd784601080600501016111b9565b90509193909250565b6000610cf582601080601060050101016111b9565b9050919050565b6000610d13826010806010806005010101016111b9565b9050919050565b6000610d34826010806010806010600501010101016111b9565b9050919050565b600080610d4783610c98565b905060048110158015610d5b5750601f8111155b915050919050565b6000806000610d7488888888610336565b610d8157600092506111ae565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663ee8f5681898989896040518563ffffffff1660e01b8152600401808560010b60010b81526020018460010b60010b81526020018360010b60010b81526020018261ffff1661ffff16815260200194505050505060206040518083038186803b158015610e2557600080fd5b505afa158015610e39573d6000803e3d6000fd5b505050506040513d6020811015610e4f57600080fd5b8101908080519060200190929190505050915060008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16632b3a3d0a846040518263ffffffff1660e01b81526004018082815260200191505060206040518083038186803b158015610ed657600080fd5b505afa158015610eea573d6000803e3d6000fd5b505050506040513d6020811015610f0057600080fd5b8101908080519060200190929190505050905060008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663541a9fc185846040518363ffffffff1660e01b815260040180838152602001826005811115610f7957fe5b60ff1681526020019250505060206040518083038186803b158015610f9d57600080fd5b505afa158015610fb1573d6000803e3d6000fd5b505050506040513d6020811015610fc757600080fd5b810190808051906020019092919050505090506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663718909fd8584846040518463ffffffff1660e01b81526004018084815260200183600581111561103f57fe5b60ff16815260200182600781111561105357fe5b60ff168152602001935050505060206040518083038186803b15801561107857600080fd5b505afa15801561108c573d6000803e3d6000fd5b505050506040513d60208110156110a257600080fd5b8101908080519060200190929190505050156111a657600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663bfd4fac18584846040518463ffffffff1660e01b81526004018084815260200183600581111561111e57fe5b60ff16815260200182600781111561113257fe5b60ff168152602001935050505060206040518083038186803b15801561115757600080fd5b505afa15801561116b573d6000803e3d6000fd5b505050506040513d602081101561118157600080fd5b810190808051906020019092919050505092508261ffff168661ffff161094506111ab565b600094505b50505b955095509592505050565b60008160ff1683901c90509291505056fea265627a7a72315820317180d7e8b76e4876cefa9f827c0bd75d35030011eb89a228f250c12e66589f64736f6c634300050e0032",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100625760003560e01c8063433b6c45146100675780634d063587146100d85780634f558e791461013b5780635bb5a2da14610181578063718501f11461020e578063dab38782146102b7575b600080fd5b6100be6004803603608081101561007d57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190505050610336565b604051808215151515815260200191505060405180910390f35b610121600480360360608110156100ee57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190505050610434565b604051808215151515815260200191505060405180910390f35b6101676004803603602081101561015157600080fd5b81019080803590602001909291905050506104e1565b604051808215151515815260200191505060405180910390f35b6101f4600480360360c081101561019757600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190803561ffff1690602001909291905050506109b4565b604051808215151515815260200191505060405180910390f35b610281600480360360c081101561022457600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190803561ffff1690602001909291905050506109d7565b60405180841515151581526020018381526020018260098111156102a157fe5b60ff168152602001935050505060405180910390f35b61031c600480360360a08110156102cd57600080fd5b81019080803560010b9060200190929190803560010b9060200190929190803560010b9060200190929190803561ffff169060200190929190803561ffff169060200190929190505050610c77565b604051808215151515815260200191505060405180910390f35b6000610343858585610434565b610350576000905061042c565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663591b5a888686866040518463ffffffff1660e01b8152600401808460010b60010b81526020018360010b60010b81526020018260010b60010b8152602001935050505060206040518083038186803b1580156103e457600080fd5b505afa1580156103f8573d6000803e3d6000fd5b505050506040513d602081101561040e57600080fd5b810190808051906020019092919050505061ffff168261ffff161090505b949350505050565b600061271060010b8460010b131561044f57600090506104da565b61271060010b8360010b131561046857600090506104da565b61271060010b8260010b131561048157600090506104da565b61271060000360010b8460010b121561049d57600090506104da565b61271060000360010b8360010b12156104b957600090506104da565b61271060000360010b8260010b12156104d557600090506104da565b600190505b9392505050565b6000806104ed83610c98565b905060008060006104fd86610ca5565b925092509250600084141561052257610517838383610434565b9450505050506109af565b600061052d87610ce0565b905060018514156105505761054484848484610336565b955050505050506109af565b600061055b88610cfc565b9050600061056889610d1a565b9050600287141561058e576105808686868686610c77565b9750505050505050506109af565b60038714156105b3576105a58686868686866109b4565b9750505050505050506109af565b6105bc89610d3b565b6105c257fe5b60008061ffff80168361ffff1614156107c05760006105e48989898989610d63565b809350819450829550505050826106085760009a50505050505050505050506109af565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c1843683876040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b15801561068b57600080fd5b505afa15801561069f573d6000803e3d6000fd5b505050506040513d60208110156106b557600080fd5b810190808051906020019092919050505091506009808111156106d457fe5b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc841c1d8488856040518463ffffffff1660e01b8152600401808481526020018361ffff1661ffff1681526020018261ffff1661ffff168152602001935050505060206040518083038186803b15801561076757600080fd5b505afa15801561077b573d6000803e3d6000fd5b505050506040513d602081101561079157600080fd5b810190808051906020019092919050505060098111156107ad57fe5b14159a50505050505050505050506109af565b60006107d08989898989896109d7565b809350819450829550505050826107f45760009a50505050505050505050506109af565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c1843683866040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b15801561087757600080fd5b505afa15801561088b573d6000803e3d6000fd5b505050506040513d60208110156108a157600080fd5b81019080805190602001909291905050509150600860098111156108c157fe5b600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663a1ea93338385886040518463ffffffff1660e01b81526004018084600981111561092157fe5b60ff1681526020018381526020018261ffff1661ffff168152602001935050505060206040518083038186803b15801561095a57600080fd5b505afa15801561096e573d6000803e3d6000fd5b505050506040513d602081101561098457600080fd5b810190808051906020019092919050505060098111156109a057fe5b14159a50505050505050505050505b919050565b6000806109c58888888888886109d7565b50509050809150509695505050505050565b6000806000806000806109ed8c8c8c8c8c610d63565b92509250925082610a015760009550610c68565b600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663b8c18436838a6040518363ffffffff1660e01b8152600401808381526020018261ffff1661ffff1681526020019250505060206040518083038186803b158015610a8457600080fd5b505afa158015610a98573d6000803e3d6000fd5b505050506040513d6020811015610aae57600080fd5b81019080805190602001909291905050509450600260009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663cc841c1d868a846040518463ffffffff1660e01b8152600401808481526020018361ffff1661ffff1681526020018261ffff1661ffff168152602001935050505060206040518083038186803b158015610b5457600080fd5b505afa158015610b68573d6000803e3d6000fd5b505050506040513d6020811015610b7e57600080fd5b810190808051906020019092919050505093506000600360009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16632b0837b487876040518363ffffffff1660e01b815260040180838152602001826009811115610bf857fe5b60ff1681526020019250505060206040518083038186803b158015610c1c57600080fd5b505afa158015610c30573d6000803e3d6000fd5b505050506040513d6020811015610c4657600080fd5b810190808051906020019092919050505090508061ffff168861ffff16109650505b50505096509650969350505050565b600080610c878787878787610d63565b505090508091505095945050505050565b6000601f82169050919050565b6000806000610cb58460056111b9565b9250610cc58460106005016111b9565b9150610cd784601080600501016111b9565b90509193909250565b6000610cf582601080601060050101016111b9565b9050919050565b6000610d13826010806010806005010101016111b9565b9050919050565b6000610d34826010806010806010600501010101016111b9565b9050919050565b600080610d4783610c98565b905060048110158015610d5b5750601f8111155b915050919050565b6000806000610d7488888888610336565b610d8157600092506111ae565b6000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663ee8f5681898989896040518563ffffffff1660e01b8152600401808560010b60010b81526020018460010b60010b81526020018360010b60010b81526020018261ffff1661ffff16815260200194505050505060206040518083038186803b158015610e2557600080fd5b505afa158015610e39573d6000803e3d6000fd5b505050506040513d6020811015610e4f57600080fd5b8101908080519060200190929190505050915060008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16632b3a3d0a846040518263ffffffff1660e01b81526004018082815260200191505060206040518083038186803b158015610ed657600080fd5b505afa158015610eea573d6000803e3d6000fd5b505050506040513d6020811015610f0057600080fd5b8101908080519060200190929190505050905060008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663541a9fc185846040518363ffffffff1660e01b815260040180838152602001826005811115610f7957fe5b60ff1681526020019250505060206040518083038186803b158015610f9d57600080fd5b505afa158015610fb1573d6000803e3d6000fd5b505050506040513d6020811015610fc757600080fd5b810190808051906020019092919050505090506000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663718909fd8584846040518463ffffffff1660e01b81526004018084815260200183600581111561103f57fe5b60ff16815260200182600781111561105357fe5b60ff168152602001935050505060206040518083038186803b15801561107857600080fd5b505afa15801561108c573d6000803e3d6000fd5b505050506040513d60208110156110a257600080fd5b8101908080519060200190929190505050156111a657600160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1663bfd4fac18584846040518463ffffffff1660e01b81526004018084815260200183600581111561111e57fe5b60ff16815260200182600781111561113257fe5b60ff168152602001935050505060206040518083038186803b15801561115757600080fd5b505afa15801561116b573d6000803e3d6000fd5b505050506040513d602081101561118157600080fd5b810190808051906020019092919050505092508261ffff168661ffff161094506111ab565b600094505b50505b955095509592505050565b60008160ff1683901c90509291505056fea265627a7a72315820317180d7e8b76e4876cefa9f827c0bd75d35030011eb89a228f250c12e66589f64736f6c634300050e0032",
+  "sourceMap": "925:9583:7:-;;;2232:526;8:9:-1;5:2;;;30:1;27;20:12;5:2;2232:526:7;;;;;;;;;;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;2232:526:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2486:20;2446:13;;:61;;;;;;;;;;;;;;;;;;2568:25;2517:18;;:77;;;;;;;;;;;;;;;;;;2648:22;2604:15;;:67;;;;;;;;;;;;;;;;;;2721:20;2681:13;;:61;;;;;;;;;;;;;;;;;;2232:526;;;;925:9583;;;;;;",
   "deployedSourceMap": "925:9583:7:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;925:9583:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3531:433;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;3531:433:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;2901:450;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;2901:450:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;7701:2804;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;7701:2804:7;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;7134:326;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;7134:326:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;5566:1064;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;5566:1064:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;6697:372;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;6697:372:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;3531:433;3634:4;3655:39;3668:7;3677;3686;3655:12;:39::i;:::-;3650:144;;3778:5;3771:12;;;;3650:144;3895:13;;;;;;;;;;;:34;;;3930:7;3939;3948;3895:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;3895:61:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;3895:61:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;3895:61:7;;;;;;;;;;;;;;;;3886:70;;:6;:70;;;3878:79;;3531:433;;;;;;;:::o;2901:450::-;2989:4;1739:5;3045:20;;:7;:20;;;3041:38;;;3074:5;3067:12;;;;3041:38;1739:5;3093:20;;:7;:20;;;3089:38;;;3122:5;3115:12;;;;3089:38;1739:5;3141:20;;:7;:20;;;3137:38;;;3170:5;3163:12;;;;3137:38;1739:5;3199:11;;3189:21;;:7;:21;;;3185:39;;;3219:5;3212:12;;;;3185:39;1739:5;3248:11;;3238:21;;:7;:21;;;3234:39;;;3268:5;3261:12;;;;3234:39;1739:5;3297:11;;3287:21;;:7;:21;;;3283:39;;;3317:5;3310:12;;;;3283:39;3340:4;3333:11;;2901:450;;;;;;:::o;7701:2804::-;7753:4;7793:17;7813:20;:5;:18;:20::i;:::-;7793:40;;7900:13;7915;7930;7947:22;:5;:20;:22::i;:::-;7899:70;;;;;;1160:1;7984:9;:30;7980:159;;;8089:39;8102:7;8111;8120;8089:12;:39::i;:::-;8082:46;;;;;;;;7980:159;8190:13;8206:22;:5;:20;:22::i;:::-;8190:38;;1204:1;8243:9;:30;8239:167;;;8348:47;8361:7;8370;8379;8388:6;8348:12;:47::i;:::-;8341:54;;;;;;;;;8239:167;8457:13;8473:22;:5;:20;:22::i;:::-;8457:38;;8541:11;8555:20;:5;:18;:20::i;:::-;8541:34;;1248:1;8590:9;:30;8586:271;;;8791:55;8804:7;8813;8822;8831:6;8839;8791:12;:55::i;:::-;8784:62;;;;;;;;;;;8586:271;1290:1;8871:9;:28;8867:169;;;8966:59;8977:7;8986;8995;9004:6;9012;9020:4;8966:10;:59::i;:::-;8959:66;;;;;;;;;;;8867:169;9091:19;:5;:17;:19::i;:::-;9084:27;;;;9250:15;9315:12;1584:6;9342:17;;:4;:17;;;9338:1161;;;9435:19;9503:62;9523:7;9532;9541;9550:6;9558;9503:19;:62::i;:::-;9468:97;;;;;;;;;;;;9585:10;9580:62;;9622:5;9615:12;;;;;;;;;;;;;;9580:62;9700:15;;;;;;;;;;;:28;;;9729:4;9735:6;9700:42;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;9700:42:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;9700:42:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;9700:42:7;;;;;;;;;;;;;;;;9693:49;;9889:34;9827:96;;;;;;;;:15;;;;;;;;;;;:30;;;9858:4;9864:6;9872:12;9827:58;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;9827:58:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;9827:58:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;9827:58:7;;;;;;;;;;;;;;;;:96;;;;;;;;;;9820:103;;;;;;;;;;;;;;9338:1161;10013:33;10094:66;10112:7;10121;10130;10139:6;10147;10155:4;10094:17;:66::i;:::-;10060:100;;;;;;;;;;;;10180:10;10175:62;;10217:5;10210:12;;;;;;;;;;;;;;10175:62;10293:15;;;;;;;;;;;:28;;;10322:4;10328;10293:40;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;10293:40:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;10293:40:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;10293:40:7;;;;;;;;;;;;;;;;10286:47;;10462:26;10407:81;;;;;;;;:13;;;;;;;;;;;:26;;;10434:11;10447:4;10453;10407:51;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;10407:51:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;10407:51:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;10407:51:7;;;;;;;;;;;;;;;;:81;;;;;;;;;;10400:88;;;;;;;;;;;;7701:2804;;;;:::o;7134:326::-;7263:4;7319:11;7338:66;7356:7;7365;7374;7383:6;7391;7399:4;7338:17;:66::i;:::-;7318:86;;;;7447:6;7440:13;;;7134:326;;;;;;;;:::o;5566:1064::-;5702:11;5723:18;5743:33;5798:15;5815:18;5835:19;5858:62;5878:7;5887;5896;5905:6;5913;5858:19;:62::i;:::-;5797:123;;;;;;5936:10;5931:693;;6022:5;6013:14;;5931:693;;;6131:15;;;;;;;;;;;:28;;;6160:10;6172:6;6131:48;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;6131:48:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;6131:48:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;6131:48:7;;;;;;;;;;;;;;;;6118:61;;6324:15;;;;;;;;;;;:30;;;6355:10;6367:6;6375:12;6324:64;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;6324:64:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;6324:64:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;6324:64:7;;;;;;;;;;;;;;;;6310:78;;6434:16;6453:13;;;;;;;;;;;:32;;;6486:10;6498:11;6453:57;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;6453:57:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;6453:57:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;6453:57:7;;;;;;;;;;;;;;;;6434:76;;6603:9;6596:16;;:4;:16;;;6586:27;;5931:693;;5566:1064;;;;;;;;;;;;;:::o;6697:372::-;6815:4;6912:11;6931:62;6951:7;6960;6969;6978:6;6986;6931:19;:62::i;:::-;6911:82;;;;7056:6;7049:13;;;6697:372;;;;;;;:::o;3737:140:9:-;3797:7;3866:4;3858:5;:12;3851:19;;3737:140;;;:::o;4905:288::-;4967:7;4976;4985;5014:43;5029:5;2030:1;5014:14;:43::i;:::-;5004:54;;5078:43;5093:5;2074:2;2030:1;2120:42;5078:14;:43::i;:::-;5068:54;;5142:43;5157:5;2205:2;2074;2030:1;2120:42;2251;5142:14;:43::i;:::-;5132:54;;4905:288;;;;;:::o;5642:135::-;5704:6;5729:41;5744:5;2336:2;2205;2074;2030:1;2120:42;2251;2380;5729:14;:41::i;:::-;5722:48;;5642:135;;;:::o;6062:::-;6124:6;6149:41;6164:5;2463:2;2336;2205;2074;2030:1;2120:42;2251;2380;2507:38;6149:14;:41::i;:::-;6142:48;;6062:135;;;:::o;6480:131::-;6540:6;6565:39;6580:5;2586:2;2463;2336;2205;2074;2030:1;2120:42;2251;2380;2507:38;2628;6565:14;:39::i;:::-;6558:46;;6480:131;;;:::o;9303:212::-;9362:4;9378:18;9399:19;9412:5;9399:12;:19::i;:::-;9378:40;;1904:1;9436:10;:33;;:70;;;;;1950:2;9473:10;:33;;9436:70;9428:79;;;9303:212;;;:::o;4105:1323:7:-;4232:11;4253:18;4273:19;4310:47;4323:7;4332;4341;4350:6;4310:12;:47::i;:::-;4305:1117;;4450:5;4441:14;;4305:1117;;;4632:13;;;;;;;;;;;:33;;;4666:7;4675;4684;4693:6;4632:68;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;4632:68:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;4632:68:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;4632:68:7;;;;;;;;;;;;;;;;4619:81;;4758:47;4808:13;;;;;;;;;;;:28;;;4837:10;4808:40;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;4808:40:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;4808:40:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;4808:40:7;;;;;;;;;;;;;;;;4758:90;;4862:47;4912:13;;;;;;;;;;;:35;;;4948:10;4960:11;4912:60;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;4912:60:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;4912:60:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;4912:60:7;;;;;;;;;;;;;;;;4862:110;;4991:13;;;;;;;;;;;:33;;;5025:10;5037:11;5050:10;4991:70;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;4991:70:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;4991:70:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;4991:70:7;;;;;;;;;;;;;;;;4987:425;;;5157:18;;;;;;;;;;;:39;;;5197:10;5209:11;5222:10;5157:76;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;5157:76:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;5157:76:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;5157:76:7;;;;;;;;;;;;;;;;5142:91;;5270:12;5261:21;;:6;:21;;;5251:32;;4987:425;;;5392:5;5383:14;;4987:425;4305:1117;;;4105:1323;;;;;;;;;:::o;4313:131:9:-;4389:6;4430;4421:15;;:5;:15;;4407:30;;4313:131;;;;:::o",
   "source": "pragma solidity ^0.5.2;\n\nimport \"openzeppelin-solidity/contracts/ownership/Ownable.sol\";\nimport \"./HasNoEther.sol\";\nimport \"./HasNoContracts.sol\";\n\nimport \"./MacroverseNFTUtils.sol\";\nimport \"./MacroverseStarGenerator.sol\";\nimport \"./MacroverseStarGeneratorPatch1.sol\";\nimport \"./MacroverseSystemGenerator.sol\";\nimport \"./MacroverseMoonGenerator.sol\";\nimport \"./Macroverse.sol\";\n\n/**\n * The MacroverseExistenceChecker queries Macroverse generator contracts to\n * determine if a particular thing (e.g. the nth planet of such-and-such a\n * star) exists in the Macroverse world.\n *\n * It does not need to be ControlledAccess because the Macroverse contracts it\n * calls into are. It does not have defenses against receiving stuck Ether and\n * tokens because it is not intended to be involved in end-user token\n * transactions in any capacity.\n *\n * Serves as an example for how Macroverse can be queried from on-chain logic.\n */\ncontract MacroverseExistenceChecker {\n\n    using MacroverseNFTUtils for uint256;\n\n    // These constants are shared with the TokenUtils library\n\n    // Define the types of tokens that can exist\n    uint256 constant TOKEN_TYPE_SECTOR = 0;\n    uint256 constant TOKEN_TYPE_SYSTEM = 1;\n    uint256 constant TOKEN_TYPE_PLANET = 2;\n    uint256 constant TOKEN_TYPE_MOON = 3;\n    // Land tokens are a range of type field values.\n    // Land tokens of the min type use one trixel field\n    uint256 constant TOKEN_TYPE_LAND_MIN = 4;\n    uint256 constant TOKEN_TYPE_LAND_MAX = 31;\n\n    // Sentinel for no moon used (for land on a planet)\n    uint16 constant MOON_NONE = 0xFFFF;\n\n    // These constants are shared with the generator contracts\n\n    // How far out does the sector system extend?\n    int16 constant MAX_SECTOR = 10000;\n\n    //////////////\n    // Contract state\n    //////////////\n\n    // Keep track of all of the generator contract addresses\n    MacroverseStarGenerator private starGenerator;\n    MacroverseStarGeneratorPatch1 private starGeneratorPatch;\n    MacroverseSystemGenerator private systemGenerator;\n    MacroverseMoonGenerator private moonGenerator;\n\n    /**\n     * Deploy a new copy of the Macroverse Existence Checker.\n     *\n     * The given generator contracts will be queried.\n     */\n    constructor(address starGeneratorAddress, address starGeneratorPatchAddress,\n        address systemGeneratorAddress, address moonGeneratorAddress) public {\n\n        // Remember where all the generators are\n        starGenerator = MacroverseStarGenerator(starGeneratorAddress);\n        starGeneratorPatch = MacroverseStarGeneratorPatch1(starGeneratorPatchAddress);\n        systemGenerator = MacroverseSystemGenerator(systemGeneratorAddress);\n        moonGenerator = MacroverseMoonGenerator(moonGeneratorAddress);\n        \n    }\n\n    /**\n     * Return true if a sector with the given coordinates exists in the\n     * Macroverse universe, and false otherwise.\n     */\n    function sectorExists(int16 sectorX, int16 sectorY, int16 sectorZ) public pure returns (bool) {\n        // Enforce absolute bounds.\n        if (sectorX > MAX_SECTOR) return false;\n        if (sectorY > MAX_SECTOR) return false;\n        if (sectorZ > MAX_SECTOR) return false;\n        if (sectorX < -MAX_SECTOR) return false;\n        if (sectorY < -MAX_SECTOR) return false;\n        if (sectorZ < -MAX_SECTOR) return false;\n\n        return true;\n    }\n\n    /**\n     * Determine if the given system (which might be a star, black hole, etc.)\n     * exists in the given sector. If the sector doesn't exist, returns false.\n     */\n    function systemExists(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 system) public view returns (bool) {\n        if (!sectorExists(sectorX, sectorY, sectorZ)) {\n            // The system can't exist if the sector doesn't.\n            return false;\n        }\n\n        // If the sector does exist, the system exists if it is in bounds\n        return (system < starGenerator.getSectorObjectCount(sectorX, sectorY, sectorZ));\n    }\n\n\n    /**\n     * Determine if the given planet exists, and if so returns some information\n     * generated about it for re-use.\n     */\n    function planetExistsVerbose(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 system, uint16 planet) internal view returns (bool exists,\n        bytes32 systemSeed, uint16 totalPlanets) {\n\n        if (!systemExists(sectorX, sectorY, sectorZ, system)) {\n            // The planet can't exist if the parent system doesn't.\n            exists = false;\n        } else {\n            // Get the system seed for the parent star/black hole/whatever\n            // TODO: unify with above to save on derives?\n            systemSeed = starGenerator.getSectorObjectSeed(sectorX, sectorY, sectorZ, system);\n\n            // Get class and spectral type\n            MacroverseStarGenerator.ObjectClass systemClass = starGenerator.getObjectClass(systemSeed);\n            MacroverseStarGenerator.SpectralType systemType = starGenerator.getObjectSpectralType(systemSeed, systemClass);\n\n            if (starGenerator.getObjectHasPlanets(systemSeed, systemClass, systemType)) {\n                // There are some planets. Are there enough?\n                totalPlanets = starGeneratorPatch.getObjectPlanetCount(systemSeed, systemClass, systemType);\n                exists = (planet < totalPlanets);\n            } else {\n                // This system doesn't actually have planets\n                exists = false;\n            }\n        }\n    }\n\n    /**\n     * Determine if the given moon exists, and if so returns some information\n     * generated about it for re-use.\n     */\n    function moonExistsVerbose(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 system, uint16 planet, uint16 moon) public view returns (bool exists,\n        bytes32 planetSeed, Macroverse.WorldClass planetClass) {\n        \n        (bool havePlanet, bytes32 systemSeed, uint16 totalPlanets) = planetExistsVerbose(sectorX, sectorY, sectorZ, system, planet);\n\n        if (!havePlanet) {\n            // Moon can't exist without its planet\n            exists = false;\n        } else {\n\n            // Otherwise, work out the seed of the planet.\n            planetSeed = systemGenerator.getWorldSeed(systemSeed, planet);\n            \n            // Use it to get the class of the planet, which is important for knowing if there is a moon\n            planetClass = systemGenerator.getPlanetClass(planetSeed, planet, totalPlanets);\n\n            // Count its moons\n            uint16 moonCount = moonGenerator.getPlanetMoonCount(planetSeed, planetClass);\n\n            // This moon exists if it is less than the count\n            exists = (moon < moonCount);\n        }\n    }\n\n    /**\n     * Determine if the given planet exists.\n     */\n    function planetExists(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 system, uint16 planet) public view returns (bool) {\n        // Get only one return value. Ignore the others with these extra commas\n        (bool exists, , ) = planetExistsVerbose(sectorX, sectorY, sectorZ, system, planet);\n\n        // Caller only cares about existence\n        return exists;\n    }\n\n    /**\n     * Determine if the given moon exists.\n     */\n    function moonExists(int16 sectorX, int16 sectorY, int16 sectorZ, uint16 system, uint16 planet, uint16 moon) public view returns (bool) {\n        // Get only the existence flag\n        (bool exists, , ) = moonExistsVerbose(sectorX, sectorY, sectorZ, system, planet, moon);\n    \n        // Return it\n        return exists;\n    }\n\n    /**\n     * Determine if the thing referred to by the given packed NFT token number\n     * exists.\n     *\n     * Token is assumed to be canonical/valid. Use MacroverseNFTUtils\n     * tokenIsCanonical() to validate it first.\n     */\n    function exists(uint256 token) public view returns (bool) {\n        // Get the type\n        uint256 tokenType = token.getTokenType();\n\n        // Unpack the sector. There's always a sector.\n        (int16 sectorX, int16 sectorY, int16 sectorZ) = token.getTokenSector();\n\n        if (tokenType == TOKEN_TYPE_SECTOR) {\n            // Check if the requested sector exists\n            return sectorExists(sectorX, sectorY, sectorZ);\n        }\n\n        // There must be a system number\n        uint16 system = token.getTokenSystem();\n\n        if (tokenType == TOKEN_TYPE_SYSTEM) {\n            // Check if the requested system exists\n            return systemExists(sectorX, sectorY, sectorZ, system);\n        }\n\n        // There must be a planet number\n        uint16 planet = token.getTokenPlanet();\n\n        // And there may be a moon\n        uint16 moon = token.getTokenMoon();\n\n        if (tokenType == TOKEN_TYPE_PLANET) {\n            // We exist if the planet exists.\n            // TODO: maybe check for ring/asteroid field types and don't let their land exist at all?\n            return planetExists(sectorX, sectorY, sectorZ, system, planet);\n        }\n\n        if (tokenType == TOKEN_TYPE_MOON) {\n             // We exist if the moon exists\n            return moonExists(sectorX, sectorY, sectorZ, system, planet, moon);\n        }\n\n        // Otherwise it must be land.\n        assert(token.tokenIsLand());\n\n        // We exist if the planet or moon exists and isn't a ring or asteroid belt\n        // We need the parent existence flag\n        bool haveParent;\n        // We will need a seed scratch.\n        bytes32 seed;\n\n        if (moon == MOON_NONE) {\n            // Make sure the planet exists and isn't a ring\n            uint16 totalPlanets;\n            (haveParent, seed, totalPlanets) = planetExistsVerbose(sectorX, sectorY, sectorZ, system, planet);\n\n            if (!haveParent) {\n                return false;\n            }\n\n            // Get the planet's seed\n            seed = systemGenerator.getWorldSeed(seed, planet);\n\n            // Land exists if the planet isn't an AsteroidBelt\n            return systemGenerator.getPlanetClass(seed, planet, totalPlanets) != Macroverse.WorldClass.AsteroidBelt;\n\n        } else {\n            // Make sure the moon exists and isn't a ring\n            Macroverse.WorldClass planetClass;\n            (haveParent, seed, planetClass) = moonExistsVerbose(sectorX, sectorY, sectorZ, system, planet, moon);\n\n            if (!haveParent) {\n                return false;\n            }\n\n            // Get the moon's seed\n            seed = systemGenerator.getWorldSeed(seed, moon);\n\n            // Land exists if the moon isn't a Ring\n            return moonGenerator.getMoonClass(planetClass, seed, moon) != Macroverse.WorldClass.Ring;\n        }\n    }\n\n}\n",
-  "sourcePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseExistenceChecker.sol",
+  "sourcePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseExistenceChecker.sol",
   "ast": {
-    "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseExistenceChecker.sol",
+    "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseExistenceChecker.sol",
     "exportedSymbols": {
       "MacroverseExistenceChecker": [
         1296
@@ -257,13 +294,13 @@
         "id": 706,
         "nodeType": "ImportDirective",
         "scope": 1297,
-        "sourceUnit": 10581,
+        "sourceUnit": 10693,
         "src": "25:63:7",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/HasNoEther.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/HasNoEther.sol",
         "file": "./HasNoEther.sol",
         "id": 707,
         "nodeType": "ImportDirective",
@@ -274,7 +311,7 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/HasNoContracts.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/HasNoContracts.sol",
         "file": "./HasNoContracts.sol",
         "id": 708,
         "nodeType": "ImportDirective",
@@ -285,7 +322,7 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseNFTUtils.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseNFTUtils.sol",
         "file": "./MacroverseNFTUtils.sol",
         "id": 709,
         "nodeType": "ImportDirective",
@@ -296,40 +333,40 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseStarGenerator.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseStarGenerator.sol",
         "file": "./MacroverseStarGenerator.sol",
         "id": 710,
         "nodeType": "ImportDirective",
         "scope": 1297,
-        "sourceUnit": 4022,
+        "sourceUnit": 4052,
         "src": "183:39:7",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseStarGeneratorPatch1.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseStarGeneratorPatch1.sol",
         "file": "./MacroverseStarGeneratorPatch1.sol",
         "id": 711,
         "nodeType": "ImportDirective",
         "scope": 1297,
-        "sourceUnit": 4428,
+        "sourceUnit": 4458,
         "src": "223:45:7",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseSystemGenerator.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGenerator.sol",
         "file": "./MacroverseSystemGenerator.sol",
         "id": 712,
         "nodeType": "ImportDirective",
         "scope": 1297,
-        "sourceUnit": 4964,
+        "sourceUnit": 4994,
         "src": "269:41:7",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseMoonGenerator.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseMoonGenerator.sol",
         "file": "./MacroverseMoonGenerator.sol",
         "id": 713,
         "nodeType": "ImportDirective",
@@ -340,7 +377,7 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/Macroverse.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/Macroverse.sol",
         "file": "./Macroverse.sol",
         "id": 714,
         "nodeType": "ImportDirective",
@@ -744,7 +781,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+              "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
               "typeString": "contract MacroverseStarGenerator"
             },
             "typeName": {
@@ -752,10 +789,10 @@
               "id": 742,
               "name": "MacroverseStarGenerator",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4021,
+              "referencedDeclaration": 4051,
               "src": "1873:23:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                 "typeString": "contract MacroverseStarGenerator"
               }
             },
@@ -772,7 +809,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+              "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
               "typeString": "contract MacroverseStarGeneratorPatch1"
             },
             "typeName": {
@@ -780,10 +817,10 @@
               "id": 744,
               "name": "MacroverseStarGeneratorPatch1",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4427,
+              "referencedDeclaration": 4457,
               "src": "1924:29:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+                "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
                 "typeString": "contract MacroverseStarGeneratorPatch1"
               }
             },
@@ -800,7 +837,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+              "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
               "typeString": "contract MacroverseSystemGenerator"
             },
             "typeName": {
@@ -808,10 +845,10 @@
               "id": 746,
               "name": "MacroverseSystemGenerator",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4963,
+              "referencedDeclaration": 4993,
               "src": "1986:25:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                 "typeString": "contract MacroverseSystemGenerator"
               }
             },
@@ -869,7 +906,7 @@
                       "referencedDeclaration": 743,
                       "src": "2446:13:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                        "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                         "typeString": "contract MacroverseStarGenerator"
                       }
                     },
@@ -903,10 +940,10 @@
                         "name": "MacroverseStarGenerator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4021,
+                        "referencedDeclaration": 4051,
                         "src": "2462:23:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_MacroverseStarGenerator_$4021_$",
+                          "typeIdentifier": "t_type$_t_contract$_MacroverseStarGenerator_$4051_$",
                           "typeString": "type(contract MacroverseStarGenerator)"
                         }
                       },
@@ -920,13 +957,13 @@
                       "nodeType": "FunctionCall",
                       "src": "2462:45:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                        "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                         "typeString": "contract MacroverseStarGenerator"
                       }
                     },
                     "src": "2446:61:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                      "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                       "typeString": "contract MacroverseStarGenerator"
                     }
                   },
@@ -951,7 +988,7 @@
                       "referencedDeclaration": 745,
                       "src": "2517:18:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
                         "typeString": "contract MacroverseStarGeneratorPatch1"
                       }
                     },
@@ -985,10 +1022,10 @@
                         "name": "MacroverseStarGeneratorPatch1",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4427,
+                        "referencedDeclaration": 4457,
                         "src": "2538:29:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_MacroverseStarGeneratorPatch1_$4427_$",
+                          "typeIdentifier": "t_type$_t_contract$_MacroverseStarGeneratorPatch1_$4457_$",
                           "typeString": "type(contract MacroverseStarGeneratorPatch1)"
                         }
                       },
@@ -1002,13 +1039,13 @@
                       "nodeType": "FunctionCall",
                       "src": "2538:56:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
                         "typeString": "contract MacroverseStarGeneratorPatch1"
                       }
                     },
                     "src": "2517:77:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+                      "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
                       "typeString": "contract MacroverseStarGeneratorPatch1"
                     }
                   },
@@ -1033,7 +1070,7 @@
                       "referencedDeclaration": 747,
                       "src": "2604:15:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                        "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                         "typeString": "contract MacroverseSystemGenerator"
                       }
                     },
@@ -1067,10 +1104,10 @@
                         "name": "MacroverseSystemGenerator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4963,
+                        "referencedDeclaration": 4993,
                         "src": "2622:25:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_MacroverseSystemGenerator_$4963_$",
+                          "typeIdentifier": "t_type$_t_contract$_MacroverseSystemGenerator_$4993_$",
                           "typeString": "type(contract MacroverseSystemGenerator)"
                         }
                       },
@@ -1084,13 +1121,13 @@
                       "nodeType": "FunctionCall",
                       "src": "2622:49:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                        "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                         "typeString": "contract MacroverseSystemGenerator"
                       }
                     },
                     "src": "2604:67:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                      "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                       "typeString": "contract MacroverseSystemGenerator"
                     }
                   },
@@ -2216,7 +2253,7 @@
                               "referencedDeclaration": 743,
                               "src": "3895:13:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                                 "typeString": "contract MacroverseStarGenerator"
                               }
                             },
@@ -2227,7 +2264,7 @@
                             "lValueRequested": false,
                             "memberName": "getSectorObjectCount",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3269,
+                            "referencedDeclaration": 3299,
                             "src": "3895:34:7",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_int16_$_t_int16_$_t_int16_$returns$_t_uint16_$",
@@ -2667,7 +2704,7 @@
                                 "referencedDeclaration": 743,
                                 "src": "4632:13:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                                  "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                                   "typeString": "contract MacroverseStarGenerator"
                                 }
                               },
@@ -2678,7 +2715,7 @@
                               "lValueRequested": false,
                               "memberName": "getSectorObjectSeed",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 3302,
+                              "referencedDeclaration": 3332,
                               "src": "4632:33:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_int16_$_t_int16_$_t_int16_$_t_uint16_$returns$_t_bytes32_$",
@@ -2724,7 +2761,7 @@
                             "stateVariable": false,
                             "storageLocation": "default",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                              "typeIdentifier": "t_enum$_ObjectClass_$3066",
                               "typeString": "enum MacroverseStarGenerator.ObjectClass"
                             },
                             "typeName": {
@@ -2732,10 +2769,10 @@
                               "id": 915,
                               "name": "MacroverseStarGenerator.ObjectClass",
                               "nodeType": "UserDefinedTypeName",
-                              "referencedDeclaration": 3036,
+                              "referencedDeclaration": 3066,
                               "src": "4758:35:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                 "typeString": "enum MacroverseStarGenerator.ObjectClass"
                               }
                             },
@@ -2777,7 +2814,7 @@
                               "referencedDeclaration": 743,
                               "src": "4808:13:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                                 "typeString": "contract MacroverseStarGenerator"
                               }
                             },
@@ -2788,10 +2825,10 @@
                             "lValueRequested": false,
                             "memberName": "getObjectClass",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3376,
+                            "referencedDeclaration": 3406,
                             "src": "4808:28:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_enum$_ObjectClass_$3036_$",
+                              "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_enum$_ObjectClass_$3066_$",
                               "typeString": "function (bytes32) view external returns (enum MacroverseStarGenerator.ObjectClass)"
                             }
                           },
@@ -2805,7 +2842,7 @@
                           "nodeType": "FunctionCall",
                           "src": "4808:40:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                            "typeIdentifier": "t_enum$_ObjectClass_$3066",
                             "typeString": "enum MacroverseStarGenerator.ObjectClass"
                           }
                         },
@@ -2827,7 +2864,7 @@
                             "stateVariable": false,
                             "storageLocation": "default",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_SpectralType_$3045",
+                              "typeIdentifier": "t_enum$_SpectralType_$3075",
                               "typeString": "enum MacroverseStarGenerator.SpectralType"
                             },
                             "typeName": {
@@ -2835,10 +2872,10 @@
                               "id": 924,
                               "name": "MacroverseStarGenerator.SpectralType",
                               "nodeType": "UserDefinedTypeName",
-                              "referencedDeclaration": 3045,
+                              "referencedDeclaration": 3075,
                               "src": "4862:36:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_enum$_SpectralType_$3045",
+                                "typeIdentifier": "t_enum$_SpectralType_$3075",
                                 "typeString": "enum MacroverseStarGenerator.SpectralType"
                               }
                             },
@@ -2872,7 +2909,7 @@
                               "referencedDeclaration": 916,
                               "src": "4960:11:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                 "typeString": "enum MacroverseStarGenerator.ObjectClass"
                               }
                             }
@@ -2884,7 +2921,7 @@
                                 "typeString": "bytes32"
                               },
                               {
-                                "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                 "typeString": "enum MacroverseStarGenerator.ObjectClass"
                               }
                             ],
@@ -2897,7 +2934,7 @@
                               "referencedDeclaration": 743,
                               "src": "4912:13:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                                 "typeString": "contract MacroverseStarGenerator"
                               }
                             },
@@ -2908,10 +2945,10 @@
                             "lValueRequested": false,
                             "memberName": "getObjectSpectralType",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3554,
+                            "referencedDeclaration": 3584,
                             "src": "4912:35:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3036_$returns$_t_enum$_SpectralType_$3045_$",
+                              "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3066_$returns$_t_enum$_SpectralType_$3075_$",
                               "typeString": "function (bytes32,enum MacroverseStarGenerator.ObjectClass) view external returns (enum MacroverseStarGenerator.SpectralType)"
                             }
                           },
@@ -2925,7 +2962,7 @@
                           "nodeType": "FunctionCall",
                           "src": "4912:60:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_enum$_SpectralType_$3045",
+                            "typeIdentifier": "t_enum$_SpectralType_$3075",
                             "typeString": "enum MacroverseStarGenerator.SpectralType"
                           }
                         },
@@ -2958,7 +2995,7 @@
                               "referencedDeclaration": 916,
                               "src": "5037:11:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                 "typeString": "enum MacroverseStarGenerator.ObjectClass"
                               }
                             },
@@ -2971,7 +3008,7 @@
                               "referencedDeclaration": 925,
                               "src": "5050:10:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_enum$_SpectralType_$3045",
+                                "typeIdentifier": "t_enum$_SpectralType_$3075",
                                 "typeString": "enum MacroverseStarGenerator.SpectralType"
                               }
                             }
@@ -2983,11 +3020,11 @@
                                 "typeString": "bytes32"
                               },
                               {
-                                "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                 "typeString": "enum MacroverseStarGenerator.ObjectClass"
                               },
                               {
-                                "typeIdentifier": "t_enum$_SpectralType_$3045",
+                                "typeIdentifier": "t_enum$_SpectralType_$3075",
                                 "typeString": "enum MacroverseStarGenerator.SpectralType"
                               }
                             ],
@@ -3000,7 +3037,7 @@
                               "referencedDeclaration": 743,
                               "src": "4991:13:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                                 "typeString": "contract MacroverseStarGenerator"
                               }
                             },
@@ -3011,10 +3048,10 @@
                             "lValueRequested": false,
                             "memberName": "getObjectHasPlanets",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 4020,
+                            "referencedDeclaration": 4050,
                             "src": "4991:33:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3036_$_t_enum$_SpectralType_$3045_$returns$_t_bool_$",
+                              "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3066_$_t_enum$_SpectralType_$3075_$returns$_t_bool_$",
                               "typeString": "function (bytes32,enum MacroverseStarGenerator.ObjectClass,enum MacroverseStarGenerator.SpectralType) view external returns (bool)"
                             }
                           },
@@ -3146,7 +3183,7 @@
                                       "referencedDeclaration": 916,
                                       "src": "5209:11:7",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                        "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                         "typeString": "enum MacroverseStarGenerator.ObjectClass"
                                       }
                                     },
@@ -3159,7 +3196,7 @@
                                       "referencedDeclaration": 925,
                                       "src": "5222:10:7",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_enum$_SpectralType_$3045",
+                                        "typeIdentifier": "t_enum$_SpectralType_$3075",
                                         "typeString": "enum MacroverseStarGenerator.SpectralType"
                                       }
                                     }
@@ -3171,11 +3208,11 @@
                                         "typeString": "bytes32"
                                       },
                                       {
-                                        "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                        "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                         "typeString": "enum MacroverseStarGenerator.ObjectClass"
                                       },
                                       {
-                                        "typeIdentifier": "t_enum$_SpectralType_$3045",
+                                        "typeIdentifier": "t_enum$_SpectralType_$3075",
                                         "typeString": "enum MacroverseStarGenerator.SpectralType"
                                       }
                                     ],
@@ -3188,7 +3225,7 @@
                                       "referencedDeclaration": 745,
                                       "src": "5157:18:7",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+                                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
                                         "typeString": "contract MacroverseStarGeneratorPatch1"
                                       }
                                     },
@@ -3199,10 +3236,10 @@
                                     "lValueRequested": false,
                                     "memberName": "getObjectPlanetCount",
                                     "nodeType": "MemberAccess",
-                                    "referencedDeclaration": 4202,
+                                    "referencedDeclaration": 4232,
                                     "src": "5157:39:7",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3036_$_t_enum$_SpectralType_$3045_$returns$_t_uint16_$",
+                                      "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3066_$_t_enum$_SpectralType_$3075_$returns$_t_uint16_$",
                                       "typeString": "function (bytes32,enum MacroverseStarGenerator.ObjectClass,enum MacroverseStarGenerator.SpectralType) view external returns (uint16)"
                                     }
                                   },
@@ -3950,7 +3987,7 @@
                                 "referencedDeclaration": 747,
                                 "src": "6131:15:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                                   "typeString": "contract MacroverseSystemGenerator"
                                 }
                               },
@@ -3961,7 +3998,7 @@
                               "lValueRequested": false,
                               "memberName": "getWorldSeed",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 4759,
+                              "referencedDeclaration": 4789,
                               "src": "6131:28:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint16_$returns$_t_bytes32_$",
@@ -4082,7 +4119,7 @@
                                 "referencedDeclaration": 747,
                                 "src": "6324:15:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                                   "typeString": "contract MacroverseSystemGenerator"
                                 }
                               },
@@ -4093,7 +4130,7 @@
                               "lValueRequested": false,
                               "memberName": "getPlanetClass",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 4780,
+                              "referencedDeclaration": 4810,
                               "src": "6324:30:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint16_$_t_uint16_$returns$_t_enum$_WorldClass_$702_$",
@@ -6665,7 +6702,7 @@
                       "name": "assert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12435,
+                      "referencedDeclaration": 12622,
                       "src": "9084:6:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_assert_pure$_t_bool_$returns$__$",
@@ -7203,7 +7240,7 @@
                                 "referencedDeclaration": 747,
                                 "src": "10293:15:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                                   "typeString": "contract MacroverseSystemGenerator"
                                 }
                               },
@@ -7214,7 +7251,7 @@
                               "lValueRequested": false,
                               "memberName": "getWorldSeed",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 4759,
+                              "referencedDeclaration": 4789,
                               "src": "10293:28:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint16_$returns$_t_bytes32_$",
@@ -7793,7 +7830,7 @@
                                 "referencedDeclaration": 747,
                                 "src": "9700:15:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                                   "typeString": "contract MacroverseSystemGenerator"
                                 }
                               },
@@ -7804,7 +7841,7 @@
                               "lValueRequested": false,
                               "memberName": "getWorldSeed",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 4759,
+                              "referencedDeclaration": 4789,
                               "src": "9700:28:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint16_$returns$_t_bytes32_$",
@@ -7914,7 +7951,7 @@
                                 "referencedDeclaration": 747,
                                 "src": "9827:15:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                                   "typeString": "contract MacroverseSystemGenerator"
                                 }
                               },
@@ -7925,7 +7962,7 @@
                               "lValueRequested": false,
                               "memberName": "getPlanetClass",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 4780,
+                              "referencedDeclaration": 4810,
                               "src": "9827:30:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint16_$_t_uint16_$returns$_t_enum$_WorldClass_$702_$",
@@ -8096,7 +8133,7 @@
     "src": "0:10509:7"
   },
   "legacyAST": {
-    "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseExistenceChecker.sol",
+    "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseExistenceChecker.sol",
     "exportedSymbols": {
       "MacroverseExistenceChecker": [
         1296
@@ -8122,13 +8159,13 @@
         "id": 706,
         "nodeType": "ImportDirective",
         "scope": 1297,
-        "sourceUnit": 10581,
+        "sourceUnit": 10693,
         "src": "25:63:7",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/HasNoEther.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/HasNoEther.sol",
         "file": "./HasNoEther.sol",
         "id": 707,
         "nodeType": "ImportDirective",
@@ -8139,7 +8176,7 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/HasNoContracts.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/HasNoContracts.sol",
         "file": "./HasNoContracts.sol",
         "id": 708,
         "nodeType": "ImportDirective",
@@ -8150,7 +8187,7 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseNFTUtils.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseNFTUtils.sol",
         "file": "./MacroverseNFTUtils.sol",
         "id": 709,
         "nodeType": "ImportDirective",
@@ -8161,40 +8198,40 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseStarGenerator.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseStarGenerator.sol",
         "file": "./MacroverseStarGenerator.sol",
         "id": 710,
         "nodeType": "ImportDirective",
         "scope": 1297,
-        "sourceUnit": 4022,
+        "sourceUnit": 4052,
         "src": "183:39:7",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseStarGeneratorPatch1.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseStarGeneratorPatch1.sol",
         "file": "./MacroverseStarGeneratorPatch1.sol",
         "id": 711,
         "nodeType": "ImportDirective",
         "scope": 1297,
-        "sourceUnit": 4428,
+        "sourceUnit": 4458,
         "src": "223:45:7",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseSystemGenerator.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGenerator.sol",
         "file": "./MacroverseSystemGenerator.sol",
         "id": 712,
         "nodeType": "ImportDirective",
         "scope": 1297,
-        "sourceUnit": 4964,
+        "sourceUnit": 4994,
         "src": "269:41:7",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MacroverseMoonGenerator.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MacroverseMoonGenerator.sol",
         "file": "./MacroverseMoonGenerator.sol",
         "id": 713,
         "nodeType": "ImportDirective",
@@ -8205,7 +8242,7 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/Macroverse.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/Macroverse.sol",
         "file": "./Macroverse.sol",
         "id": 714,
         "nodeType": "ImportDirective",
@@ -8609,7 +8646,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+              "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
               "typeString": "contract MacroverseStarGenerator"
             },
             "typeName": {
@@ -8617,10 +8654,10 @@
               "id": 742,
               "name": "MacroverseStarGenerator",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4021,
+              "referencedDeclaration": 4051,
               "src": "1873:23:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                 "typeString": "contract MacroverseStarGenerator"
               }
             },
@@ -8637,7 +8674,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+              "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
               "typeString": "contract MacroverseStarGeneratorPatch1"
             },
             "typeName": {
@@ -8645,10 +8682,10 @@
               "id": 744,
               "name": "MacroverseStarGeneratorPatch1",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4427,
+              "referencedDeclaration": 4457,
               "src": "1924:29:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+                "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
                 "typeString": "contract MacroverseStarGeneratorPatch1"
               }
             },
@@ -8665,7 +8702,7 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+              "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
               "typeString": "contract MacroverseSystemGenerator"
             },
             "typeName": {
@@ -8673,10 +8710,10 @@
               "id": 746,
               "name": "MacroverseSystemGenerator",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4963,
+              "referencedDeclaration": 4993,
               "src": "1986:25:7",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                 "typeString": "contract MacroverseSystemGenerator"
               }
             },
@@ -8734,7 +8771,7 @@
                       "referencedDeclaration": 743,
                       "src": "2446:13:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                        "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                         "typeString": "contract MacroverseStarGenerator"
                       }
                     },
@@ -8768,10 +8805,10 @@
                         "name": "MacroverseStarGenerator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4021,
+                        "referencedDeclaration": 4051,
                         "src": "2462:23:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_MacroverseStarGenerator_$4021_$",
+                          "typeIdentifier": "t_type$_t_contract$_MacroverseStarGenerator_$4051_$",
                           "typeString": "type(contract MacroverseStarGenerator)"
                         }
                       },
@@ -8785,13 +8822,13 @@
                       "nodeType": "FunctionCall",
                       "src": "2462:45:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                        "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                         "typeString": "contract MacroverseStarGenerator"
                       }
                     },
                     "src": "2446:61:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                      "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                       "typeString": "contract MacroverseStarGenerator"
                     }
                   },
@@ -8816,7 +8853,7 @@
                       "referencedDeclaration": 745,
                       "src": "2517:18:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
                         "typeString": "contract MacroverseStarGeneratorPatch1"
                       }
                     },
@@ -8850,10 +8887,10 @@
                         "name": "MacroverseStarGeneratorPatch1",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4427,
+                        "referencedDeclaration": 4457,
                         "src": "2538:29:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_MacroverseStarGeneratorPatch1_$4427_$",
+                          "typeIdentifier": "t_type$_t_contract$_MacroverseStarGeneratorPatch1_$4457_$",
                           "typeString": "type(contract MacroverseStarGeneratorPatch1)"
                         }
                       },
@@ -8867,13 +8904,13 @@
                       "nodeType": "FunctionCall",
                       "src": "2538:56:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
                         "typeString": "contract MacroverseStarGeneratorPatch1"
                       }
                     },
                     "src": "2517:77:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+                      "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
                       "typeString": "contract MacroverseStarGeneratorPatch1"
                     }
                   },
@@ -8898,7 +8935,7 @@
                       "referencedDeclaration": 747,
                       "src": "2604:15:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                        "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                         "typeString": "contract MacroverseSystemGenerator"
                       }
                     },
@@ -8932,10 +8969,10 @@
                         "name": "MacroverseSystemGenerator",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 4963,
+                        "referencedDeclaration": 4993,
                         "src": "2622:25:7",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_MacroverseSystemGenerator_$4963_$",
+                          "typeIdentifier": "t_type$_t_contract$_MacroverseSystemGenerator_$4993_$",
                           "typeString": "type(contract MacroverseSystemGenerator)"
                         }
                       },
@@ -8949,13 +8986,13 @@
                       "nodeType": "FunctionCall",
                       "src": "2622:49:7",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                        "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                         "typeString": "contract MacroverseSystemGenerator"
                       }
                     },
                     "src": "2604:67:7",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                      "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                       "typeString": "contract MacroverseSystemGenerator"
                     }
                   },
@@ -10081,7 +10118,7 @@
                               "referencedDeclaration": 743,
                               "src": "3895:13:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                                 "typeString": "contract MacroverseStarGenerator"
                               }
                             },
@@ -10092,7 +10129,7 @@
                             "lValueRequested": false,
                             "memberName": "getSectorObjectCount",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3269,
+                            "referencedDeclaration": 3299,
                             "src": "3895:34:7",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_view$_t_int16_$_t_int16_$_t_int16_$returns$_t_uint16_$",
@@ -10532,7 +10569,7 @@
                                 "referencedDeclaration": 743,
                                 "src": "4632:13:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                                  "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                                   "typeString": "contract MacroverseStarGenerator"
                                 }
                               },
@@ -10543,7 +10580,7 @@
                               "lValueRequested": false,
                               "memberName": "getSectorObjectSeed",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 3302,
+                              "referencedDeclaration": 3332,
                               "src": "4632:33:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_int16_$_t_int16_$_t_int16_$_t_uint16_$returns$_t_bytes32_$",
@@ -10589,7 +10626,7 @@
                             "stateVariable": false,
                             "storageLocation": "default",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                              "typeIdentifier": "t_enum$_ObjectClass_$3066",
                               "typeString": "enum MacroverseStarGenerator.ObjectClass"
                             },
                             "typeName": {
@@ -10597,10 +10634,10 @@
                               "id": 915,
                               "name": "MacroverseStarGenerator.ObjectClass",
                               "nodeType": "UserDefinedTypeName",
-                              "referencedDeclaration": 3036,
+                              "referencedDeclaration": 3066,
                               "src": "4758:35:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                 "typeString": "enum MacroverseStarGenerator.ObjectClass"
                               }
                             },
@@ -10642,7 +10679,7 @@
                               "referencedDeclaration": 743,
                               "src": "4808:13:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                                 "typeString": "contract MacroverseStarGenerator"
                               }
                             },
@@ -10653,10 +10690,10 @@
                             "lValueRequested": false,
                             "memberName": "getObjectClass",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3376,
+                            "referencedDeclaration": 3406,
                             "src": "4808:28:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_enum$_ObjectClass_$3036_$",
+                              "typeIdentifier": "t_function_external_view$_t_bytes32_$returns$_t_enum$_ObjectClass_$3066_$",
                               "typeString": "function (bytes32) view external returns (enum MacroverseStarGenerator.ObjectClass)"
                             }
                           },
@@ -10670,7 +10707,7 @@
                           "nodeType": "FunctionCall",
                           "src": "4808:40:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                            "typeIdentifier": "t_enum$_ObjectClass_$3066",
                             "typeString": "enum MacroverseStarGenerator.ObjectClass"
                           }
                         },
@@ -10692,7 +10729,7 @@
                             "stateVariable": false,
                             "storageLocation": "default",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_enum$_SpectralType_$3045",
+                              "typeIdentifier": "t_enum$_SpectralType_$3075",
                               "typeString": "enum MacroverseStarGenerator.SpectralType"
                             },
                             "typeName": {
@@ -10700,10 +10737,10 @@
                               "id": 924,
                               "name": "MacroverseStarGenerator.SpectralType",
                               "nodeType": "UserDefinedTypeName",
-                              "referencedDeclaration": 3045,
+                              "referencedDeclaration": 3075,
                               "src": "4862:36:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_enum$_SpectralType_$3045",
+                                "typeIdentifier": "t_enum$_SpectralType_$3075",
                                 "typeString": "enum MacroverseStarGenerator.SpectralType"
                               }
                             },
@@ -10737,7 +10774,7 @@
                               "referencedDeclaration": 916,
                               "src": "4960:11:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                 "typeString": "enum MacroverseStarGenerator.ObjectClass"
                               }
                             }
@@ -10749,7 +10786,7 @@
                                 "typeString": "bytes32"
                               },
                               {
-                                "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                 "typeString": "enum MacroverseStarGenerator.ObjectClass"
                               }
                             ],
@@ -10762,7 +10799,7 @@
                               "referencedDeclaration": 743,
                               "src": "4912:13:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                                 "typeString": "contract MacroverseStarGenerator"
                               }
                             },
@@ -10773,10 +10810,10 @@
                             "lValueRequested": false,
                             "memberName": "getObjectSpectralType",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 3554,
+                            "referencedDeclaration": 3584,
                             "src": "4912:35:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3036_$returns$_t_enum$_SpectralType_$3045_$",
+                              "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3066_$returns$_t_enum$_SpectralType_$3075_$",
                               "typeString": "function (bytes32,enum MacroverseStarGenerator.ObjectClass) view external returns (enum MacroverseStarGenerator.SpectralType)"
                             }
                           },
@@ -10790,7 +10827,7 @@
                           "nodeType": "FunctionCall",
                           "src": "4912:60:7",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_enum$_SpectralType_$3045",
+                            "typeIdentifier": "t_enum$_SpectralType_$3075",
                             "typeString": "enum MacroverseStarGenerator.SpectralType"
                           }
                         },
@@ -10823,7 +10860,7 @@
                               "referencedDeclaration": 916,
                               "src": "5037:11:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                 "typeString": "enum MacroverseStarGenerator.ObjectClass"
                               }
                             },
@@ -10836,7 +10873,7 @@
                               "referencedDeclaration": 925,
                               "src": "5050:10:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_enum$_SpectralType_$3045",
+                                "typeIdentifier": "t_enum$_SpectralType_$3075",
                                 "typeString": "enum MacroverseStarGenerator.SpectralType"
                               }
                             }
@@ -10848,11 +10885,11 @@
                                 "typeString": "bytes32"
                               },
                               {
-                                "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                 "typeString": "enum MacroverseStarGenerator.ObjectClass"
                               },
                               {
-                                "typeIdentifier": "t_enum$_SpectralType_$3045",
+                                "typeIdentifier": "t_enum$_SpectralType_$3075",
                                 "typeString": "enum MacroverseStarGenerator.SpectralType"
                               }
                             ],
@@ -10865,7 +10902,7 @@
                               "referencedDeclaration": 743,
                               "src": "4991:13:7",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4021",
+                                "typeIdentifier": "t_contract$_MacroverseStarGenerator_$4051",
                                 "typeString": "contract MacroverseStarGenerator"
                               }
                             },
@@ -10876,10 +10913,10 @@
                             "lValueRequested": false,
                             "memberName": "getObjectHasPlanets",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 4020,
+                            "referencedDeclaration": 4050,
                             "src": "4991:33:7",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3036_$_t_enum$_SpectralType_$3045_$returns$_t_bool_$",
+                              "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3066_$_t_enum$_SpectralType_$3075_$returns$_t_bool_$",
                               "typeString": "function (bytes32,enum MacroverseStarGenerator.ObjectClass,enum MacroverseStarGenerator.SpectralType) view external returns (bool)"
                             }
                           },
@@ -11011,7 +11048,7 @@
                                       "referencedDeclaration": 916,
                                       "src": "5209:11:7",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                        "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                         "typeString": "enum MacroverseStarGenerator.ObjectClass"
                                       }
                                     },
@@ -11024,7 +11061,7 @@
                                       "referencedDeclaration": 925,
                                       "src": "5222:10:7",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_enum$_SpectralType_$3045",
+                                        "typeIdentifier": "t_enum$_SpectralType_$3075",
                                         "typeString": "enum MacroverseStarGenerator.SpectralType"
                                       }
                                     }
@@ -11036,11 +11073,11 @@
                                         "typeString": "bytes32"
                                       },
                                       {
-                                        "typeIdentifier": "t_enum$_ObjectClass_$3036",
+                                        "typeIdentifier": "t_enum$_ObjectClass_$3066",
                                         "typeString": "enum MacroverseStarGenerator.ObjectClass"
                                       },
                                       {
-                                        "typeIdentifier": "t_enum$_SpectralType_$3045",
+                                        "typeIdentifier": "t_enum$_SpectralType_$3075",
                                         "typeString": "enum MacroverseStarGenerator.SpectralType"
                                       }
                                     ],
@@ -11053,7 +11090,7 @@
                                       "referencedDeclaration": 745,
                                       "src": "5157:18:7",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4427",
+                                        "typeIdentifier": "t_contract$_MacroverseStarGeneratorPatch1_$4457",
                                         "typeString": "contract MacroverseStarGeneratorPatch1"
                                       }
                                     },
@@ -11064,10 +11101,10 @@
                                     "lValueRequested": false,
                                     "memberName": "getObjectPlanetCount",
                                     "nodeType": "MemberAccess",
-                                    "referencedDeclaration": 4202,
+                                    "referencedDeclaration": 4232,
                                     "src": "5157:39:7",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3036_$_t_enum$_SpectralType_$3045_$returns$_t_uint16_$",
+                                      "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_enum$_ObjectClass_$3066_$_t_enum$_SpectralType_$3075_$returns$_t_uint16_$",
                                       "typeString": "function (bytes32,enum MacroverseStarGenerator.ObjectClass,enum MacroverseStarGenerator.SpectralType) view external returns (uint16)"
                                     }
                                   },
@@ -11815,7 +11852,7 @@
                                 "referencedDeclaration": 747,
                                 "src": "6131:15:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                                   "typeString": "contract MacroverseSystemGenerator"
                                 }
                               },
@@ -11826,7 +11863,7 @@
                               "lValueRequested": false,
                               "memberName": "getWorldSeed",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 4759,
+                              "referencedDeclaration": 4789,
                               "src": "6131:28:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint16_$returns$_t_bytes32_$",
@@ -11947,7 +11984,7 @@
                                 "referencedDeclaration": 747,
                                 "src": "6324:15:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                                   "typeString": "contract MacroverseSystemGenerator"
                                 }
                               },
@@ -11958,7 +11995,7 @@
                               "lValueRequested": false,
                               "memberName": "getPlanetClass",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 4780,
+                              "referencedDeclaration": 4810,
                               "src": "6324:30:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint16_$_t_uint16_$returns$_t_enum$_WorldClass_$702_$",
@@ -14530,7 +14567,7 @@
                       "name": "assert",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 12435,
+                      "referencedDeclaration": 12622,
                       "src": "9084:6:7",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_assert_pure$_t_bool_$returns$__$",
@@ -15068,7 +15105,7 @@
                                 "referencedDeclaration": 747,
                                 "src": "10293:15:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                                   "typeString": "contract MacroverseSystemGenerator"
                                 }
                               },
@@ -15079,7 +15116,7 @@
                               "lValueRequested": false,
                               "memberName": "getWorldSeed",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 4759,
+                              "referencedDeclaration": 4789,
                               "src": "10293:28:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint16_$returns$_t_bytes32_$",
@@ -15658,7 +15695,7 @@
                                 "referencedDeclaration": 747,
                                 "src": "9700:15:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                                   "typeString": "contract MacroverseSystemGenerator"
                                 }
                               },
@@ -15669,7 +15706,7 @@
                               "lValueRequested": false,
                               "memberName": "getWorldSeed",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 4759,
+                              "referencedDeclaration": 4789,
                               "src": "9700:28:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint16_$returns$_t_bytes32_$",
@@ -15779,7 +15816,7 @@
                                 "referencedDeclaration": 747,
                                 "src": "9827:15:7",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4963",
+                                  "typeIdentifier": "t_contract$_MacroverseSystemGenerator_$4993",
                                   "typeString": "contract MacroverseSystemGenerator"
                                 }
                               },
@@ -15790,7 +15827,7 @@
                               "lValueRequested": false,
                               "memberName": "getPlanetClass",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 4780,
+                              "referencedDeclaration": 4810,
                               "src": "9827:30:7",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_view$_t_bytes32_$_t_uint16_$_t_uint16_$returns$_t_enum$_WorldClass_$702_$",
@@ -15962,18 +15999,19 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.5.8+commit.23d335f2.Emscripten.clang"
+    "version": "0.5.14+commit.01f1aaa4.Emscripten.clang"
   },
   "networks": {
     "4": {
       "events": {},
       "links": {},
-      "address": "0xa6eE2Efa5c46955Ad7DfD44BD0DE726ff72d1390",
-      "transactionHash": "0xdb9c883e2f9ea2310728511a7957abf4b610bc56bcdfad502aaef5c3a0ddaf51"
+      "address": "0x0b757Bf9b2A52C6994385559506b2B537873647a",
+      "transactionHash": "0xbbdf816f59534d8bc60b0deb902951aceb34da8b7b30bd5590a6df5cb59968d6"
     }
   },
-  "schemaVersion": "3.0.16",
-  "updatedAt": "2020-01-10T05:20:57.350Z",
+  "schemaVersion": "3.1.0",
+  "updatedAt": "2020-05-22T04:32:06.052Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },

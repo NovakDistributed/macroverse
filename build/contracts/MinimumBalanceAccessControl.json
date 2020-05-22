@@ -4,10 +4,12 @@
     {
       "inputs": [
         {
+          "internalType": "address",
           "name": "tokenAddress_",
           "type": "address"
         },
         {
+          "internalType": "uint256",
           "name": "minBalanceInAtomicUnits_",
           "type": "uint256"
         }
@@ -20,10 +22,12 @@
       "constant": true,
       "inputs": [
         {
+          "internalType": "address",
           "name": "",
           "type": "address"
         },
         {
+          "internalType": "address",
           "name": "origin",
           "type": "address"
         }
@@ -31,6 +35,7 @@
       "name": "allowQuery",
       "outputs": [
         {
+          "internalType": "bool",
           "name": "",
           "type": "bool"
         }
@@ -40,25 +45,25 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.8+commit.23d335f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"},{\"name\":\"origin\",\"type\":\"address\"}],\"name\":\"allowQuery\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"tokenAddress_\",\"type\":\"address\"},{\"name\":\"minBalanceInAtomicUnits_\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"allowQuery(address,address)\":{\"notice\":\"Allow all queries resulting from a transaction initiated from an origin address with at least the required minimum balance. This means that any contract you use can make queries on your behalf, but that no contract with the minimum balance can proxy queries for others.\"},\"constructor\":\"Make a new MinimumBalanceAccessControl that requires the specified minimum balance of the specified token.\"},\"notice\":\"Represents an access control strategy where any end user (origin) with a minimum balance in an ERC20 token is allowed.\"}},\"settings\":{\"compilationTarget\":{\"/Users/anovak/Documents/Workspace/macroverse/contracts/MinimumBalanceAccessControl.sol\":\"MinimumBalanceAccessControl\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/anovak/Documents/Workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xb73144156419d9a5318081c9ae9d65b13da5e5e706a96c17c24c2173a6b31ecc\",\"urls\":[\"bzzr://67fff4064ba28bc0de8a8a40ba90cfdb243ca86d2046de2823c9c236595066ae\"]},\"/Users/anovak/Documents/Workspace/macroverse/contracts/MinimumBalanceAccessControl.sol\":{\"keccak256\":\"0x3ff2d60985423935dfe871570533ce6ad445de87d0765ea94b061cb718731c0f\",\"urls\":[\"bzzr://83626b6ce05b3860be611dda5fb2a94ffc47e2893bdeeca0dc408c3202b3df6d\"]},\"openzeppelin-solidity/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe5bb0f57cff3e299f360052ba50f1ea0fff046df2be070b6943e0e3c3fdad8a9\",\"urls\":[\"bzzr://cf2d583b8dce38d0617fdcd65f2fd9f126fe17b7f683b5a515ea9d2762d8b062\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b506040516040806102728339810180604052604081101561003057600080fd5b810190808051906020019092919080519060200190929190505050816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508060018190555050506101cf806100a36000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c80634af5fb0f14610030575b600080fd5b6100926004803603604081101561004657600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506100ac565b604051808215151515815260200191505060405180910390f35b60006001546000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231846040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561014f57600080fd5b505afa158015610163573d6000803e3d6000fd5b505050506040513d602081101561017957600080fd5b810190808051906020019092919050505010610198576001905061019d565b600090505b9291505056fea165627a7a72305820fb25a631fe6bd9549973898c96640b2a42b92b2b2e3821903eeb56907aa81a3c0029",
-  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061002b5760003560e01c80634af5fb0f14610030575b600080fd5b6100926004803603604081101561004657600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506100ac565b604051808215151515815260200191505060405180910390f35b60006001546000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231846040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561014f57600080fd5b505afa158015610163573d6000803e3d6000fd5b505050506040513d602081101561017957600080fd5b810190808051906020019092919050505010610198576001905061019d565b600090505b9291505056fea165627a7a72305820fb25a631fe6bd9549973898c96640b2a42b92b2b2e3821903eeb56907aa81a3c0029",
-  "sourceMap": "253:964:19:-;;;490:186;8:9:-1;5:2;;;30:1;27;20:12;5:2;490:186:19;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;490:186:19;;;;;;;;;;;;;;;;;;;;;;;;;595:13;573:12;;:36;;;;;;;;;;;;;;;;;;645:24;619:23;:50;;;;490:186;;253:964;;;;;;",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.14+commit.01f1aaa4\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"minBalanceInAtomicUnits_\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"origin\",\"type\":\"address\"}],\"name\":\"allowQuery\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"allowQuery(address,address)\":{\"notice\":\"Allow all queries resulting from a transaction initiated from an origin address with at least the required minimum balance. This means that any contract you use can make queries on your behalf, but that no contract with the minimum balance can proxy queries for others.\"},\"constructor\":\"Make a new MinimumBalanceAccessControl that requires the specified minimum balance of the specified token.\"},\"notice\":\"Represents an access control strategy where any end user (origin) with a minimum balance in an ERC20 token is allowed.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/MinimumBalanceAccessControl.sol\":\"MinimumBalanceAccessControl\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xb73144156419d9a5318081c9ae9d65b13da5e5e706a96c17c24c2173a6b31ecc\",\"urls\":[\"bzz-raw://9a300f85ad1673f454fdf492f29c50e3b0f1f12f178b5d3ce45f6a6724025395\",\"dweb:/ipfs/QmTPzViBHUXQ9TvWyWoNPKsRqfgbDpv8YfFproneZ8HcBw\"]},\"/z/home/anovak/workspace/macroverse/contracts/MinimumBalanceAccessControl.sol\":{\"keccak256\":\"0x3ff2d60985423935dfe871570533ce6ad445de87d0765ea94b061cb718731c0f\",\"urls\":[\"bzz-raw://9db947a5155d270f9ceea05799a41dfdf395da0c46d6e715cb838e9deabdf376\",\"dweb:/ipfs/Qmf2Hrciw6ngZD3hm43cPVaJrNNzWurEnYMKUxLQ9UxMNJ\"]},\"openzeppelin-solidity/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe5bb0f57cff3e299f360052ba50f1ea0fff046df2be070b6943e0e3c3fdad8a9\",\"urls\":[\"bzz-raw://59fd025151435da35faa8093a5c7a17de02de9d08ad27275c5cdf05050820d91\",\"dweb:/ipfs/QmQMvwEcPhoRXzbXyrdoeRtvLoifUW9Qh7Luho7bmUPRkc\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060405161027e38038061027e8339818101604052604081101561003357600080fd5b810190808051906020019092919080519060200190929190505050816000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff1602179055508060018190555050506101d8806100a66000396000f3fe608060405234801561001057600080fd5b506004361061002b5760003560e01c80634af5fb0f14610030575b600080fd5b6100926004803603604081101561004657600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506100ac565b604051808215151515815260200191505060405180910390f35b60006001546000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231846040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561014f57600080fd5b505afa158015610163573d6000803e3d6000fd5b505050506040513d602081101561017957600080fd5b810190808051906020019092919050505010610198576001905061019d565b600090505b9291505056fea265627a7a7231582043e98b4b78ba7b4c5850b67c2d0d6e2d81f9e7b99e2722d33ce2b3c1c44955bd64736f6c634300050e0032",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061002b5760003560e01c80634af5fb0f14610030575b600080fd5b6100926004803603604081101561004657600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506100ac565b604051808215151515815260200191505060405180910390f35b60006001546000809054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166370a08231846040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200191505060206040518083038186803b15801561014f57600080fd5b505afa158015610163573d6000803e3d6000fd5b505050506040513d602081101561017957600080fd5b810190808051906020019092919050505010610198576001905061019d565b600090505b9291505056fea265627a7a7231582043e98b4b78ba7b4c5850b67c2d0d6e2d81f9e7b99e2722d33ce2b3c1c44955bd64736f6c634300050e0032",
+  "sourceMap": "253:964:19:-;;;490:186;8:9:-1;5:2;;;30:1;27;20:12;5:2;490:186:19;;;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;490:186:19;;;;;;;;;;;;;;;;;;;;;;;;;595:13;573:12;;:36;;;;;;;;;;;;;;;;;;645:24;619:23;:50;;;;490:186;;253:964;;;;;;",
   "deployedSourceMap": "253:964:19:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;253:964:19;;;;;;;;;;;;;;;;;;;993:222;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;993:222:19;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;1072:4;1126:23;;1092:12;;;;;;;;;;;:22;;;1115:6;1092:30;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1092:30:19;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;1092:30:19;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1092:30:19;;;;;;;;;;;;;;;;:57;1088:99;;1172:4;1165:11;;;;1088:99;1203:5;1196:12;;993:222;;;;;:::o",
   "source": "pragma solidity ^0.5.2;\n\nimport \"openzeppelin-solidity/contracts/token/ERC20/IERC20.sol\";\n\nimport \"./AccessControl.sol\";\n\n\n/**\n * Represents an access control strategy where any end user (origin) with a minimum balance in an ERC20 token is allowed.\n */\ncontract MinimumBalanceAccessControl {\n    IERC20 tokenAddress;\n    uint minBalanceInAtomicUnits;\n    \n    /**\n     * Make a new MinimumBalanceAccessControl that requires the specified minimum balance of the specified token.\n     */\n    constructor(address tokenAddress_, uint minBalanceInAtomicUnits_) public {\n        tokenAddress = IERC20(tokenAddress_);\n        minBalanceInAtomicUnits = minBalanceInAtomicUnits_;\n    }\n    \n    /**\n     * Allow all queries resulting from a transaction initiated from an origin address with at least the required minimum balance.\n     * This means that any contract you use can make queries on your behalf, but that no contract with the minimum balance can proxy\n     * queries for others.\n     */\n    function allowQuery(address /* sender */, address origin) public view returns (bool) {\n        if (tokenAddress.balanceOf(origin) >= minBalanceInAtomicUnits) {\n            return true;\n        }\n        return false;\n    }\n}\n",
-  "sourcePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MinimumBalanceAccessControl.sol",
+  "sourcePath": "/z/home/anovak/workspace/macroverse/contracts/MinimumBalanceAccessControl.sol",
   "ast": {
-    "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MinimumBalanceAccessControl.sol",
+    "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MinimumBalanceAccessControl.sol",
     "exportedSymbols": {
       "MinimumBalanceAccessControl": [
-        8310
+        8340
       ]
     },
-    "id": 8311,
+    "id": 8341,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 8263,
+        "id": 8293,
         "literals": [
           "solidity",
           "^",
@@ -71,20 +76,20 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol",
         "file": "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol",
-        "id": 8264,
+        "id": 8294,
         "nodeType": "ImportDirective",
-        "scope": 8311,
-        "sourceUnit": 11055,
+        "scope": 8341,
+        "sourceUnit": 11167,
         "src": "25:64:19",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/AccessControl.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol",
         "file": "./AccessControl.sol",
-        "id": 8265,
+        "id": 8295,
         "nodeType": "ImportDirective",
-        "scope": 8311,
+        "scope": 8341,
         "sourceUnit": 12,
         "src": "91:29:19",
         "symbolAliases": [],
@@ -96,35 +101,35 @@
         "contractKind": "contract",
         "documentation": "Represents an access control strategy where any end user (origin) with a minimum balance in an ERC20 token is allowed.",
         "fullyImplemented": true,
-        "id": 8310,
+        "id": 8340,
         "linearizedBaseContracts": [
-          8310
+          8340
         ],
         "name": "MinimumBalanceAccessControl",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 8267,
+            "id": 8297,
             "name": "tokenAddress",
             "nodeType": "VariableDeclaration",
-            "scope": 8310,
+            "scope": 8340,
             "src": "296:19:19",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$11054",
+              "typeIdentifier": "t_contract$_IERC20_$11166",
               "typeString": "contract IERC20"
             },
             "typeName": {
               "contractScope": null,
-              "id": 8266,
+              "id": 8296,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11054,
+              "referencedDeclaration": 11166,
               "src": "296:6:19",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$11054",
+                "typeIdentifier": "t_contract$_IERC20_$11166",
                 "typeString": "contract IERC20"
               }
             },
@@ -133,10 +138,10 @@
           },
           {
             "constant": false,
-            "id": 8269,
+            "id": 8299,
             "name": "minBalanceInAtomicUnits",
             "nodeType": "VariableDeclaration",
-            "scope": 8310,
+            "scope": 8340,
             "src": "321:28:19",
             "stateVariable": true,
             "storageLocation": "default",
@@ -145,7 +150,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 8268,
+              "id": 8298,
               "name": "uint",
               "nodeType": "ElementaryTypeName",
               "src": "321:4:19",
@@ -159,28 +164,28 @@
           },
           {
             "body": {
-              "id": 8286,
+              "id": 8316,
               "nodeType": "Block",
               "src": "563:113:19",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 8280,
+                    "id": 8310,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 8276,
+                      "id": 8306,
                       "name": "tokenAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8267,
+                      "referencedDeclaration": 8297,
                       "src": "573:12:19",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$11054",
+                        "typeIdentifier": "t_contract$_IERC20_$11166",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -191,11 +196,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 8278,
+                          "id": 8308,
                           "name": "tokenAddress_",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8271,
+                          "referencedDeclaration": 8301,
                           "src": "595:13:19",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -210,18 +215,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 8277,
+                        "id": 8307,
                         "name": "IERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11054,
+                        "referencedDeclaration": 11166,
                         "src": "588:6:19",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IERC20_$11054_$",
+                          "typeIdentifier": "t_type$_t_contract$_IERC20_$11166_$",
                           "typeString": "type(contract IERC20)"
                         }
                       },
-                      "id": 8279,
+                      "id": 8309,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -231,35 +236,35 @@
                       "nodeType": "FunctionCall",
                       "src": "588:21:19",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$11054",
+                        "typeIdentifier": "t_contract$_IERC20_$11166",
                         "typeString": "contract IERC20"
                       }
                     },
                     "src": "573:36:19",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$11054",
+                      "typeIdentifier": "t_contract$_IERC20_$11166",
                       "typeString": "contract IERC20"
                     }
                   },
-                  "id": 8281,
+                  "id": 8311,
                   "nodeType": "ExpressionStatement",
                   "src": "573:36:19"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 8284,
+                    "id": 8314,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 8282,
+                      "id": 8312,
                       "name": "minBalanceInAtomicUnits",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8269,
+                      "referencedDeclaration": 8299,
                       "src": "619:23:19",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -270,11 +275,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 8283,
+                      "id": 8313,
                       "name": "minBalanceInAtomicUnits_",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8273,
+                      "referencedDeclaration": 8303,
                       "src": "645:24:19",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -287,29 +292,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 8285,
+                  "id": 8315,
                   "nodeType": "ExpressionStatement",
                   "src": "619:50:19"
                 }
               ]
             },
             "documentation": "Make a new MinimumBalanceAccessControl that requires the specified minimum balance of the specified token.",
-            "id": 8287,
+            "id": 8317,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 8274,
+              "id": 8304,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8271,
+                  "id": 8301,
                   "name": "tokenAddress_",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8287,
+                  "scope": 8317,
                   "src": "502:21:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -318,7 +323,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8270,
+                    "id": 8300,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "502:7:19",
@@ -333,10 +338,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 8273,
+                  "id": 8303,
                   "name": "minBalanceInAtomicUnits_",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8287,
+                  "scope": 8317,
                   "src": "525:29:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -345,7 +350,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 8272,
+                    "id": 8302,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "525:4:19",
@@ -361,12 +366,12 @@
               "src": "501:54:19"
             },
             "returnParameters": {
-              "id": 8275,
+              "id": 8305,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "563:0:19"
             },
-            "scope": 8310,
+            "scope": 8340,
             "src": "490:186:19",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -374,7 +379,7 @@
           },
           {
             "body": {
-              "id": 8308,
+              "id": 8338,
               "nodeType": "Block",
               "src": "1078:137:19",
               "statements": [
@@ -385,7 +390,7 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 8301,
+                    "id": 8331,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -395,11 +400,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 8298,
+                          "id": 8328,
                           "name": "origin",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8291,
+                          "referencedDeclaration": 8321,
                           "src": "1115:6:19",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -416,32 +421,32 @@
                         ],
                         "expression": {
                           "argumentTypes": null,
-                          "id": 8296,
+                          "id": 8326,
                           "name": "tokenAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8267,
+                          "referencedDeclaration": 8297,
                           "src": "1092:12:19",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_IERC20_$11054",
+                            "typeIdentifier": "t_contract$_IERC20_$11166",
                             "typeString": "contract IERC20"
                           }
                         },
-                        "id": 8297,
+                        "id": 8327,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "balanceOf",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 10999,
+                        "referencedDeclaration": 11111,
                         "src": "1092:22:19",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_uint256_$",
                           "typeString": "function (address) view external returns (uint256)"
                         }
                       },
-                      "id": 8299,
+                      "id": 8329,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -459,11 +464,11 @@
                     "operator": ">=",
                     "rightExpression": {
                       "argumentTypes": null,
-                      "id": 8300,
+                      "id": 8330,
                       "name": "minBalanceInAtomicUnits",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8269,
+                      "referencedDeclaration": 8299,
                       "src": "1126:23:19",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -477,11 +482,11 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 8305,
+                  "id": 8335,
                   "nodeType": "IfStatement",
                   "src": "1088:99:19",
                   "trueBody": {
-                    "id": 8304,
+                    "id": 8334,
                     "nodeType": "Block",
                     "src": "1151:36:19",
                     "statements": [
@@ -489,7 +494,7 @@
                         "expression": {
                           "argumentTypes": null,
                           "hexValue": "74727565",
-                          "id": 8302,
+                          "id": 8332,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -504,8 +509,8 @@
                           },
                           "value": "true"
                         },
-                        "functionReturnParameters": 8295,
-                        "id": 8303,
+                        "functionReturnParameters": 8325,
+                        "id": 8333,
                         "nodeType": "Return",
                         "src": "1165:11:19"
                       }
@@ -516,7 +521,7 @@
                   "expression": {
                     "argumentTypes": null,
                     "hexValue": "66616c7365",
-                    "id": 8306,
+                    "id": 8336,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -531,30 +536,30 @@
                     },
                     "value": "false"
                   },
-                  "functionReturnParameters": 8295,
-                  "id": 8307,
+                  "functionReturnParameters": 8325,
+                  "id": 8337,
                   "nodeType": "Return",
                   "src": "1196:12:19"
                 }
               ]
             },
             "documentation": "Allow all queries resulting from a transaction initiated from an origin address with at least the required minimum balance.\nThis means that any contract you use can make queries on your behalf, but that no contract with the minimum balance can proxy\nqueries for others.",
-            "id": 8309,
+            "id": 8339,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "allowQuery",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 8292,
+              "id": 8322,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8289,
+                  "id": 8319,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8309,
+                  "scope": 8339,
                   "src": "1013:7:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -563,7 +568,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8288,
+                    "id": 8318,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1013:7:19",
@@ -578,10 +583,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 8291,
+                  "id": 8321,
                   "name": "origin",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8309,
+                  "scope": 8339,
                   "src": "1035:14:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -590,7 +595,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8290,
+                    "id": 8320,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1035:7:19",
@@ -607,15 +612,15 @@
               "src": "1012:38:19"
             },
             "returnParameters": {
-              "id": 8295,
+              "id": 8325,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8294,
+                  "id": 8324,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8309,
+                  "scope": 8339,
                   "src": "1072:4:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -624,7 +629,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 8293,
+                    "id": 8323,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1072:4:19",
@@ -639,31 +644,31 @@
               ],
               "src": "1071:6:19"
             },
-            "scope": 8310,
+            "scope": 8340,
             "src": "993:222:19",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 8311,
+        "scope": 8341,
         "src": "253:964:19"
       }
     ],
     "src": "0:1218:19"
   },
   "legacyAST": {
-    "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/MinimumBalanceAccessControl.sol",
+    "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MinimumBalanceAccessControl.sol",
     "exportedSymbols": {
       "MinimumBalanceAccessControl": [
-        8310
+        8340
       ]
     },
-    "id": 8311,
+    "id": 8341,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 8263,
+        "id": 8293,
         "literals": [
           "solidity",
           "^",
@@ -676,20 +681,20 @@
       {
         "absolutePath": "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol",
         "file": "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol",
-        "id": 8264,
+        "id": 8294,
         "nodeType": "ImportDirective",
-        "scope": 8311,
-        "sourceUnit": 11055,
+        "scope": 8341,
+        "sourceUnit": 11167,
         "src": "25:64:19",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "absolutePath": "/Users/anovak/Documents/Workspace/macroverse/contracts/AccessControl.sol",
+        "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol",
         "file": "./AccessControl.sol",
-        "id": 8265,
+        "id": 8295,
         "nodeType": "ImportDirective",
-        "scope": 8311,
+        "scope": 8341,
         "sourceUnit": 12,
         "src": "91:29:19",
         "symbolAliases": [],
@@ -701,35 +706,35 @@
         "contractKind": "contract",
         "documentation": "Represents an access control strategy where any end user (origin) with a minimum balance in an ERC20 token is allowed.",
         "fullyImplemented": true,
-        "id": 8310,
+        "id": 8340,
         "linearizedBaseContracts": [
-          8310
+          8340
         ],
         "name": "MinimumBalanceAccessControl",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 8267,
+            "id": 8297,
             "name": "tokenAddress",
             "nodeType": "VariableDeclaration",
-            "scope": 8310,
+            "scope": 8340,
             "src": "296:19:19",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_IERC20_$11054",
+              "typeIdentifier": "t_contract$_IERC20_$11166",
               "typeString": "contract IERC20"
             },
             "typeName": {
               "contractScope": null,
-              "id": 8266,
+              "id": 8296,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 11054,
+              "referencedDeclaration": 11166,
               "src": "296:6:19",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$11054",
+                "typeIdentifier": "t_contract$_IERC20_$11166",
                 "typeString": "contract IERC20"
               }
             },
@@ -738,10 +743,10 @@
           },
           {
             "constant": false,
-            "id": 8269,
+            "id": 8299,
             "name": "minBalanceInAtomicUnits",
             "nodeType": "VariableDeclaration",
-            "scope": 8310,
+            "scope": 8340,
             "src": "321:28:19",
             "stateVariable": true,
             "storageLocation": "default",
@@ -750,7 +755,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 8268,
+              "id": 8298,
               "name": "uint",
               "nodeType": "ElementaryTypeName",
               "src": "321:4:19",
@@ -764,28 +769,28 @@
           },
           {
             "body": {
-              "id": 8286,
+              "id": 8316,
               "nodeType": "Block",
               "src": "563:113:19",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 8280,
+                    "id": 8310,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 8276,
+                      "id": 8306,
                       "name": "tokenAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8267,
+                      "referencedDeclaration": 8297,
                       "src": "573:12:19",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$11054",
+                        "typeIdentifier": "t_contract$_IERC20_$11166",
                         "typeString": "contract IERC20"
                       }
                     },
@@ -796,11 +801,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 8278,
+                          "id": 8308,
                           "name": "tokenAddress_",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8271,
+                          "referencedDeclaration": 8301,
                           "src": "595:13:19",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -815,18 +820,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 8277,
+                        "id": 8307,
                         "name": "IERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 11054,
+                        "referencedDeclaration": 11166,
                         "src": "588:6:19",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_IERC20_$11054_$",
+                          "typeIdentifier": "t_type$_t_contract$_IERC20_$11166_$",
                           "typeString": "type(contract IERC20)"
                         }
                       },
-                      "id": 8279,
+                      "id": 8309,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -836,35 +841,35 @@
                       "nodeType": "FunctionCall",
                       "src": "588:21:19",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$11054",
+                        "typeIdentifier": "t_contract$_IERC20_$11166",
                         "typeString": "contract IERC20"
                       }
                     },
                     "src": "573:36:19",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IERC20_$11054",
+                      "typeIdentifier": "t_contract$_IERC20_$11166",
                       "typeString": "contract IERC20"
                     }
                   },
-                  "id": 8281,
+                  "id": 8311,
                   "nodeType": "ExpressionStatement",
                   "src": "573:36:19"
                 },
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 8284,
+                    "id": 8314,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 8282,
+                      "id": 8312,
                       "name": "minBalanceInAtomicUnits",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8269,
+                      "referencedDeclaration": 8299,
                       "src": "619:23:19",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -875,11 +880,11 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "id": 8283,
+                      "id": 8313,
                       "name": "minBalanceInAtomicUnits_",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8273,
+                      "referencedDeclaration": 8303,
                       "src": "645:24:19",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -892,29 +897,29 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 8285,
+                  "id": 8315,
                   "nodeType": "ExpressionStatement",
                   "src": "619:50:19"
                 }
               ]
             },
             "documentation": "Make a new MinimumBalanceAccessControl that requires the specified minimum balance of the specified token.",
-            "id": 8287,
+            "id": 8317,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 8274,
+              "id": 8304,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8271,
+                  "id": 8301,
                   "name": "tokenAddress_",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8287,
+                  "scope": 8317,
                   "src": "502:21:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -923,7 +928,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8270,
+                    "id": 8300,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "502:7:19",
@@ -938,10 +943,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 8273,
+                  "id": 8303,
                   "name": "minBalanceInAtomicUnits_",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8287,
+                  "scope": 8317,
                   "src": "525:29:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -950,7 +955,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 8272,
+                    "id": 8302,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "525:4:19",
@@ -966,12 +971,12 @@
               "src": "501:54:19"
             },
             "returnParameters": {
-              "id": 8275,
+              "id": 8305,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "563:0:19"
             },
-            "scope": 8310,
+            "scope": 8340,
             "src": "490:186:19",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -979,7 +984,7 @@
           },
           {
             "body": {
-              "id": 8308,
+              "id": 8338,
               "nodeType": "Block",
               "src": "1078:137:19",
               "statements": [
@@ -990,7 +995,7 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 8301,
+                    "id": 8331,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1000,11 +1005,11 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 8298,
+                          "id": 8328,
                           "name": "origin",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8291,
+                          "referencedDeclaration": 8321,
                           "src": "1115:6:19",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
@@ -1021,32 +1026,32 @@
                         ],
                         "expression": {
                           "argumentTypes": null,
-                          "id": 8296,
+                          "id": 8326,
                           "name": "tokenAddress",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 8267,
+                          "referencedDeclaration": 8297,
                           "src": "1092:12:19",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_contract$_IERC20_$11054",
+                            "typeIdentifier": "t_contract$_IERC20_$11166",
                             "typeString": "contract IERC20"
                           }
                         },
-                        "id": 8297,
+                        "id": 8327,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "balanceOf",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 10999,
+                        "referencedDeclaration": 11111,
                         "src": "1092:22:19",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_uint256_$",
                           "typeString": "function (address) view external returns (uint256)"
                         }
                       },
-                      "id": 8299,
+                      "id": 8329,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1064,11 +1069,11 @@
                     "operator": ">=",
                     "rightExpression": {
                       "argumentTypes": null,
-                      "id": 8300,
+                      "id": 8330,
                       "name": "minBalanceInAtomicUnits",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 8269,
+                      "referencedDeclaration": 8299,
                       "src": "1126:23:19",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1082,11 +1087,11 @@
                     }
                   },
                   "falseBody": null,
-                  "id": 8305,
+                  "id": 8335,
                   "nodeType": "IfStatement",
                   "src": "1088:99:19",
                   "trueBody": {
-                    "id": 8304,
+                    "id": 8334,
                     "nodeType": "Block",
                     "src": "1151:36:19",
                     "statements": [
@@ -1094,7 +1099,7 @@
                         "expression": {
                           "argumentTypes": null,
                           "hexValue": "74727565",
-                          "id": 8302,
+                          "id": 8332,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1109,8 +1114,8 @@
                           },
                           "value": "true"
                         },
-                        "functionReturnParameters": 8295,
-                        "id": 8303,
+                        "functionReturnParameters": 8325,
+                        "id": 8333,
                         "nodeType": "Return",
                         "src": "1165:11:19"
                       }
@@ -1121,7 +1126,7 @@
                   "expression": {
                     "argumentTypes": null,
                     "hexValue": "66616c7365",
-                    "id": 8306,
+                    "id": 8336,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -1136,30 +1141,30 @@
                     },
                     "value": "false"
                   },
-                  "functionReturnParameters": 8295,
-                  "id": 8307,
+                  "functionReturnParameters": 8325,
+                  "id": 8337,
                   "nodeType": "Return",
                   "src": "1196:12:19"
                 }
               ]
             },
             "documentation": "Allow all queries resulting from a transaction initiated from an origin address with at least the required minimum balance.\nThis means that any contract you use can make queries on your behalf, but that no contract with the minimum balance can proxy\nqueries for others.",
-            "id": 8309,
+            "id": 8339,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "allowQuery",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 8292,
+              "id": 8322,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8289,
+                  "id": 8319,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8309,
+                  "scope": 8339,
                   "src": "1013:7:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1168,7 +1173,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8288,
+                    "id": 8318,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1013:7:19",
@@ -1183,10 +1188,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 8291,
+                  "id": 8321,
                   "name": "origin",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8309,
+                  "scope": 8339,
                   "src": "1035:14:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1195,7 +1200,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 8290,
+                    "id": 8320,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1035:7:19",
@@ -1212,15 +1217,15 @@
               "src": "1012:38:19"
             },
             "returnParameters": {
-              "id": 8295,
+              "id": 8325,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 8294,
+                  "id": 8324,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 8309,
+                  "scope": 8339,
                   "src": "1072:4:19",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1229,7 +1234,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 8293,
+                    "id": 8323,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1072:4:19",
@@ -1244,14 +1249,14 @@
               ],
               "src": "1071:6:19"
             },
-            "scope": 8310,
+            "scope": 8340,
             "src": "993:222:19",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 8311,
+        "scope": 8341,
         "src": "253:964:19"
       }
     ],
@@ -1259,7 +1264,7 @@
   },
   "compiler": {
     "name": "solc",
-    "version": "0.5.8+commit.23d335f2.Emscripten.clang"
+    "version": "0.5.14+commit.01f1aaa4.Emscripten.clang"
   },
   "networks": {
     "1": {
@@ -1271,12 +1276,13 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x9038f95b3E6AEAcF973DC41374Da58538aa88624",
-      "transactionHash": "0xc874fcd51596ec02caac17ef4c78379eaefd625c19ea2b334d3b0c6425f6de22"
+      "address": "0xd38232b3a765B5fF6f59948B4303aa58026Fb2aA",
+      "transactionHash": "0x8880cb8c86efe549bfe1b421219af983b0f3ea6909b5b3dae2fd7e58610bf0fa"
     }
   },
-  "schemaVersion": "3.0.16",
-  "updatedAt": "2020-01-10T05:18:25.181Z",
+  "schemaVersion": "3.1.0",
+  "updatedAt": "2020-05-22T04:29:06.641Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },
