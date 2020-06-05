@@ -60,6 +60,11 @@ module.exports = {
       currency: 'USD'
     }
   },
+  plugins: ['truffle-plugin-verify'],
+  api_keys: {
+    // Verification is "Powered by Etherscan.io APIs"
+    etherscan: env['ETHERSCAN_API_KEY']
+  },
   compilers: {
     solc: {
       version: '0.5.14'

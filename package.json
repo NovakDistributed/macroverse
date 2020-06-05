@@ -22,6 +22,7 @@
         "bn.js": "^5.1.1",
         "degrees-radians": "^1.0.3",
         "radians-degrees": "^1.0.0",
+        "truffle-plugin-verify": "^0.3.11",
         "web3-utils": "^1.2.4"
     },
     "license": "SEE LICENSE IN LICENSE",
