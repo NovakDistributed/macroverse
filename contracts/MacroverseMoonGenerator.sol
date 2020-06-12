@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -33,33 +33,33 @@ contract MacroverseMoonGenerator is ControlledAccess {
     using RealMath for *;
     // No SafeMath or it might confuse RealMath
 
-    /**
+    /**@dev
      * It is useful to have Pi around.
      * We can't pull it in from the library.
      */
     int128 constant REAL_PI = 3454217652358;
 
-    /**
+    /**@dev
      * How many fractional bits are there?
      */
     int256 constant REAL_FBITS = 40;
 
-    /**
+    /**@dev
      * What's the first non-fractional bit
      */
-    int128 constant REAL_ONE = int128(1) << REAL_FBITS;
+    int128 constant REAL_ONE = int128(1) << int128(REAL_FBITS);
     
-    /**
+    /**@dev
      * What's the last fractional bit?
      */
     int128 constant REAL_HALF = REAL_ONE >> 1;
     
-    /**
+    /**@dev
      * What's two? Two is pretty useful.
      */
-    int128 constant REAL_TWO = REAL_ONE << 1;
+    int128 constant REAL_TWO = REAL_ONE << int128(1);
 
-    /**
+    /**@dev
      * For having moons, we need to be able to run the orbit calculations (all
      * specified in solar masses for the central mass) on
      * Earth-mass-denominated planet masses.
@@ -67,12 +67,12 @@ contract MacroverseMoonGenerator is ControlledAccess {
      */
     int256 constant EARTH_MASSES_PER_SOLAR_MASS = 332950;
 
-    /**
+    /**@dev
      * We define the number of earth masses per solar mass as a real, so we don't have to convert it always.
      */
     int128 constant REAL_EARTH_MASSES_PER_SOLAR_MASS = int128(EARTH_MASSES_PER_SOLAR_MASS) * REAL_ONE; 
 
-    /**
+    /**@dev
      * We also keep a "stowage factor" for planetary material in m^3 per earth mass, at water density, for
      * faking planetary radii during moon orbit calculations.
      */
@@ -260,3 +260,5 @@ contract MacroverseMoonGenerator is ControlledAccess {
         return real_inclination;  
     }
 }
+
+// SPDX-License-Identifier: UNLICENSED

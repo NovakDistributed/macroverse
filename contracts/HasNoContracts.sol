@@ -1,5 +1,5 @@
-pragma solidity ^0.5.2;
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+pragma solidity ^0.6.10;
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
 /** 
  * @title Contracts that should not own Contracts
@@ -19,6 +19,7 @@ contract HasNoContracts is Ownable {
   }
 }
 
+// SPDX-License-Identifier: MIT
 /*
 The MIT License (MIT)
 

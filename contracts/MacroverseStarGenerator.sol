@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -266,4 +266,5 @@ contract MacroverseStarGenerator is ControlledAccess {
     
 
 }
- 
+
+// SPDX-License-Identifier: UNLICENSED

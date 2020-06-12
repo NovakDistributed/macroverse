@@ -1,6 +1,6 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "./HasNoEther.sol";
 import "./HasNoContracts.sol";
 
@@ -47,9 +47,9 @@ contract MacroverseExistenceChecker {
     // How far out does the sector system extend?
     int16 constant MAX_SECTOR = 10000;
 
-    //////////////
+    //
     // Contract state
-    //////////////
+    //
 
     // Keep track of all of the generator contract addresses
     MacroverseStarGenerator private starGenerator;
@@ -270,3 +270,5 @@ contract MacroverseExistenceChecker {
     }
 
 }
+
+// SPDX-License-Identifier: UNLICENSED

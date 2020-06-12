@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./AccessControl.sol";
 
@@ -14,3 +14,5 @@ contract UnrestrictedAccessControl {
         return true;
     }
 }
+
+// SPDX-License-Identifier: UNLICENSED

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 /**
  * Library which exists to hold types shared across the Macroverse ecosystem.
@@ -22,3 +22,5 @@ library Macroverse {
     enum WorldClass {Asteroidal, Lunar, Terrestrial, Jovian, Cometary, Europan, Panthalassic, Neptunian, Ring, AsteroidBelt}
 
 }
+
+// SPDX-License-Identifier: UNLICENSED

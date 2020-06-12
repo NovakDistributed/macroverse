@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 /**
  * This library contains utility functions for creating, parsing, and
@@ -36,9 +36,9 @@ pragma solidity ^0.5.2;
  */
 library MacroverseNFTUtils {
 
-    //////////////
+    //
     // Code for working on token IDs
-    //////////////
+    //
     
     // Define the types of tokens that can exist
     uint256 constant TOKEN_TYPE_SECTOR = 0;
@@ -398,3 +398,5 @@ library MacroverseNFTUtils {
     }
 
 }
+
+// SPDX-License-Identifier: UNLICENSED

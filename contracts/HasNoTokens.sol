@@ -1,5 +1,5 @@
-pragma solidity ^0.5.2;
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+pragma solidity ^0.6.10;
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
 /** 
@@ -29,6 +29,7 @@ contract HasNoTokens is Ownable {
   }
 }
 
+// SPDX-License-Identifier: MIT
 /*
 The MIT License (MIT)
 

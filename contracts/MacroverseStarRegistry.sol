@@ -1,7 +1,7 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./MRVToken.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "./HasNoEther.sol";
 import "./HasNoContracts.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
@@ -196,3 +196,5 @@ contract MacroverseStarRegistry is Ownable, HasNoEther, HasNoContracts {
         other.transfer(owner(), excessBalance);
     }
 }
+
+// SPDX-License-Identifier: UNLICENSED

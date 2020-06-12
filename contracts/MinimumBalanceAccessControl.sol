@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
@@ -32,3 +32,5 @@ contract MinimumBalanceAccessControl {
         return false;
     }
 }
+
+// SPDX-License-Identifier: UNLICENSED

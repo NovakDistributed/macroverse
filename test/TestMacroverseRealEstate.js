@@ -1,4 +1,6 @@
 let MacroverseRealEstate = artifacts.require("MacroverseRealEstate")
+let MacroverseUniversalRegistry = artifacts.require("MacroverseUniversalRegistry")
+let MRVToken = artifacts.require("MRVToken")
 
 // Load the Macroverse module JavaScript
 let mv = require('../src')
@@ -37,17 +39,30 @@ async function getChainID() {
 }
 
 contract('MacroverseRealEstate', function(accounts) {
-  it("should report the correct URL for a token, even if the token doesn't exist", async function() {
+  it("should report the correct URL for a token that exists", async function() {
     let instance = await MacroverseRealEstate.deployed()
+    let reg = await MacroverseUniversalRegistry.deployed()
+    let mrv = await MRVToken.deployed()
     
     let chainId = (await getChainID()).toString(10)
 
     let keypath = '0.0.0.33.2'
     let tokenNumber = mv.keypathToToken(keypath).toString(10)
+    
+    // With OpenZeppelin 3.0 we need the token to actually exist before we can get its URI.
+    assert.equal((await mrv.balanceOf.call(accounts[0])), Web3Utils.toWei("5000", "ether"), "We start with the expected amount of MRV for the test")
+    await mrv.approve(reg.address, await mrv.balanceOf.call(accounts[0]))
+    let nonce = mv.generateNonce()
+    let data_hash = mv.hashTokenAndNonce(tokenNumber, nonce)
+    await reg.commit(data_hash, Web3Utils.toWei("1000", "ether"), {from: accounts[0]})
+    await mv.advanceTime(10)
+    await reg.reveal(tokenNumber, nonce)
 
     let url = await instance.tokenURI.call(tokenNumber)
 
     assert.equal(url, 'https://api.macroverse.io/vre/v1/chain/' + chainId + '/token/' + tokenNumber, "We got the expected URL")
+    
+    await reg.release(tokenNumber)
 
   })
 })

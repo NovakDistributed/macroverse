@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 /**
  * RealMath: fixed-point math library, based on fractional and integer parts.
@@ -18,61 +18,61 @@ pragma solidity ^0.5.2;
 
 library RealMath {
     
-    /**
+    /**@dev
      * How many total bits are there?
      */
     int256 constant REAL_BITS = 128;
     
-    /**
+    /**@dev
      * How many fractional bits are there?
      */
     int256 constant REAL_FBITS = 40;
     
-    /**
+    /**@dev
      * How many integer bits are there?
      */
     int256 constant REAL_IBITS = REAL_BITS - REAL_FBITS;
     
-    /**
+    /**@dev
      * What's the first non-fractional bit
      */
-    int128 constant REAL_ONE = int128(1) << REAL_FBITS;
+    int128 constant REAL_ONE = int128(1) << int128(REAL_FBITS);
     
-    /**
+    /**@dev
      * What's the last fractional bit?
      */
-    int128 constant REAL_HALF = REAL_ONE >> 1;
+    int128 constant REAL_HALF = REAL_ONE >> int128(1);
     
-    /**
+    /**@dev
      * What's two? Two is pretty useful.
      */
-    int128 constant REAL_TWO = REAL_ONE << 1;
+    int128 constant REAL_TWO = REAL_ONE << int128(1);
     
-    /**
+    /**@dev
      * And our logarithms are based on ln(2).
      */
     int128 constant REAL_LN_TWO = 762123384786;
     
-    /**
+    /**@dev
      * It is also useful to have Pi around.
      */
     int128 constant REAL_PI = 3454217652358;
     
-    /**
+    /**@dev
      * And half Pi, to save on divides.
      * TODO: That might not be how the compiler handles constants.
      */
     int128 constant REAL_HALF_PI = 1727108826179;
     
-    /**
+    /**@dev
      * And two pi, which happens to be odd in its most accurate representation.
      */
     int128 constant REAL_TWO_PI = 6908435304715;
     
-    /**
+    /**@dev
      * What's the sign bit?
      */
-    int128 constant SIGN_MASK = int128(1) << 127;
+    int128 constant SIGN_MASK = int128(1) << int128(127);
     
 
     /**
@@ -95,7 +95,7 @@ library RealMath {
     function round(int128 real_value) public pure returns (int128) {
         // First, truncate.
         int88 ipart = fromReal(real_value);
-        if ((fractionalBits(real_value) & (uint40(1) << (REAL_FBITS - 1))) > 0) {
+        if ((fractionalBits(real_value) & (uint40(1) << uint40(REAL_FBITS - 1))) > 0) {
             // High fractional bit is set. Round up.
             if (real_value < int128(0)) {
                 // Rounding up for a negative number is rounding down.
@@ -292,10 +292,10 @@ library RealMath {
         
         if (shift < 0) {
             // Shift left
-            real_scaled = real_arg << -shift;
+            real_scaled = real_arg << int128(-shift);
         } else if (shift >= 0) {
             // Shift right
-            real_scaled = real_arg >> shift;
+            real_scaled = real_arg >> int128(shift);
         }
     }
     
@@ -554,6 +554,7 @@ library RealMath {
     }
 }
 
+// SPDX-License-Identifier: MIT
 
 
 

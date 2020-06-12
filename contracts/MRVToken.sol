@@ -1,13 +1,23 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "./HasNoTokens.sol";
 import "./HasNoContracts.sol";
 
 
 /**
+ *
+ * !!!WARNING!!! Due to breaking changes in OpenZeppelin, THE CODE OF THIS
+ * CONTRACT IS SIGNIFICANTLY DIFFERENT FROM THAT WHICH IS ACTUALLY DEPLOYED ON
+ * THE MAINNET in order to allow it to build on current Solidity against
+ * current OpenZeppelin. Unless I've missed a good way to ship archival
+ * bytecode to represent a contract for testing purposes, blame the OZ devs and
+ * the Solidity devs and the Truffle devs not talking to each other about a
+ * sensible migration system for projects with existing mainnet code deployed
+ * that are under active development.
+ *
  * MRV token, distributed by crowdsale. Token and crowdsale functionality are unified in a single
  * contract, to make clear and restrict the conditions under which tokens can be created or destroyed.
  * Derived from OpenZeppelin CrowdsaleToken template.
@@ -54,13 +64,13 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     // From StandardToken we inherit balances and totalSupply.
     
     // What is the full name of the token?
-    string public constant name = "Macroverse Token";
+    // Not allowed by current Solidity/OpenZeppelin: string override public constant name = "Macroverse Token";
     // What is its suggested symbol?
-    string public constant symbol = "MRV";
+    // Not allowed by current Solidity/OpenZeppelin: string override public constant symbol = "MRV";
     // How many of the low base-10 digits are to the right of the decimal point?
     // Note that this is not constant! After the crowdsale, the contract owner can
     // adjust the decimal places, allowing for 10-to-1 splits and merges.
-    uint8 public decimals;
+    // Not allowed by current Solidity/OpenZeppelin: uint8 public decimals;
     
     // Crowdsale Parameters
     
@@ -85,20 +95,20 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     // After this time, no contributions will be accepted, and the crowdsale will close with a call to checkCloseTimer().
     uint public closeTimer = 0;
     
-    ////////////
+    //
     // Constructor
-    ////////////
+    //
     
     /**
     * Deploy a new MRVToken contract, paying crowdsale proceeds to the given address,
     * and awarding reserved tokens to the other given address.
     */
-    constructor(address payable sendProceedsTo, address sendTokensTo) public {
+    constructor(address payable sendProceedsTo, address sendTokensTo) ERC20("Macroverse Token", "MRV") public {
         // Proceeds of the crowdsale go here.
         beneficiary = sendProceedsTo;
         
         // Start with 18 decimals, same as ETH
-        decimals = 18;
+        _setupDecimals(18);
         
         // Initially, the reserved tokens belong to the given address.
         // TODO: This change for OZ 2.0 compatibility causes the code to differ from the behavior of the mainnet deployed contract!
@@ -111,9 +121,9 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
         maxCrowdsaleSupplyInWholeTokens = 100000000;
     }
     
-    ////////////
-    // Fallback function
-    ////////////
+    //
+    // Receive function
+    //
     
     /**
     * This is the MAIN CROWDSALE ENTRY POINT. You participate in the crowdsale by 
@@ -128,13 +138,13 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     * tokens remaining to be bought, your transaction will be rolled back and you will
     * get no tokens and waste your gas.
     */
-    function() external payable onlyDuringCrowdsale {
+    receive() external payable onlyDuringCrowdsale {
         createTokens(msg.sender);
     }
     
-    ////////////
+    //
     // Events
-    ////////////
+    //
     
     // Fired when the crowdsale is recorded as started.
     event CrowdsaleOpen(uint time);
@@ -145,9 +155,9 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     // Fired when the decimal point moves
     event DecimalChange(uint8 newDecimals);
     
-    ////////////
+    //
     // Modifiers (encoding important crowdsale logic)
-    ////////////
+    //
     
     /**
      * Only allow some actions before the crowdsale closes, whether it's open or not.
@@ -189,9 +199,9 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
         _;
     }
 
-    ////////////
+    //
     // Status and utility functions
-    ////////////
+    //
     
     /**
      * Determine if the crowdsale should open by timer.
@@ -238,9 +248,9 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
         return ((crowdsaleStarted || openTimerElapsed()) && !(crowdsaleEnded || closeTimerElapsed()));
     }
     
-    ////////////
+    //
     // Before the crowdsale: configuration
-    ////////////
+    //
     
     /**
      * Before the crowdsale opens, the max token count can be configured.
@@ -292,9 +302,9 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     }
     
     
-    ////////////
+    //
     // During the crowdsale
-    ////////////
+    //
     
     /**
      * Create tokens for the given address, in response to a payment.
@@ -340,9 +350,9 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
         emit CrowdsaleClose(now);
     }  
     
-    ////////////
+    //
     // After the crowdsale: token maintainance
-    ////////////
+    //
     
     /**
      * When the crowdsale is finished, the contract owner may adjust the decimal places for display purposes.
@@ -352,9 +362,10 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      * Note that this changes the decimals IMMEDIATELY with NO NOTICE to users.
      */
     function setDecimals(uint8 newDecimals) public onlyOwner onlyAfterClosed {
-        decimals = newDecimals;
+        // Change the decimals
+        _setupDecimals(newDecimals);
         // Announce the change
-        emit DecimalChange(decimals);
+        emit DecimalChange(newDecimals);
     }
     
     /**
@@ -375,7 +386,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      * Block the increaseAllowance method which is not in the mainned deployed
      * contract, but which OZ added to their library after we deployed.
      */
-    function increaseAllowance(address /* spender */, uint256 /* addedValue */) public returns (bool) {
+    function increaseAllowance(address /* spender */, uint256 /* addedValue */) override public returns (bool) {
         revert();
     }
 
@@ -383,8 +394,10 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      * Block the decreaseAllowance method which is not in the mainned deployed
      * contract, but which OZ added to their library after we deployed.
      */
-    function decreaseAllowance(address /* spender */, uint256 /* addedValue */) public returns (bool) {
+    function decreaseAllowance(address /* spender */, uint256 /* addedValue */) override public returns (bool) {
         revert();
     }
 
 }
+
+// SPDX-License-Identifier: UNLICENSED

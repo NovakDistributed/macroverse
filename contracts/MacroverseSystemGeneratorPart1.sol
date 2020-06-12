@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -20,38 +20,38 @@ library MacroverseSystemGeneratorPart1 {
     using RealMath for *;
     // No SafeMath or it might confuse RealMath
 
-    /**
+    /**@dev
      * It is useful to have Pi around.
      * We can't pull it in from the library.
      */
     int128 constant REAL_PI = 3454217652358;
 
-    /**
+    /**@dev
      * Also perpare pi/2
      */
     int128 constant REAL_HALF_PI = REAL_PI >> 1;
 
-    /**
+    /**@dev
      * How many fractional bits are there?
      */
     int256 constant REAL_FBITS = 40;
     
-    /**
+    /**@dev
      * What's the first non-fractional bit
      */
-    int128 constant REAL_ONE = int128(1) << REAL_FBITS;
+    int128 constant REAL_ONE = int128(1) << int128(REAL_FBITS);
     
-    /**
+    /**@dev
      * What's the last fractional bit?
      */
     int128 constant REAL_HALF = REAL_ONE >> 1;
     
-    /**
+    /**@dev
      * What's two? Two is pretty useful.
      */
-    int128 constant REAL_TWO = REAL_ONE << 1;
+    int128 constant REAL_TWO = REAL_ONE << int128(1);
 
-    /**
+    /**@dev
      * And zero
      */
     int128 constant REAL_ZERO = 0;
@@ -320,4 +320,5 @@ library MacroverseSystemGeneratorPart1 {
         return realApoapsis + RealMath.mul(realSeparation, realInnerRadius).div(RealMath.toReal(100)); 
     }
 }
- 
+
+// SPDX-License-Identifier: UNLICENSED

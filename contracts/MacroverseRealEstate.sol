@@ -1,10 +1,10 @@
-pragma solidity ^0.5.14;
+pragma solidity ^0.6.10;
 
-import "openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol";
+import "openzeppelin-solidity/contracts/token/ERC721/ERC721.sol";
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
-import "./Strings.sol";
+import "openzeppelin-solidity/contracts/utils/Strings.sol";
 
 /**
  * The MacroverseRealEstate contract keeps track of who currently owns virtual
@@ -16,13 +16,20 @@ import "./Strings.sol";
  * The split between this contract and the MacroverseUniversalRegistry exists
  * to keep contract size under the limit. 
  */
-contract MacroverseRealEstate is ERC721Full, Ownable {
+contract MacroverseRealEstate is ERC721, Ownable {
 
     
     /**
      * Deploy the backend, taking mint, burn, and set-user commands from the deployer.
      */
-    constructor() public ERC721Full("Macroverse Real Estate", "MRE") {
+    constructor() public ERC721("Macroverse Real Estate", "MRE") {
+        // Set up new OpenZeppelin 3.0 automatic token URI system.
+        // Good thing we match their format or we'd have to fork OZ.
+        uint chainId = 0;
+        assembly {
+            chainId := chainid()
+        }
+        _setBaseURI(string(abi.encodePacked("https://api.macroverse.io/vre/v1/chain/", Strings.toString(chainId), "/token/")));
     }
 
     /**
@@ -35,8 +42,8 @@ contract MacroverseRealEstate is ERC721Full, Ownable {
     /**
      * Burn tokens at the direction of the owning contract.
      */
-    function burn(address from, uint256 tokenId) external onlyOwner {
-        _burn(from, tokenId);
+    function burn(uint256 tokenId) external onlyOwner {
+        _burn(tokenId);
     }
 
     /**
@@ -47,20 +54,6 @@ contract MacroverseRealEstate is ERC721Full, Ownable {
     function exists(uint256 tokenId) external view returns (bool) {
         return _exists(tokenId);
     }
-
-    
-    /**
-     * Define the URI where information about an individual token can be obtained.
-     * Token is assumed to exist.
-     */
-    function tokenURI(uint256 tokenId) external view returns (string memory) {
-        uint chainId = 0;
-        assembly {
-            chainId := chainid
-        }
-        return string(abi.encodePacked("https://api.macroverse.io/vre/v1/chain/",
-            Strings.uint2str(chainId), "/token/", Strings.uint2str(tokenId)));
-    }
-
-    
 }
+
+// SPDX-License-Identifier: UNLICENSED

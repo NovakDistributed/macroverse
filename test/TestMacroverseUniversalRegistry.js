@@ -32,8 +32,10 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     // Decide what to claim: system 0 of sector 0,0,0
     let to_claim = mv.keypathToToken('0.0.0.0')
 
-    // Generate a **random** nonce.
-    // If someone can brute force this they may be able to front run your claim
+    // Generate a "random" nonce.
+    // DO NOT DO THIS! Use mv.generateNonce() instead.
+    // If someone can brute force this they may be able to front run your claim.
+    // We use constant nonces here to share them between tests.
     let nonce = 0xDEAD 
 
     // Compute a hash

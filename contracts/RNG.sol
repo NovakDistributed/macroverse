@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./RealMath.sol";
 
@@ -107,4 +107,6 @@ library RNG {
         }
     }
 }
+
+// SPDX-License-Identifier: MIT
 

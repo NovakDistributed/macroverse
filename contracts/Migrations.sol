@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 contract Migrations {
   address public owner;
@@ -21,3 +21,5 @@ contract Migrations {
     upgraded.setCompleted(last_completed_migration);
   }
 }
+
+// SPDX-License-Identifier: UNLICENSED

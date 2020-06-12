@@ -1,9 +1,10 @@
-pragma solidity ^0.5.2;
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+pragma solidity ^0.6.10;
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
 /**
  * @title Contracts that should not own Ether
  * @author Remco Bloemen <remco@2π.com>
+ * @author Novak Distributed
  * @dev This tries to block incoming ether to prevent accidental loss of Ether. Should Ether end up
  * in the contract, it will allow the owner to reclaim this Ether.
  * @notice Ether can still be sent to this contract by:
@@ -23,9 +24,10 @@ contract HasNoEther is Ownable {
     require(msg.value == 0);
   }
   /**
-   * @dev Disallows direct send by setting a default function without the `payable` flag.
+   * @dev Disallows direct send by throwing in the receive function.
    */
-  function() external {
+  receive() external payable {
+    revert();
   }
   /**
    * @dev Transfer all Ether held by the contract to the owner.
@@ -37,10 +39,12 @@ contract HasNoEther is Ownable {
   }
 }
 
+// SPDX-License-Identifier: MIT
 /*
 The MIT License (MIT)
 
 Copyright (c) 2016 Smart Contract Solutions, Inc.
+Copyright (c) 2020 Novak Distributed
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

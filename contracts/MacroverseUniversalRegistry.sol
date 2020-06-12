@@ -1,6 +1,6 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "./HasNoEther.sol";
 import "./HasNoContracts.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
@@ -148,9 +148,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
     // Sentinel for no moon used (for land on a planet)
     uint16 constant MOON_NONE = 0xFFFF; 
 
-    //////////////
+    //
     // Events for the commit/reveal system
-    //////////////
+    //
 
     // Note that in addition to these special events, transfers to/from 0 are
     // fired as tokens are created and destroyed.
@@ -181,39 +181,55 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
     /// Fired when the commitment min wait time is updated by the administrator.
     event CommitmentMinWaitChange(uint256 new_commitment_min_wait_in_seconds);
 
-    //////////////
+    //
     // Contract state
-    //////////////
+    //
 
-    // This is the backend contract that actually has the machinery to track token ownership
-    MacroverseRealEstate backend;
+    /**
+     * This is the backend contract that actually has the machinery to track token ownership
+     */
+    MacroverseRealEstate public backend;
 
-    /// This is the contract we check virtual real estate existence against;
-    MacroverseExistenceChecker existenceChecker;
+    /**
+     * This is the contract we check virtual real estate existence against;
+     */
+    MacroverseExistenceChecker public existenceChecker;
 
-    /// This is the token in which ownership deposits have to be paid.
-    IERC20 private depositTokenContract;
-    /// This is the minimum ownership deposit in atomic token units.
+    /**
+     * This is the token in which ownership deposits have to be paid.
+     */
+    IERC20 public depositTokenContract;
+    /**
+     * This is the minimum ownership deposit in atomic token units.
+     */
     uint public minSystemDepositInAtomicUnits;
     
-    /// This tracks how much of the deposit token the contract is supposed to have.
-    /// If it ends up with extra (because someone incorrectly used transfer() instead of approve()), the owner can remove it.
+    /**
+     * This tracks how much of the deposit token the contract is supposed to have.
+     * If it ends up with extra (because someone incorrectly used transfer() instead of approve()), the owner can remove it.
+     */
     uint public expectedDepositBalance;
 
-    /// How long should a commitment be required to sit before it can be revealed, in Ethereum time?
-    /// This is also the maximum delay that we can let a bad actor keep good transactions off the chain, in our front-running security model.
+    /**
+     * How long should a commitment be required to sit before it can be revealed, in Ethereum time?
+     * This is also the maximum delay that we can let a bad actor keep good transactions off the chain, in our front-running security model.
+     */
     uint public commitmentMinWait;
 
-    /// How long should a commitment be allowed to sit un-revealed before it becomes invalid and can only be canceled?
-    /// This protects against unrevealed commitments being used as griefing traps.
-    /// This is a multiple of the min wait.
-    uint constant COMMITMENT_MAX_WAIT_FACTOR = 7;
+    /**
+     * How long should a commitment be allowed to sit un-revealed before it becomes invalid and can only be canceled?
+     * This protects against unrevealed commitments being used as griefing traps.
+     * This is a multiple of the min wait.
+     */
+    uint public constant COMMITMENT_MAX_WAIT_FACTOR = 7;
 
-    /// A Commitment represents an outstanding attempt to claim a deed.
-    /// It also needs to be referenced to look up the deposit associated with an owned token when the token is destroyed.
-    /// It is identified by a "key", which is the hash of the committing hash and the owner address.
-    /// This is the mapping key under which it is stored.
-    /// We don't need to store the owner because the mapping key hash binds the commitment to the owner.
+    /**
+     * A Commitment represents an outstanding attempt to claim a deed.
+     * It also needs to be referenced to look up the deposit associated with an owned token when the token is destroyed.
+     * It is identified by a "key", which is the hash of the committing hash and the owner address.
+     * This is the mapping key under which it is stored.
+     * We don't need to store the owner because the mapping key hash binds the commitment to the owner.
+     */
     struct Commitment {
         // Hash (keccak256) of the token we want to claim and a uint256 nonce to be revealed with it.
         bytes32 hash;        
@@ -223,26 +239,34 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         uint256 creationTime;
     }
     
-    /// This is all the commitments that are currently outstanding.
-    /// The mapping key is keccak256(hash, owner address).
-    /// When they are revealed or canceled, they are deleted from the map.
+    /**
+     * This is all the commitments that are currently outstanding.
+     * The mapping key is keccak256(hash, owner address).
+     * When they are revealed or canceled, they are deleted from the map.
+     */
     mapping(bytes32 => Commitment) public commitments;
 
-    /// Tokens have some configuration info to them, beyond what the base ERC721 implementation tracks.
+    /**
+     * Tokens have some configuration info to them, beyond what the base ERC721 implementation tracks.
+     */
     struct TokenConfig {
-        /// This holds the deposit amount associated with the token, which will be released when the token is unclaimed.
+        // This holds the deposit amount associated with the token, which will be released when the token is unclaimed.
         uint256 deposit;
-        /// True if the token allows homesteading (i.e. the claiming of child tokens by others)
+        // True if the token allows homesteading (i.e. the claiming of child tokens by others)
         bool homesteading;
     }
 
-    /// This holds the TokenConfig for each token
+    /**@dev
+     * This holds the TokenConfig for each token
+     */
     mapping(uint256 => TokenConfig) tokenConfigs;
 
-    /// This maps from each hierarchical bit-packed keypath entry to a bitmap of
-    /// which of its direct children have deed tokens issued at or under them.
-    /// If all the bits would be 0, an entry need not exist (which is the
-    /// Solidity mapping default behavior).
+    /**@dev
+     * This maps from each hierarchical bit-packed keypath entry to a bitmap of
+     * which of its direct children have deed tokens issued at or under them.
+     * If all the bits would be 0, an entry need not exist (which is the
+     * Solidity mapping default behavior).
+     */
     mapping (uint256 => uint256) internal childTree;
 
     /**
@@ -267,9 +291,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         commitmentMinWait = commitment_min_wait;
     }
 
-    //////////////
+    //
     // Child tree functions
-    //////////////
+    //
 
     // First we need some bit utilities
 
@@ -370,9 +394,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         }
     }
 
-    //////////////
+    //
     // State-aware token utility functions
-    //////////////
+    //
 
     /**
      * Get the lowest-in-the-hierarchy token that exists (is owned).
@@ -404,7 +428,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
      * Children of system/planet/moon tokens can only be claimed if the claimer owns them or the owner allows homesteading.
      */
     function childrenClaimable(uint256 token, address claimant) public view returns (bool) {
-        require(backend.exists(token));
+        require(backend.exists(token), "Token not extant");
         return !token.tokenIsLand() && (claimant == backend.ownerOf(token) || tokenConfigs[token].homesteading);
     }
 
@@ -458,9 +482,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
     }
 
 
-    //////////////
+    //
     // Minting and destruction logic: commit/reveal/cancel and release
-    //////////////
+    //
     
     /**
      * Make a new commitment by debiting msg.sender's account for the given deposit.
@@ -618,8 +642,14 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
      * Retruns the associated deposit to you.
      */
     function release(uint256 token) external {
-        // Burn the token IFF it exists and is owned by msg.sender
-        backend.burn(msg.sender, token);
+        // Make sure nobody can release things that aren't claimed.
+        require(backend.exists(token), "Token not extant");
+        
+        // Make sure only we can release our tokens.
+        require(backend.ownerOf(token) == msg.sender, "Token owner mismatch");
+        
+        // Burn the token 
+        backend.burn(token);
 
         // Say the token was released
         emit Release(token, msg.sender);
@@ -640,9 +670,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         require(depositTokenContract.transfer(msg.sender, deposit));
     }
 
-    //////////////
+    //
     // Token owner functions
-    //////////////
+    //
 
     /**
      * Set whether homesteading is allowed under a token. The token must be owned by you, and must not be land.
@@ -733,7 +763,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         require(required_deposit <= deposit, "Deposit not sufficient");
 
         // Burn the parent
-        backend.burn(msg.sender, parent);
+        backend.burn(parent);
 
         // Clean up its config
         delete tokenConfigs[parent];
@@ -818,7 +848,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
 
         for (uint256 i = 0; i < CHILDREN_PER_TRIXEL; i++) {
             // Burn the children
-            backend.burn(msg.sender, children[i]);
+            backend.burn(children[i]);
 
             // Clean up the config
             delete tokenConfigs[children[i]];
@@ -849,9 +879,9 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         require(depositTokenContract.transfer(msg.sender, withdraw_deposit));
     }
 
-    //////////////
+    //
     // Admin functions
-    //////////////
+    //
 
     /**
      * Allow the contract owner to set the minimum deposit amount for granting new
@@ -891,3 +921,5 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         other.transfer(owner(), excessBalance);
     }
 }
+
+// SPDX-License-Identifier: UNLICENSED

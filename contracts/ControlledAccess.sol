@@ -1,8 +1,8 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./AccessControl.sol";
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/access/Ownable.sol";
 
 /**
  * Represents a contract that is Ownable, and which has methods that are to be protected by an AccessControl strategy selected by the owner.
@@ -36,3 +36,5 @@ contract ControlledAccess is Ownable {
     
 
 }
+
+// SPDX-License-Identifier: UNLICENSED

@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./RNG.sol";
 import "./RealMath.sol";
@@ -30,22 +30,22 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
     using RealMath for *;
     // No SafeMath or it might confuse RealMath
 
-    /**
+    /**@dev
      * How many fractional bits are there?
      */
     int256 constant REAL_FBITS = 40;
     
-    /**
+    /**@dev
      * What's the first non-fractional bit
      */
-    int128 constant REAL_ONE = int128(1) << REAL_FBITS;
+    int128 constant REAL_ONE = int128(1) << int128(REAL_FBITS);
 
-    /**
+    /**@dev
      * What's the last fractional bit?
      */
     int128 constant REAL_HALF = REAL_ONE >> 1;
 
-    /**
+    /**@dev
      * It is useful to have Pi around.
      * We can't pull it in from the library.
      */
@@ -184,4 +184,5 @@ contract MacroverseStarGeneratorPatch1 is ControlledAccess {
     
 
 }
- 
+
+// SPDX-License-Identifier: UNLICENSED

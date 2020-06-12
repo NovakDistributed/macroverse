@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./MRVToken.sol";
 
@@ -26,3 +26,5 @@ contract TestnetMRVToken is MRVToken {
     }
 
 }
+
+// SPDX-License-Identifier: UNLICENSED

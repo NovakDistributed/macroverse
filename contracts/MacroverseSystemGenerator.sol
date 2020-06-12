@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./AccessControl.sol";
 import "./ControlledAccess.sol";
@@ -164,4 +164,5 @@ contract MacroverseSystemGenerator is ControlledAccess {
     }
 
 }
- 
+
+// SPDX-License-Identifier: UNLICENSED

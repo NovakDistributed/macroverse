@@ -1,4 +1,4 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.6.10;
 
 import "./RealMath.sol";
 
@@ -13,7 +13,7 @@ import "./RealMath.sol";
 contract OrbitalMechanics {
     using RealMath for *;
 
-    /**
+    /**@dev
      * We need the gravitational constant. Calculated by solving the mean
      * motion equation for Earth. We can be mostly precise here, because we
      * know the semimajor axis and year length (in Julian years) to a few
@@ -25,43 +25,43 @@ contract OrbitalMechanics {
 
     // TODO: We have to copy-paste constants from RealMath because Solidity doesn't expose them by import.
 
-    /**
+    /**@dev
      * It is also useful to have Pi around.
      * We can't pull it in from the library.
      */
     int128 constant REAL_PI = 3454217652358;
 
-    /**
+    /**@dev
      * And two pi, which happens to be odd in its most accurate representation.
      */
     int128 constant REAL_TWO_PI = 6908435304715;
 
-    /**
+    /**@dev
      * How many fractional bits are there?
      */
     int256 constant REAL_FBITS = 40;
 
-    /**
+    /**@dev
      * What's the first non-fractional bit
      */
-    int128 constant REAL_ONE = int128(1) << REAL_FBITS;
+    int128 constant REAL_ONE = int128(1) << int128(REAL_FBITS);
 
-    /**
+    /**@dev
      * What's the last fractional bit?
      */
-    int128 constant REAL_HALF = REAL_ONE >> 1;
+    int128 constant REAL_HALF = REAL_ONE >> int128(1);
 
-    /**
+    /**@dev
      * We need 2 for constants in numerical methods.
      */
     int128 constant REAL_TWO = REAL_ONE * 2;
     
-    /**
+    /**@dev
      * We need 3 for constants in numerical methods.
      */
     int128 constant REAL_THREE = REAL_ONE * 3;
 
-    /**
+    /**@dev
      * A "year" is 365.25 days. We use Julian years.
      */
     int128 constant REAL_SECONDS_PER_YEAR = 34697948144703898000;
@@ -198,3 +198,5 @@ contract OrbitalMechanics {
 
     }
 }
+
+// SPDX-License-Identifier: UNLICENSED

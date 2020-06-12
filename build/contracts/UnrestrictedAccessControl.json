@@ -2,7 +2,6 @@
   "contractName": "UnrestrictedAccessControl",
   "abi": [
     {
-      "constant": true,
       "inputs": [
         {
           "internalType": "address",
@@ -23,81 +22,88 @@
           "type": "bool"
         }
       ],
-      "payable": false,
       "stateMutability": "pure",
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.14+commit.01f1aaa4\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowQuery\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"allowQuery(address,address)\":{\"notice\":\"Always approve access, ignoring the addresses passed in. Note that this raises solidity compiler warnings about unused variables.\"}},\"notice\":\"Represents an access control strategy where all requests are accepted.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":\"UnrestrictedAccessControl\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xb73144156419d9a5318081c9ae9d65b13da5e5e706a96c17c24c2173a6b31ecc\",\"urls\":[\"bzz-raw://9a300f85ad1673f454fdf492f29c50e3b0f1f12f178b5d3ce45f6a6724025395\",\"dweb:/ipfs/QmTPzViBHUXQ9TvWyWoNPKsRqfgbDpv8YfFproneZ8HcBw\"]},\"/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":{\"keccak256\":\"0x0406209b279a116edbb549852e4ad573e0fcb3a5c0243c0ddc43b201a2ab8a7a\",\"urls\":[\"bzz-raw://824348daa3c5bdb313de54fa26708d820435df084a86282a3fa0e7e25762958d\",\"dweb:/ipfs/QmSw9wG8MjUx8K4Y5yrCFfW5CRifTHjm378tKmX8rwBjPV\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5060e78061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80634af5fb0f14602d575b600080fd5b608c60048036036040811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505060a6565b604051808215151515815260200191505060405180910390f35b6000600190509291505056fea265627a7a72315820726609bca9caf7d21aa152869e075aab50bf9345bf177e67ceb2b4bc794627ca64736f6c634300050e0032",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80634af5fb0f14602d575b600080fd5b608c60048036036040811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505060a6565b604051808215151515815260200191505060405180910390f35b6000600190509291505056fea265627a7a72315820726609bca9caf7d21aa152869e075aab50bf9345bf177e67ceb2b4bc794627ca64736f6c634300050e0032",
-  "sourceMap": "138:322:25:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;138:322:25;;;;;;;",
-  "deployedSourceMap": "138:322:25:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;138:322:25;;;;;;;;;;;;;;;;;;;339:119;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;339:119:25;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;424:4;447;440:11;;339:119;;;;:::o",
-  "source": "pragma solidity ^0.5.2;\n\nimport \"./AccessControl.sol\";\n\n/**\n * Represents an access control strategy where all requests are accepted.\n */\ncontract UnrestrictedAccessControl {\n    /**\n     * Always approve access, ignoring the addresses passed in.\n     * Note that this raises solidity compiler warnings about unused variables.\n     */\n    function allowQuery(address /* sender */, address /* origin */) public pure returns (bool) {\n        return true;\n    }\n}\n",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowQuery\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"allowQuery(address,address)\":{\"notice\":\"Always approve access, ignoring the addresses passed in. Note that this raises solidity compiler warnings about unused variables.\"}},\"notice\":\"Represents an access control strategy where all requests are accepted.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":\"UnrestrictedAccessControl\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xcc9e89f4b2238f4885c974b9f36ca4b9e5bb97d301a45a5da1019f191412325b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://147f3842bd6e7b474433a14a8749383a147b0378ee3f2e44f522261c1517208c\",\"dweb:/ipfs/QmazvLHvgJm8XeJc5tb3FHowci7hLgtUhVe8sYVZB4V4vu\"]},\"/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":{\"keccak256\":\"0xd0978b6320663a73bafc43860afdae7d63284b6419b446b4e966c2e5a6e84347\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://0bdcaedd0ef49b8f6b2738ab8ca3bde8b008d3a91e9a249e61fb8a53c679e240\",\"dweb:/ipfs/QmQcTJKHoMqtBk8guiPJyoEdBS3Fz7NrV4zUUU1vTZroeM\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060e88061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80634af5fb0f14602d575b600080fd5b608c60048036036040811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505060a6565b604051808215151515815260200191505060405180910390f35b6000600190509291505056fea26469706673582212205c20c88f552922a88b8cd9cf3b369c1d2f38cb56b0dce581c7fd43316035357164736f6c634300060a0033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80634af5fb0f14602d575b600080fd5b608c60048036036040811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505060a6565b604051808215151515815260200191505060405180910390f35b6000600190509291505056fea26469706673582212205c20c88f552922a88b8cd9cf3b369c1d2f38cb56b0dce581c7fd43316035357164736f6c634300060a0033",
+  "immutableReferences": {},
+  "sourceMap": "139:322:24:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "139:322:24:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;340:119;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;425:4;448;441:11;;340:119;;;;:::o",
+  "source": "pragma solidity ^0.6.10;\n\nimport \"./AccessControl.sol\";\n\n/**\n * Represents an access control strategy where all requests are accepted.\n */\ncontract UnrestrictedAccessControl {\n    /**\n     * Always approve access, ignoring the addresses passed in.\n     * Note that this raises solidity compiler warnings about unused variables.\n     */\n    function allowQuery(address /* sender */, address /* origin */) public pure returns (bool) {\n        return true;\n    }\n}\n\n// SPDX-License-Identifier: UNLICENSED\n",
   "sourcePath": "/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol",
   "ast": {
     "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol",
     "exportedSymbols": {
       "UnrestrictedAccessControl": [
-        10249
+        10583
       ]
     },
-    "id": 10250,
+    "id": 10584,
+    "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10235,
+        "id": 10567,
         "literals": [
           "solidity",
           "^",
-          "0.5",
-          ".2"
+          "0.6",
+          ".10"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:25"
+        "src": "0:24:24"
       },
       {
         "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol",
         "file": "./AccessControl.sol",
-        "id": 10236,
+        "id": 10568,
         "nodeType": "ImportDirective",
-        "scope": 10250,
-        "sourceUnit": 12,
-        "src": "25:29:25",
+        "scope": 10584,
+        "sourceUnit": 14,
+        "src": "26:29:24",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
+        "abstract": false,
         "baseContracts": [],
         "contractDependencies": [],
         "contractKind": "contract",
-        "documentation": "Represents an access control strategy where all requests are accepted.",
+        "documentation": {
+          "id": 10569,
+          "nodeType": "StructuredDocumentation",
+          "src": "57:81:24",
+          "text": " Represents an access control strategy where all requests are accepted."
+        },
         "fullyImplemented": true,
-        "id": 10249,
+        "id": 10583,
         "linearizedBaseContracts": [
-          10249
+          10583
         ],
         "name": "UnrestrictedAccessControl",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 10247,
+              "id": 10581,
               "nodeType": "Block",
-              "src": "430:28:25",
+              "src": "431:28:24",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
                     "hexValue": "74727565",
-                    "id": 10245,
+                    "id": 10579,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
                     "kind": "bool",
                     "lValueRequested": false,
                     "nodeType": "Literal",
-                    "src": "447:4:25",
+                    "src": "448:4:24",
                     "subdenomination": null,
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
@@ -105,31 +111,40 @@
                     },
                     "value": "true"
                   },
-                  "functionReturnParameters": 10244,
-                  "id": 10246,
+                  "functionReturnParameters": 10578,
+                  "id": 10580,
                   "nodeType": "Return",
-                  "src": "440:11:25"
+                  "src": "441:11:24"
                 }
               ]
             },
-            "documentation": "Always approve access, ignoring the addresses passed in.\nNote that this raises solidity compiler warnings about unused variables.",
-            "id": 10248,
+            "documentation": {
+              "id": 10570,
+              "nodeType": "StructuredDocumentation",
+              "src": "180:155:24",
+              "text": " Always approve access, ignoring the addresses passed in.\n Note that this raises solidity compiler warnings about unused variables."
+            },
+            "functionSelector": "4af5fb0f",
+            "id": 10582,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "allowQuery",
             "nodeType": "FunctionDefinition",
+            "overrides": null,
             "parameters": {
-              "id": 10241,
+              "id": 10575,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10238,
+                  "id": 10572,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10248,
-                  "src": "359:7:25",
+                  "overrides": null,
+                  "scope": 10582,
+                  "src": "360:7:24",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -137,10 +152,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10237,
+                    "id": 10571,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "359:7:25",
+                    "src": "360:7:24",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -152,11 +167,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 10240,
+                  "id": 10574,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10248,
-                  "src": "381:7:25",
+                  "overrides": null,
+                  "scope": 10582,
+                  "src": "382:7:24",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -164,10 +181,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10239,
+                    "id": 10573,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "381:7:25",
+                    "src": "382:7:24",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -178,19 +195,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "358:44:25"
+              "src": "359:44:24"
             },
             "returnParameters": {
-              "id": 10244,
+              "id": 10578,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10243,
+                  "id": 10577,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10248,
-                  "src": "424:4:25",
+                  "overrides": null,
+                  "scope": 10582,
+                  "src": "425:4:24",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -198,10 +217,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 10242,
+                    "id": 10576,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "424:4:25",
+                    "src": "425:4:24",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -211,84 +230,91 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "423:6:25"
+              "src": "424:6:24"
             },
-            "scope": 10249,
-            "src": "339:119:25",
+            "scope": 10583,
+            "src": "340:119:24",
             "stateMutability": "pure",
-            "superFunction": null,
+            "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 10250,
-        "src": "138:322:25"
+        "scope": 10584,
+        "src": "139:322:24"
       }
     ],
-    "src": "0:461:25"
+    "src": "0:502:24"
   },
   "legacyAST": {
     "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol",
     "exportedSymbols": {
       "UnrestrictedAccessControl": [
-        10249
+        10583
       ]
     },
-    "id": 10250,
+    "id": 10584,
+    "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10235,
+        "id": 10567,
         "literals": [
           "solidity",
           "^",
-          "0.5",
-          ".2"
+          "0.6",
+          ".10"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:25"
+        "src": "0:24:24"
       },
       {
         "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol",
         "file": "./AccessControl.sol",
-        "id": 10236,
+        "id": 10568,
         "nodeType": "ImportDirective",
-        "scope": 10250,
-        "sourceUnit": 12,
-        "src": "25:29:25",
+        "scope": 10584,
+        "sourceUnit": 14,
+        "src": "26:29:24",
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
+        "abstract": false,
         "baseContracts": [],
         "contractDependencies": [],
         "contractKind": "contract",
-        "documentation": "Represents an access control strategy where all requests are accepted.",
+        "documentation": {
+          "id": 10569,
+          "nodeType": "StructuredDocumentation",
+          "src": "57:81:24",
+          "text": " Represents an access control strategy where all requests are accepted."
+        },
         "fullyImplemented": true,
-        "id": 10249,
+        "id": 10583,
         "linearizedBaseContracts": [
-          10249
+          10583
         ],
         "name": "UnrestrictedAccessControl",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 10247,
+              "id": 10581,
               "nodeType": "Block",
-              "src": "430:28:25",
+              "src": "431:28:24",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
                     "hexValue": "74727565",
-                    "id": 10245,
+                    "id": 10579,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
                     "kind": "bool",
                     "lValueRequested": false,
                     "nodeType": "Literal",
-                    "src": "447:4:25",
+                    "src": "448:4:24",
                     "subdenomination": null,
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
@@ -296,31 +322,40 @@
                     },
                     "value": "true"
                   },
-                  "functionReturnParameters": 10244,
-                  "id": 10246,
+                  "functionReturnParameters": 10578,
+                  "id": 10580,
                   "nodeType": "Return",
-                  "src": "440:11:25"
+                  "src": "441:11:24"
                 }
               ]
             },
-            "documentation": "Always approve access, ignoring the addresses passed in.\nNote that this raises solidity compiler warnings about unused variables.",
-            "id": 10248,
+            "documentation": {
+              "id": 10570,
+              "nodeType": "StructuredDocumentation",
+              "src": "180:155:24",
+              "text": " Always approve access, ignoring the addresses passed in.\n Note that this raises solidity compiler warnings about unused variables."
+            },
+            "functionSelector": "4af5fb0f",
+            "id": 10582,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "allowQuery",
             "nodeType": "FunctionDefinition",
+            "overrides": null,
             "parameters": {
-              "id": 10241,
+              "id": 10575,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10238,
+                  "id": 10572,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10248,
-                  "src": "359:7:25",
+                  "overrides": null,
+                  "scope": 10582,
+                  "src": "360:7:24",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -328,10 +363,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10237,
+                    "id": 10571,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "359:7:25",
+                    "src": "360:7:24",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -343,11 +378,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 10240,
+                  "id": 10574,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10248,
-                  "src": "381:7:25",
+                  "overrides": null,
+                  "scope": 10582,
+                  "src": "382:7:24",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -355,10 +392,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10239,
+                    "id": 10573,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "381:7:25",
+                    "src": "382:7:24",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -369,19 +406,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "358:44:25"
+              "src": "359:44:24"
             },
             "returnParameters": {
-              "id": 10244,
+              "id": 10578,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10243,
+                  "id": 10577,
+                  "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 10248,
-                  "src": "424:4:25",
+                  "overrides": null,
+                  "scope": 10582,
+                  "src": "425:4:24",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -389,10 +428,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 10242,
+                    "id": 10576,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "424:4:25",
+                    "src": "425:4:24",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -402,24 +441,24 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "423:6:25"
+              "src": "424:6:24"
             },
-            "scope": 10249,
-            "src": "339:119:25",
+            "scope": 10583,
+            "src": "340:119:24",
             "stateMutability": "pure",
-            "superFunction": null,
+            "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 10250,
-        "src": "138:322:25"
+        "scope": 10584,
+        "src": "139:322:24"
       }
     ],
-    "src": "0:461:25"
+    "src": "0:502:24"
   },
   "compiler": {
     "name": "solc",
-    "version": "0.5.14+commit.01f1aaa4.Emscripten.clang"
+    "version": "0.6.10+commit.00c0fcaf.Emscripten.clang"
   },
   "networks": {
     "1": {
@@ -436,8 +475,7 @@
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-05-22T04:25:20.772Z",
-  "networkType": "ethereum",
+  "updatedAt": "2020-06-12T02:44:30.421Z",
   "devdoc": {
     "methods": {}
   },
