@@ -23,7 +23,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -52,7 +53,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -81,7 +83,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -105,7 +108,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -129,7 +133,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -158,7 +163,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -207,7 +213,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_radius\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_true_anomaly\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_lan\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_inclination\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_aop\",\"type\":\"int128\"}],\"name\":\"computeCartesianOffset\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"real_x\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_y\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_z\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_mean_anomaly\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_eccentricity\",\"type\":\"int128\"}],\"name\":\"computeEccentricAnomaly\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_mean_anomaly\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_eccentricity\",\"type\":\"int128\"},{\"internalType\":\"int88\",\"name\":\"max_iterations\",\"type\":\"int88\"}],\"name\":\"computeEccentricAnomalyLimited\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_central_mass_in_sols\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_semimajor_axis\",\"type\":\"int128\"}],\"name\":\"computeMeanAngularMotion\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_mean_anomaly_at_epoch\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_mean_angular_motion\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_years_since_epoch\",\"type\":\"int128\"}],\"name\":\"computeMeanAnomaly\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_true_anomaly\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_semimajor_axis\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_eccentricity\",\"type\":\"int128\"}],\"name\":\"computeRadius\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_eccentric_anomaly\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_eccentricity\",\"type\":\"int128\"}],\"name\":\"computeTrueAnomaly\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{},\"stateVariables\":{\"REAL_FBITS\":{\"details\":\"How many fractional bits are there?\"},\"REAL_G_PER_SOL\":{\"details\":\"We need the gravitational constant. Calculated by solving the mean motion equation for Earth. We can be mostly precise here, because we know the semimajor axis and year length (in Julian years) to a few places. This is 132712875029098577920 m^3 s^-2 sols^-1\"},\"REAL_HALF\":{\"details\":\"What's the last fractional bit?\"},\"REAL_ONE\":{\"details\":\"What's the first non-fractional bit\"},\"REAL_PI\":{\"details\":\"It is also useful to have Pi around. We can't pull it in from the library.\"},\"REAL_SECONDS_PER_YEAR\":{\"details\":\"A \\\"year\\\" is 365.25 days. We use Julian years.\"},\"REAL_THREE\":{\"details\":\"We need 3 for constants in numerical methods.\"},\"REAL_TWO\":{\"details\":\"We need 2 for constants in numerical methods.\"},\"REAL_TWO_PI\":{\"details\":\"And two pi, which happens to be odd in its most accurate representation.\"}}},\"userdoc\":{\"methods\":{\"computeCartesianOffset(int128,int128,int128,int128,int128)\":{\"notice\":\"Compute Cartesian X, Y, and Z offset from center of parent body to orbiting body. Operates on distances in meters. X is toward longitude 0 of the parent body. Y is the other in-plane direction. Z is up out of the plane.\"},\"computeEccentricAnomaly(int128,int128)\":{\"notice\":\"Compute the eccentric anomaly, given the mean anomaly and eccentricity. Uses numerical methods to solve MA = EA - eccentricity * sin(EA). Internally limited to a reasonable iteration count.\"},\"computeEccentricAnomalyLimited(int128,int128,int88)\":{\"notice\":\"Compute the eccentric anomaly, given the mean anomaly and eccentricity. Uses numerical methods to solve MA = EA - eccentricity * sin(EA). Limit to a certain iteration count.\"},\"computeMeanAngularMotion(int128,int128)\":{\"notice\":\"Compute the mean angular motion, in radians per Julian year (365.25 days), given a star mass in sols and a semimajor axis in meters.\"},\"computeMeanAnomaly(int128,int128,int128)\":{\"notice\":\"Compute the mean anomaly, from 0 to 2 PI, given the mean anomaly at epoch, mean angular motion (in radians per Julian year) and the time (in Julian years) since epoch.\"},\"computeRadius(int128,int128,int128)\":{\"notice\":\"Compute the current orbit radius (distance from parent body) from the true anomaly, semimajor axis, and eccentricity. Operates on distances in meters.\"},\"computeTrueAnomaly(int128,int128)\":{\"notice\":\"Compute the true anomaly from the eccentric anomaly and the eccentricity.\"}},\"notice\":\"Provides methods for doing orbital mechanics calculations, based on RealMath.  DON'T use these functions for computing positions for things every frame; the RealMath library isn't really accurate enough for that. Use these in smart contract game logic, on a time scale of one or more blocks.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/OrbitalMechanics.sol\":\"OrbitalMechanics\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/OrbitalMechanics.sol\":{\"keccak256\":\"0x6ea24197bb0bbfbf340a0c28274820a400eb44ce143e81eb2739c9c7dc0e0763\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://edcab5c8096d36075c52ba972a8b29e4833e2c54f6d8b5653c150ee6412c8e4c\",\"dweb:/ipfs/QmcsXcpTpSh1Sxbm2g5esxjgpBwQQLqj8fXEXJVtXtjGZN\"]},\"/z/home/anovak/workspace/macroverse/contracts/RealMath.sol\":{\"keccak256\":\"0xf9d1a71762758251fdf137b97ea14686e4f3eef1f4cd99274ea039eb1dcff461\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11b67835c43266838fd9e3da9a247a10280bdc4a80785b927ed2c64dedd438ff\",\"dweb:/ipfs/QmemMQ4q1VTBWv1XyXbgc5DxXSjCyXJC4NM9St6hAhzrR7\"]}},\"version\":1}",
@@ -13374,14 +13381,15 @@
     "4": {
       "events": {},
       "links": {
-        "RealMath": "0x7a5B1a0Ce60c0Bb7eA228c265CD526bbF5Bbdb32"
+        "RealMath": "0x04D1A6e4580182D5685436AE00181034Fc601726"
       },
-      "address": "0x89241156892C54f0A42dd960726C533707EEf006",
-      "transactionHash": "0x8c561f479db762ead258c2044450c5e1d457da983771be4ff5ba75b0c479b6e4"
+      "address": "0xAdF39e81A058d62b12b2784090526Eab2Bd5426e",
+      "transactionHash": "0x5219631b1bf563b47628fdd05d8e84836b230c8581f5ff28e226b16cc56d457e"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T02:44:30.390Z",
+  "updatedAt": "2020-06-12T03:45:10.357Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {},
     "stateVariables": {

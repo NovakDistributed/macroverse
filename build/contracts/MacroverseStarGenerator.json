@@ -60,7 +60,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -109,7 +110,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -138,7 +140,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -172,7 +175,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -191,7 +195,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -215,7 +220,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -244,7 +250,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -273,7 +280,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -302,7 +310,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"baseSeed\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"accessControlAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newAccessControl\",\"type\":\"address\"}],\"name\":\"changeAccessControl\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"}],\"name\":\"getGalaxyDensity\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"realDensity\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"}],\"name\":\"getObjectClass\",\"outputs\":[{\"internalType\":\"enum MacroverseStarGenerator.ObjectClass\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"enum MacroverseStarGenerator.ObjectClass\",\"name\":\"objectClass\",\"type\":\"uint8\"},{\"internalType\":\"enum MacroverseStarGenerator.SpectralType\",\"name\":\"spectralType\",\"type\":\"uint8\"}],\"name\":\"getObjectHasPlanets\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"enum MacroverseStarGenerator.ObjectClass\",\"name\":\"objectClass\",\"type\":\"uint8\"},{\"internalType\":\"enum MacroverseStarGenerator.SpectralType\",\"name\":\"spectralType\",\"type\":\"uint8\"}],\"name\":\"getObjectMass\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"}],\"name\":\"getObjectPosition\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"realX\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realY\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realZ\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"enum MacroverseStarGenerator.ObjectClass\",\"name\":\"objectClass\",\"type\":\"uint8\"}],\"name\":\"getObjectSpectralType\",\"outputs\":[{\"internalType\":\"enum MacroverseStarGenerator.SpectralType\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"}],\"name\":\"getSectorObjectCount\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"},{\"internalType\":\"uint16\",\"name\":\"object\",\"type\":\"uint16\"}],\"name\":\"getSectorObjectSeed\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{\"changeAccessControl(address)\":{\"notice\":\"Change the access control strategy of the prototype.\"},\"constructor\":\"Deploy a new copy of the Macroverse generator contract. Use the given seed to generate a galaxy, down to the star level. Use the contract at the given address to regulate access.\",\"getGalaxyDensity(int16,int16,int16)\":{\"notice\":\"Get the density (between 0 and 1 as a fixed-point real88x40) of stars in the given sector. Sector 0,0,0 is centered on the galactic origin. +Y is upwards.\"},\"getObjectClass(bytes32)\":{\"notice\":\"Get the class of the star system with the given seed.\"},\"getObjectHasPlanets(bytes32,uint8,uint8)\":{\"notice\":\"Determine if the given star has any orbiting planets or not.\"},\"getObjectMass(bytes32,uint8,uint8)\":{\"notice\":\"Get the mass of a star, in solar masses as a real, given its seed and class and spectral type.\"},\"getObjectPosition(bytes32)\":{\"notice\":\"Get the position of a star within its sector, as reals from 0 to 25. Note that stars may end up implausibly close together. Such is life in the Macroverse.\"},\"getObjectSpectralType(bytes32,uint8)\":{\"notice\":\"Get the spectral type for an object with the given seed of the given class.\"},\"getSectorObjectCount(int16,int16,int16)\":{\"notice\":\"Get the number of objects in the sector at the given coordinates.\"},\"getSectorObjectSeed(int16,int16,int16,uint16)\":{\"notice\":\"Get the seed for an object in a sector.\"}},\"notice\":\"Represents a Macroverse Generator for a galaxy. Permission to call methods on this contract is regulated by a configurable AccessControl contract. One such set of terms might be to require that the account initiating a transaction have a certain minimum MRV token balance. The owner of this contract reserves the right to supersede it with a new version, and to modify the terms for accessing this contract, at any time, for any reason, and without notice. This includes the right to indefinitely or permanently suspend or terminate access to this contract for any person, account, or other contract, or for all persons, accounts, or other contracts. The owner also reserves the right to not do any of the above.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/MacroverseStarGenerator.sol\":\"MacroverseStarGenerator\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xcc9e89f4b2238f4885c974b9f36ca4b9e5bb97d301a45a5da1019f191412325b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://147f3842bd6e7b474433a14a8749383a147b0378ee3f2e44f522261c1517208c\",\"dweb:/ipfs/QmazvLHvgJm8XeJc5tb3FHowci7hLgtUhVe8sYVZB4V4vu\"]},\"/z/home/anovak/workspace/macroverse/contracts/ControlledAccess.sol\":{\"keccak256\":\"0x26e901bb94b389ebb1aa85720c85b82506bc97a2ad9bc9dcba90099c3f40fc48\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://b56c1d321c7700c06ffe3666e711583b33daa662249b4a818ba93818423e9f23\",\"dweb:/ipfs/Qmf5treeYxy3w3rA2cMJZe9pZ2DAZUkqHWQbAv2TEqeMHu\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseStarGenerator.sol\":{\"keccak256\":\"0xdef7360323bc51d8af82b7d83043d7e95b96b0baa83a572215c81f77440516ca\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://f5330df42e7a3212481bbbb1c8cdacd2edf641e24f02137e9aadff51d4b93a2a\",\"dweb:/ipfs/QmU6m3kUUJ8zabXcmSw2PvkVWzct86bE7nCS15Utq2qqFg\"]},\"/z/home/anovak/workspace/macroverse/contracts/RNG.sol\":{\"keccak256\":\"0xdb1e0446d6ba6b4fad81d7c5f43a47386685eedd49340ecfd2e6fdeeb86c871e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d95f52689ac87b5cf2658bf9c68bc5dfa69130294caaed089a31021b31d58f96\",\"dweb:/ipfs/QmTLzUy6Qt9jMt8Ci1rW2pYNvMD2wB4Au8uPXMvmDP1AAc\"]},\"/z/home/anovak/workspace/macroverse/contracts/RealMath.sol\":{\"keccak256\":\"0xf9d1a71762758251fdf137b97ea14686e4f3eef1f4cd99274ea039eb1dcff461\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11b67835c43266838fd9e3da9a247a10280bdc4a80785b927ed2c64dedd438ff\",\"dweb:/ipfs/QmemMQ4q1VTBWv1XyXbgc5DxXSjCyXJC4NM9St6hAhzrR7\"]},\"openzeppelin-solidity/contracts/GSN/Context.sol\":{\"keccak256\":\"0xc6fb4c940628ca2cde81ed6d20fc9ff456b60f55aafef555f43a86a2dda7ad9f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f17dda58954a84ffca3d53c0b6435bad7f5c42ab3a9c4603db2f1aef00edae4e\",\"dweb:/ipfs/QmehW99QmmzKvnqTsprsApDF7mK2JVo6nnrZ47znhLTFjh\"]},\"openzeppelin-solidity/contracts/access/Ownable.sol\":{\"keccak256\":\"0x4bd6402ca6b3419008c2b482aff54e66836e8cb4eba2680e42ac5884ae6424fc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8f9f711fb8d0d92aeea1c327e3845d13ca1fa8f142e47f8723cd5b3106fb29a3\",\"dweb:/ipfs/QmVQUReDW9f4zGqhizwHnyU8EntMs95tbASdqkGncnikba\"]}},\"version\":1}",
@@ -29561,14 +29570,15 @@
         }
       },
       "links": {
-        "RealMath": "0xEA83De9D7d589cDC5AAFec6C34A22b74E72bfb22"
+        "RealMath": "0xe7Ce47C030BED8a78889d0C46c5b9CA7a214a55D"
       },
-      "address": "0x1BDe132E8887d2369D96bA642C0770AD3C0DDa3e",
-      "transactionHash": "0x583063b05043b6fb29ff5e8c046da68d2d73ca64af49dcb3092dd7f2bac5dcec"
+      "address": "0x6a15A608EEa496b0540d7604713fd3d5a443D2E4",
+      "transactionHash": "0xb28c3c384e0afafc728d5c61402c1f3e6768df0f28dc067b79482736849b9e69"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T02:44:30.282Z",
+  "updatedAt": "2020-06-12T03:46:39.763Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {
       "owner()": {

@@ -23,7 +23,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowQuery\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"allowQuery(address,address)\":{\"notice\":\"Always approve access, ignoring the addresses passed in. Note that this raises solidity compiler warnings about unused variables.\"}},\"notice\":\"Represents an access control strategy where all requests are accepted.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":\"UnrestrictedAccessControl\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xcc9e89f4b2238f4885c974b9f36ca4b9e5bb97d301a45a5da1019f191412325b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://147f3842bd6e7b474433a14a8749383a147b0378ee3f2e44f522261c1517208c\",\"dweb:/ipfs/QmazvLHvgJm8XeJc5tb3FHowci7hLgtUhVe8sYVZB4V4vu\"]},\"/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":{\"keccak256\":\"0xd0978b6320663a73bafc43860afdae7d63284b6419b446b4e966c2e5a6e84347\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://0bdcaedd0ef49b8f6b2738ab8ca3bde8b008d3a91e9a249e61fb8a53c679e240\",\"dweb:/ipfs/QmQcTJKHoMqtBk8guiPJyoEdBS3Fz7NrV4zUUU1vTZroeM\"]}},\"version\":1}",
@@ -470,12 +471,13 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0xB7eF25266908b65B0e01fE0C2Cc185EEEDe4A072",
-      "transactionHash": "0xec78d8b0ed6ded05e6592cf328a092df2f88493ade7b53f3d6361c238e830707"
+      "address": "0x91084757ebfD1110d00A5691dab687e20069178d",
+      "transactionHash": "0xa68bd468c50406a25b31a9b753f9da19a2beb6c4f9649bd65b2d008852aee670"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T02:44:30.421Z",
+  "updatedAt": "2020-06-12T03:41:54.926Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },

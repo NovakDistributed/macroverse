@@ -1,7 +1,7 @@
 pragma solidity ^0.6.10;
 
 /**
- * Interface for an access control strategy for Macrtoverse contracts.
+ * Interface for an access control strategy for Macroverse contracts.
  * Can be asked if a certain query should be allowed, and will return true or false.
  * Allows for different access control strategies (unrestricted, minimum balance, subscription, etc.) to be swapped in.
  */

@@ -7437,12 +7437,13 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x998d8eea9750e8a98cdbA0B2AE35374418E13A1c",
-      "transactionHash": "0x3ffdeb72b54618a80202faa5b0a5de1fa2bcdc4ffdbae27f0bf9bea6245bc737"
+      "address": "0x311F34241c8E17B0b1aE4748864d8D9a3c0037a9",
+      "transactionHash": "0x15ec74b188cd2ac68112acc629556c6d2451554954e9dcbba68edb8ba7eaf2aa"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T02:44:30.397Z",
+  "updatedAt": "2020-06-12T03:45:39.615Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },

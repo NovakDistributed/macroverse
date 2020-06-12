@@ -18,7 +18,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -37,7 +38,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -56,7 +58,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -75,7 +78,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -94,7 +98,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -113,7 +118,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -132,7 +138,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -151,7 +158,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -175,7 +183,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -199,7 +208,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -223,7 +233,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -247,7 +258,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -271,7 +283,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -290,7 +303,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -314,7 +328,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -333,7 +348,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -357,7 +373,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -376,7 +393,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -400,7 +418,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -419,7 +438,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -438,7 +458,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -457,7 +478,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -476,7 +498,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -500,7 +523,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_value\",\"type\":\"int128\"}],\"name\":\"abs\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_y\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_x\",\"type\":\"int128\"}],\"name\":\"atan2\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_arg\",\"type\":\"int128\"}],\"name\":\"atanSmall\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_arg\",\"type\":\"int128\"}],\"name\":\"cos\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_numerator\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_denominator\",\"type\":\"int128\"}],\"name\":\"div\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_arg\",\"type\":\"int128\"}],\"name\":\"exp\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_arg\",\"type\":\"int128\"},{\"internalType\":\"int256\",\"name\":\"max_iterations\",\"type\":\"int256\"}],\"name\":\"expLimited\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_value\",\"type\":\"int128\"}],\"name\":\"fpart\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_value\",\"type\":\"int128\"}],\"name\":\"fpartSigned\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int88\",\"name\":\"numerator\",\"type\":\"int88\"},{\"internalType\":\"int88\",\"name\":\"denominator\",\"type\":\"int88\"}],\"name\":\"fraction\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_value\",\"type\":\"int128\"}],\"name\":\"fractionalBits\",\"outputs\":[{\"internalType\":\"uint40\",\"name\":\"\",\"type\":\"uint40\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_value\",\"type\":\"int128\"}],\"name\":\"fromReal\",\"outputs\":[{\"internalType\":\"int88\",\"name\":\"\",\"type\":\"int88\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_value\",\"type\":\"int128\"}],\"name\":\"ipart\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_base\",\"type\":\"int128\"},{\"internalType\":\"int88\",\"name\":\"exponent\",\"type\":\"int88\"}],\"name\":\"ipow\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_arg\",\"type\":\"int128\"}],\"name\":\"ln\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_arg\",\"type\":\"int128\"},{\"internalType\":\"int256\",\"name\":\"max_iterations\",\"type\":\"int256\"}],\"name\":\"lnLimited\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_a\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_b\",\"type\":\"int128\"}],\"name\":\"mul\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_base\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"real_exponent\",\"type\":\"int128\"}],\"name\":\"pow\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_value\",\"type\":\"int128\"}],\"name\":\"round\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_arg\",\"type\":\"int128\"}],\"name\":\"sin\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_arg\",\"type\":\"int128\"},{\"internalType\":\"int88\",\"name\":\"max_iterations\",\"type\":\"int88\"}],\"name\":\"sinLimited\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_arg\",\"type\":\"int128\"}],\"name\":\"sqrt\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"real_arg\",\"type\":\"int128\"}],\"name\":\"tan\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int88\",\"name\":\"ipart\",\"type\":\"int88\"}],\"name\":\"toReal\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{},\"stateVariables\":{\"REAL_BITS\":{\"details\":\"How many total bits are there?\"},\"REAL_FBITS\":{\"details\":\"How many fractional bits are there?\"},\"REAL_HALF\":{\"details\":\"What's the last fractional bit?\"},\"REAL_HALF_PI\":{\"details\":\"And half Pi, to save on divides. TODO: That might not be how the compiler handles constants.\"},\"REAL_IBITS\":{\"details\":\"How many integer bits are there?\"},\"REAL_LN_TWO\":{\"details\":\"And our logarithms are based on ln(2).\"},\"REAL_ONE\":{\"details\":\"What's the first non-fractional bit\"},\"REAL_PI\":{\"details\":\"It is also useful to have Pi around.\"},\"REAL_TWO\":{\"details\":\"What's two? Two is pretty useful.\"},\"REAL_TWO_PI\":{\"details\":\"And two pi, which happens to be odd in its most accurate representation.\"},\"SIGN_MASK\":{\"details\":\"What's the sign bit?\"}}},\"userdoc\":{\"methods\":{\"abs(int128)\":{\"notice\":\"Get the absolute value of a real. Just the same as abs on a normal int128.\"},\"atan2(int128,int128)\":{\"notice\":\"Compute the nice two-component arctangent of y/x.\"},\"atanSmall(int128)\":{\"notice\":\"Calculate atan(x) for x in [-1, 1]. Uses the Chebyshev polynomial approach presented at https://www.mathworks.com/help/fixedpoint/examples/calculate-fixed-point-arctangent.html Uses polynomials received by personal communication. 0.999974x-0.332568x^3+0.193235x^5-0.115729x^7+0.0519505x^9-0.0114658x^11\"},\"cos(int128)\":{\"notice\":\"Calculate cos(x).\"},\"div(int128,int128)\":{\"notice\":\"Divide one real by another real. Truncates overflows.\"},\"exp(int128)\":{\"notice\":\"Calculate e^x with a sensible maximum iteration count to wait until convergence. Note that it is potentially possible to get an un-converged value; lack of convergence does not throw.\"},\"expLimited(int128,int256)\":{\"notice\":\"Calculate e^x. Uses the series given at <http://pages.mtu.edu/~shene/COURSES/cs201/NOTES/chap04/exp.html>. Lets you artificially limit the number of iterations. Note that it is potentially possible to get an un-converged value; lack of convergence does not throw.\"},\"fpart(int128)\":{\"notice\":\"Get the fractional part of a real, as a real. Ignores sign (so fpart(-0.5) is 0.5).\"},\"fpartSigned(int128)\":{\"notice\":\"Get the fractional part of a real, as a real. Respects sign (so fpartSigned(-0.5) is -0.5).\"},\"fraction(int88,int88)\":{\"notice\":\"Create a real from a rational fraction.\"},\"fractionalBits(int128)\":{\"notice\":\"Returns the fractional bits of a real. Ignores the sign of the real.\"},\"fromReal(int128)\":{\"notice\":\"Convert a real to an integer. Preserves sign.\"},\"ipart(int128)\":{\"notice\":\"Get the integer part of a fixed point value.\"},\"ipow(int128,int88)\":{\"notice\":\"Raise a number to a positive integer power in O(log power) time. See <https://stackoverflow.com/a/101613>\"},\"ln(int128)\":{\"notice\":\"Calculate a natural logarithm with a sensible maximum iteration count to wait until convergence. Note that it is potentially possible to get an un-converged value; lack of convergence does not throw.\"},\"lnLimited(int128,int256)\":{\"notice\":\"Calculate the natural log of a number. Rescales the input value and uses the algorithm outlined at <https://math.stackexchange.com/a/977836> and the ipow implementation. Lets you artificially limit the number of iterations. Note that it is potentially possible to get an un-converged value; lack of convergence does not throw.\"},\"mul(int128,int128)\":{\"notice\":\"Multiply one real by another. Truncates overflows.\"},\"pow(int128,int128)\":{\"notice\":\"Raise any number to any power, except for negative bases to fractional powers.\"},\"round(int128)\":{\"notice\":\"Round a real to the nearest integral real value.\"},\"sin(int128)\":{\"notice\":\"Calculate sin(x) with a sensible maximum iteration count to wait until convergence.\"},\"sinLimited(int128,int88)\":{\"notice\":\"Compute the sin of a number to a certain number of Taylor series terms.\"},\"sqrt(int128)\":{\"notice\":\"Compute the square root of a number.\"},\"tan(int128)\":{\"notice\":\"Calculate tan(x). May overflow for large results. May throw if tan(x) would be infinite, or return an approximation, or overflow.\"},\"toReal(int88)\":{\"notice\":\"Convert an integer to a real. Preserves sign.\"}},\"notice\":\"RealMath: fixed-point math library, based on fractional and integer parts. Using int128 as real88x40, which isn't in Solidity yet. 40 fractional bits gets us down to 1E-12 precision, while still letting us go up to galaxy scale counting in meters. Internally uses the wider int256 for some math. Note that for addition, subtraction, and mod (%), you should just use the built-in Solidity operators. Functions for these operations are not provided. Note that the fancy functions like sqrt, atan2, etc. aren't as accurate as they should be. They are (hopefully) Good Enough for doing orbital mechanics on block timescales in a game context, but they may not be good enough for other applications.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/RealMath.sol\":\"RealMath\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/RealMath.sol\":{\"keccak256\":\"0xf9d1a71762758251fdf137b97ea14686e4f3eef1f4cd99274ea039eb1dcff461\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11b67835c43266838fd9e3da9a247a10280bdc4a80785b927ed2c64dedd438ff\",\"dweb:/ipfs/QmemMQ4q1VTBWv1XyXbgc5DxXSjCyXJC4NM9St6hAhzrR7\"]}},\"version\":1}",
@@ -32235,12 +32259,13 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x7a5B1a0Ce60c0Bb7eA228c265CD526bbF5Bbdb32",
-      "transactionHash": "0x9d0fd0337f56b8ecfa6dd5cd35740d30100e375ec74f988fabb7633c95f017bd"
+      "address": "0x04D1A6e4580182D5685436AE00181034Fc601726",
+      "transactionHash": "0x1dc32bba7e0de62b053dd89711c28dad14382917310f7e0ddb76a2dda100428c"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T02:44:30.406Z",
+  "updatedAt": "2020-06-12T03:45:39.604Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {},
     "stateVariables": {

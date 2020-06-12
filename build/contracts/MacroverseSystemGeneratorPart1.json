@@ -23,7 +23,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -52,7 +53,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -76,7 +78,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -125,7 +128,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"uint16\",\"name\":\"planetNumber\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"totalPlanets\",\"type\":\"uint16\"}],\"name\":\"getPlanetClass\",\"outputs\":[{\"internalType\":\"enum Macroverse.WorldClass\",\"name\":\"\",\"type\":\"Macroverse.WorldClass\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"realInnerRadius\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realOuterRadius\",\"type\":\"int128\"},{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"enum Macroverse.WorldClass\",\"name\":\"class\",\"type\":\"Macroverse.WorldClass\"},{\"internalType\":\"int128\",\"name\":\"realPrevClearance\",\"type\":\"int128\"}],\"name\":\"getPlanetOrbitDimensions\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"realPeriapsis\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realApoapsis\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realClearance\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"enum Macroverse.WorldClass\",\"name\":\"class\",\"type\":\"Macroverse.WorldClass\"}],\"name\":\"getWorldMass\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"parentSeed\",\"type\":\"bytes32\"},{\"internalType\":\"uint16\",\"name\":\"childNumber\",\"type\":\"uint16\"}],\"name\":\"getWorldSeed\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{},\"stateVariables\":{\"REAL_FBITS\":{\"details\":\"How many fractional bits are there?\"},\"REAL_HALF\":{\"details\":\"What's the last fractional bit?\"},\"REAL_HALF_PI\":{\"details\":\"Also perpare pi/2\"},\"REAL_ONE\":{\"details\":\"What's the first non-fractional bit\"},\"REAL_PI\":{\"details\":\"It is useful to have Pi around. We can't pull it in from the library.\"},\"REAL_TWO\":{\"details\":\"What's two? Two is pretty useful.\"},\"REAL_ZERO\":{\"details\":\"And zero\"}}},\"userdoc\":{\"methods\":{\"getPlanetClass(bytes32,uint16,uint16)\":{\"notice\":\"Decide what kind of planet a given planet is. It depends on its place in the order. Takes the *planet*'s seed, its number, and the total planets in the system.\"},\"getPlanetOrbitDimensions(int128,int128,bytes32,Macroverse.WorldClass,int128)\":{\"notice\":\"Given the parent star's habitable zone bounds, the planet seed, the planet class to be generated, and the \\\"clearance\\\" radius around the previous planet in meters, produces orbit statistics (periapsis, apoapsis, and clearance) in meters. The first planet uses a previous clearance of 0. TODO: realOuterRadius from the habitable zone never gets used. We should remove it.\"},\"getWorldMass(bytes32,Macroverse.WorldClass)\":{\"notice\":\"Decide what the mass of the planet or moon is. We can't do even the mass of Jupiter in the ~88 bits we have in a real (should we have used int256 as the backing type?) so we work in Earth masses. Also produces the masses for moons.\"},\"getWorldSeed(bytes32,uint16)\":{\"notice\":\"Get the seed for a planet or moon from the seed for its parent (star or planet) and its child number.\"}},\"notice\":\"Contains a portion of the MacroverseStstemGenerator implementation code. The contract is split up due to contract size limitations. We can't do access control here sadly.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGeneratorPart1.sol\":\"MacroverseSystemGeneratorPart1\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xcc9e89f4b2238f4885c974b9f36ca4b9e5bb97d301a45a5da1019f191412325b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://147f3842bd6e7b474433a14a8749383a147b0378ee3f2e44f522261c1517208c\",\"dweb:/ipfs/QmazvLHvgJm8XeJc5tb3FHowci7hLgtUhVe8sYVZB4V4vu\"]},\"/z/home/anovak/workspace/macroverse/contracts/ControlledAccess.sol\":{\"keccak256\":\"0x26e901bb94b389ebb1aa85720c85b82506bc97a2ad9bc9dcba90099c3f40fc48\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://b56c1d321c7700c06ffe3666e711583b33daa662249b4a818ba93818423e9f23\",\"dweb:/ipfs/Qmf5treeYxy3w3rA2cMJZe9pZ2DAZUkqHWQbAv2TEqeMHu\"]},\"/z/home/anovak/workspace/macroverse/contracts/Macroverse.sol\":{\"keccak256\":\"0x6310724c21dfcb680881ac605dbc9d72982028b0bc63c5d87da4c5341ec44914\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5f49dc347fdc1511c3e39478687d22920d9d102beab470a27be66b63fd8c2342\",\"dweb:/ipfs/QmcQkHtjY7HMzSP95YCLaCfbhVYECZ6nbC47TTFXaJVkBo\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGeneratorPart1.sol\":{\"keccak256\":\"0x8cfbaa3c9596a92cb179a61002b5f8f22cb90ed5b95f8092f183ebc852b299b4\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://45a1b99a17acabb3b9f43744a3c216c4b0fdcb185652a8c2cf8d1d7f09809ab1\",\"dweb:/ipfs/QmfPebskp5Lm8BWZtdwKt2nf5u2KB5J1wBAELQ1sztk6bo\"]},\"/z/home/anovak/workspace/macroverse/contracts/RNG.sol\":{\"keccak256\":\"0xdb1e0446d6ba6b4fad81d7c5f43a47386685eedd49340ecfd2e6fdeeb86c871e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d95f52689ac87b5cf2658bf9c68bc5dfa69130294caaed089a31021b31d58f96\",\"dweb:/ipfs/QmTLzUy6Qt9jMt8Ci1rW2pYNvMD2wB4Au8uPXMvmDP1AAc\"]},\"/z/home/anovak/workspace/macroverse/contracts/RealMath.sol\":{\"keccak256\":\"0xf9d1a71762758251fdf137b97ea14686e4f3eef1f4cd99274ea039eb1dcff461\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11b67835c43266838fd9e3da9a247a10280bdc4a80785b927ed2c64dedd438ff\",\"dweb:/ipfs/QmemMQ4q1VTBWv1XyXbgc5DxXSjCyXJC4NM9St6hAhzrR7\"]},\"openzeppelin-solidity/contracts/GSN/Context.sol\":{\"keccak256\":\"0xc6fb4c940628ca2cde81ed6d20fc9ff456b60f55aafef555f43a86a2dda7ad9f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f17dda58954a84ffca3d53c0b6435bad7f5c42ab3a9c4603db2f1aef00edae4e\",\"dweb:/ipfs/QmehW99QmmzKvnqTsprsApDF7mK2JVo6nnrZ47znhLTFjh\"]},\"openzeppelin-solidity/contracts/access/Ownable.sol\":{\"keccak256\":\"0x4bd6402ca6b3419008c2b482aff54e66836e8cb4eba2680e42ac5884ae6424fc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8f9f711fb8d0d92aeea1c327e3845d13ca1fa8f142e47f8723cd5b3106fb29a3\",\"dweb:/ipfs/QmVQUReDW9f4zGqhizwHnyU8EntMs95tbASdqkGncnikba\"]}},\"version\":1}",
@@ -31782,14 +31786,15 @@
     "4": {
       "events": {},
       "links": {
-        "RealMath": "0x7a5B1a0Ce60c0Bb7eA228c265CD526bbF5Bbdb32"
+        "RealMath": "0x04D1A6e4580182D5685436AE00181034Fc601726"
       },
-      "address": "0xcCDA49D04f3334b1742c9fC55A8630B64570D486",
-      "transactionHash": "0x96d3d1d3fd3dbb89b64aa9d7db453077a6e845e995ca822e2ce111f7201f3854"
+      "address": "0x9a126789A738634664BE8a28d62f83363ee73e87",
+      "transactionHash": "0xbd0b77fbb77fe28f9348816074477394c831197496cc865846468eba9c8cf4d3"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T02:44:30.331Z",
+  "updatedAt": "2020-06-12T03:44:40.389Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {},
     "stateVariables": {

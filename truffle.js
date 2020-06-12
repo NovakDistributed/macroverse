@@ -42,6 +42,17 @@ module.exports = {
       gas: 8000000, // Knock down because it has to be les than block gas limit
       gasPrice: 4000000000 // Defaults to 100 gwei = 100 shannon = 100 billion, which is extremely high.
     },
+    rinkeby_local: {
+      network_id: 4,
+      host: "localhost", // Ignored
+      provider: function() {
+        // KEYSTORE_DIR must have a ./keystore under it.
+        // KEYSTORE_NAME is a file under that keystore directory
+        return makeKeystoreProvider(env['KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'http://localhost:8546/')
+      },
+      gas: 8000000, // Knock down because it has to be les than block gas limit
+      gasPrice: 4000000000 // Defaults to 100 gwei = 100 shannon = 100 billion, which is extremely high.
+    },
     rinkeby_infura: {
       network_id: 4,
       host: "localhost", // Ignored

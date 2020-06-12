@@ -54,7 +54,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -88,7 +89,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -142,7 +144,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -181,7 +184,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -225,7 +229,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -244,7 +249,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"starGeneratorAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"starGeneratorPatchAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"systemGeneratorAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"moonGeneratorAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"token\",\"type\":\"uint256\"}],\"name\":\"exists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"},{\"internalType\":\"uint16\",\"name\":\"system\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"planet\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"moon\",\"type\":\"uint16\"}],\"name\":\"moonExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"},{\"internalType\":\"uint16\",\"name\":\"system\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"planet\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"moon\",\"type\":\"uint16\"}],\"name\":\"moonExistsVerbose\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"exists\",\"type\":\"bool\"},{\"internalType\":\"bytes32\",\"name\":\"planetSeed\",\"type\":\"bytes32\"},{\"internalType\":\"enum Macroverse.WorldClass\",\"name\":\"planetClass\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"},{\"internalType\":\"uint16\",\"name\":\"system\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"planet\",\"type\":\"uint16\"}],\"name\":\"planetExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"}],\"name\":\"sectorExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int16\",\"name\":\"sectorX\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorY\",\"type\":\"int16\"},{\"internalType\":\"int16\",\"name\":\"sectorZ\",\"type\":\"int16\"},{\"internalType\":\"uint16\",\"name\":\"system\",\"type\":\"uint16\"}],\"name\":\"systemExists\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"constructor\":\"Deploy a new copy of the Macroverse Existence Checker. The given generator contracts will be queried.\",\"exists(uint256)\":{\"notice\":\"Determine if the thing referred to by the given packed NFT token number exists. Token is assumed to be canonical/valid. Use MacroverseNFTUtils tokenIsCanonical() to validate it first.\"},\"moonExists(int16,int16,int16,uint16,uint16,uint16)\":{\"notice\":\"Determine if the given moon exists.\"},\"moonExistsVerbose(int16,int16,int16,uint16,uint16,uint16)\":{\"notice\":\"Determine if the given moon exists, and if so returns some information generated about it for re-use.\"},\"planetExists(int16,int16,int16,uint16,uint16)\":{\"notice\":\"Determine if the given planet exists.\"},\"sectorExists(int16,int16,int16)\":{\"notice\":\"Return true if a sector with the given coordinates exists in the Macroverse universe, and false otherwise.\"},\"systemExists(int16,int16,int16,uint16)\":{\"notice\":\"Determine if the given system (which might be a star, black hole, etc.) exists in the given sector. If the sector doesn't exist, returns false.\"}},\"notice\":\"The MacroverseExistenceChecker queries Macroverse generator contracts to determine if a particular thing (e.g. the nth planet of such-and-such a star) exists in the Macroverse world. It does not need to be ControlledAccess because the Macroverse contracts it calls into are. It does not have defenses against receiving stuck Ether and tokens because it is not intended to be involved in end-user token transactions in any capacity. Serves as an example for how Macroverse can be queried from on-chain logic.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/MacroverseExistenceChecker.sol\":\"MacroverseExistenceChecker\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xcc9e89f4b2238f4885c974b9f36ca4b9e5bb97d301a45a5da1019f191412325b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://147f3842bd6e7b474433a14a8749383a147b0378ee3f2e44f522261c1517208c\",\"dweb:/ipfs/QmazvLHvgJm8XeJc5tb3FHowci7hLgtUhVe8sYVZB4V4vu\"]},\"/z/home/anovak/workspace/macroverse/contracts/ControlledAccess.sol\":{\"keccak256\":\"0x26e901bb94b389ebb1aa85720c85b82506bc97a2ad9bc9dcba90099c3f40fc48\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://b56c1d321c7700c06ffe3666e711583b33daa662249b4a818ba93818423e9f23\",\"dweb:/ipfs/Qmf5treeYxy3w3rA2cMJZe9pZ2DAZUkqHWQbAv2TEqeMHu\"]},\"/z/home/anovak/workspace/macroverse/contracts/HasNoContracts.sol\":{\"keccak256\":\"0xd02f05b2811cdede03d04d4a24dd33da47bf1da87214b9684fb3c056a26e22b4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4463d6c8a654d45a2ab593ea7c58db4c9238fb29f1fd01cca1825bb70dbdfb08\",\"dweb:/ipfs/QmQ9gbbpDbrcrSnhUCXzkbgu6wQJFPKsw3p45rP2Djt5Hf\"]},\"/z/home/anovak/workspace/macroverse/contracts/HasNoEther.sol\":{\"keccak256\":\"0x1ed159c308f042591cd3db0f7f8fae21e5743483cc922aa309aba7ff3f2e5be7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cd894e58f259aec2e01d2c0a5cae2cb59f4bca9c7dfee0ca3d8c0e84e893f1c7\",\"dweb:/ipfs/QmZqTZRZiRYehq3fKvM3iSAY9tJKqu3EfHv8KfR3MDhM9g\"]},\"/z/home/anovak/workspace/macroverse/contracts/Macroverse.sol\":{\"keccak256\":\"0x6310724c21dfcb680881ac605dbc9d72982028b0bc63c5d87da4c5341ec44914\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5f49dc347fdc1511c3e39478687d22920d9d102beab470a27be66b63fd8c2342\",\"dweb:/ipfs/QmcQkHtjY7HMzSP95YCLaCfbhVYECZ6nbC47TTFXaJVkBo\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseExistenceChecker.sol\":{\"keccak256\":\"0x42880d8edfd43a9420fd51bb1280a156cf8180549ae494cbe3a73332ed29bc4a\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://f1aad52cd0224ba04d5dc3078f30daf27144bf2f493f4774eb5bde6329436a1b\",\"dweb:/ipfs/QmRAHwV8iZW5sfLNGL4bAsd4RR6fHTp2Cc5AB5T7TFkEyf\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseMoonGenerator.sol\":{\"keccak256\":\"0x17f4e46b18c28010ce257205c692cf89d8084785f3a1c640c36cf1a3140cdce0\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://aabbed67c664d9435adec0334f6570bb1d3a035bf4d0579de5f156724e94d8db\",\"dweb:/ipfs/QmZVVwPW4DxTjSuE2fZTxwDpPDbvBdvt2An9tpgTTY6jzr\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseNFTUtils.sol\":{\"keccak256\":\"0x6e96a68cd20a24d48e2e4c3ed58ae9317741996509c3042c8817ae0389558e1a\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://2c5d5b8ed0abafe4f96af6accbae68e47207a576c24924a8b2413398bba1c592\",\"dweb:/ipfs/QmWc2Yc4ASXRooPkxxjafUsHRVL4LjWeKCNzrZnLBwRgyA\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseStarGenerator.sol\":{\"keccak256\":\"0xdef7360323bc51d8af82b7d83043d7e95b96b0baa83a572215c81f77440516ca\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://f5330df42e7a3212481bbbb1c8cdacd2edf641e24f02137e9aadff51d4b93a2a\",\"dweb:/ipfs/QmU6m3kUUJ8zabXcmSw2PvkVWzct86bE7nCS15Utq2qqFg\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseStarGeneratorPatch1.sol\":{\"keccak256\":\"0x58575a5c636bffd007020975e4d2507a2bbb627308e08c4010b1d64976c7d5f7\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://06f4ebc098135d7fd79909408e38a8fe53aaf77ba8380e718db72450ab8a0c12\",\"dweb:/ipfs/QmdYt2FnnVjNMK2BdXMtSZ1b1n5Z1Mm5Ge7w9dBZGJgYDk\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGenerator.sol\":{\"keccak256\":\"0x27903522e7378353f23e36a5cc0171dff52a0727c2e5b64eb3a6f82d310c11d4\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://af7e87a7e0773f834d76327bbf9231752d93bc955a98c8071764e385dd3a3bba\",\"dweb:/ipfs/QmSKMW8ydKDEpNCqTF1QEwDabGUwBXTyUfVuiifiPXWwDV\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGeneratorPart1.sol\":{\"keccak256\":\"0x8cfbaa3c9596a92cb179a61002b5f8f22cb90ed5b95f8092f183ebc852b299b4\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://45a1b99a17acabb3b9f43744a3c216c4b0fdcb185652a8c2cf8d1d7f09809ab1\",\"dweb:/ipfs/QmfPebskp5Lm8BWZtdwKt2nf5u2KB5J1wBAELQ1sztk6bo\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGeneratorPart2.sol\":{\"keccak256\":\"0x557b71407f45d9517d6e3010a4a8d0ad965f54775693984f622936f2acc4ce95\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://10456c18a625a3ddfeca713e0a89a91b43e002a6150272dfec37b947826d1c04\",\"dweb:/ipfs/QmdgvVCYJfAhVJbEsu8KpyUFsnpWF8caaTVdc9sqXdQmau\"]},\"/z/home/anovak/workspace/macroverse/contracts/RNG.sol\":{\"keccak256\":\"0xdb1e0446d6ba6b4fad81d7c5f43a47386685eedd49340ecfd2e6fdeeb86c871e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d95f52689ac87b5cf2658bf9c68bc5dfa69130294caaed089a31021b31d58f96\",\"dweb:/ipfs/QmTLzUy6Qt9jMt8Ci1rW2pYNvMD2wB4Au8uPXMvmDP1AAc\"]},\"/z/home/anovak/workspace/macroverse/contracts/RealMath.sol\":{\"keccak256\":\"0xf9d1a71762758251fdf137b97ea14686e4f3eef1f4cd99274ea039eb1dcff461\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11b67835c43266838fd9e3da9a247a10280bdc4a80785b927ed2c64dedd438ff\",\"dweb:/ipfs/QmemMQ4q1VTBWv1XyXbgc5DxXSjCyXJC4NM9St6hAhzrR7\"]},\"openzeppelin-solidity/contracts/GSN/Context.sol\":{\"keccak256\":\"0xc6fb4c940628ca2cde81ed6d20fc9ff456b60f55aafef555f43a86a2dda7ad9f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f17dda58954a84ffca3d53c0b6435bad7f5c42ab3a9c4603db2f1aef00edae4e\",\"dweb:/ipfs/QmehW99QmmzKvnqTsprsApDF7mK2JVo6nnrZ47znhLTFjh\"]},\"openzeppelin-solidity/contracts/access/Ownable.sol\":{\"keccak256\":\"0x4bd6402ca6b3419008c2b482aff54e66836e8cb4eba2680e42ac5884ae6424fc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8f9f711fb8d0d92aeea1c327e3845d13ca1fa8f142e47f8723cd5b3106fb29a3\",\"dweb:/ipfs/QmVQUReDW9f4zGqhizwHnyU8EntMs95tbASdqkGncnikba\"]}},\"version\":1}",
@@ -16489,12 +16495,13 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x0b757Bf9b2A52C6994385559506b2B537873647a",
-      "transactionHash": "0xbbdf816f59534d8bc60b0deb902951aceb34da8b7b30bd5590a6df5cb59968d6"
+      "address": "0xA166dEFa00EADD5C53914d695d3DaD63b149D75c",
+      "transactionHash": "0xfb384f91dad09b1ddb886a49f6a3bc3c268f45b877ee36c36c251f51594ef5fe"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T02:44:30.239Z",
+  "updatedAt": "2020-06-12T03:48:09.923Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },

@@ -39,7 +39,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"minBalanceInAtomicUnits_\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"origin\",\"type\":\"address\"}],\"name\":\"allowQuery\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"allowQuery(address,address)\":{\"notice\":\"Allow all queries resulting from a transaction initiated from an origin address with at least the required minimum balance. This means that any contract you use can make queries on your behalf, but that no contract with the minimum balance can proxy queries for others.\"},\"constructor\":\"Make a new MinimumBalanceAccessControl that requires the specified minimum balance of the specified token.\"},\"notice\":\"Represents an access control strategy where any end user (origin) with a minimum balance in an ERC20 token is allowed.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/MinimumBalanceAccessControl.sol\":\"MinimumBalanceAccessControl\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xcc9e89f4b2238f4885c974b9f36ca4b9e5bb97d301a45a5da1019f191412325b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://147f3842bd6e7b474433a14a8749383a147b0378ee3f2e44f522261c1517208c\",\"dweb:/ipfs/QmazvLHvgJm8XeJc5tb3FHowci7hLgtUhVe8sYVZB4V4vu\"]},\"/z/home/anovak/workspace/macroverse/contracts/MinimumBalanceAccessControl.sol\":{\"keccak256\":\"0x83bbdb0d7270e20ba3efc67cd0270f97ea09f342363a0e9bf08f574088b96778\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://7c54b7b0ccaab8347d1397ac38109b255941220885b3aec9584c559334590833\",\"dweb:/ipfs/QmPrVaJAL75pGSWWfY28DLL2VDKY6W4HD6GKRWdErYvKUk\"]},\"openzeppelin-solidity/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x5c26b39d26f7ed489e555d955dcd3e01872972e71fdd1528e93ec164e4f23385\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://efdc632af6960cf865dbc113665ea1f5b90eab75cc40ec062b2f6ae6da582017\",\"dweb:/ipfs/QmfAZFDuG62vxmAN9DnXApv7e7PMzPqi4RkqqZHLMSQiY5\"]}},\"version\":1}",
@@ -1346,12 +1347,13 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0xd38232b3a765B5fF6f59948B4303aa58026Fb2aA",
-      "transactionHash": "0x8880cb8c86efe549bfe1b421219af983b0f3ea6909b5b3dae2fd7e58610bf0fa"
+      "address": "0x19A1f4406462e21EfAb9C11aB366966e046F3020",
+      "transactionHash": "0x577a7c927f710fd94b575e4f701094c893adcb9d40aa854fb9f6c3414a726018"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T02:44:30.386Z",
+  "updatedAt": "2020-06-12T03:45:39.635Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },

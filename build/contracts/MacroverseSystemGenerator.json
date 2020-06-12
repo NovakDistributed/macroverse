@@ -55,7 +55,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -99,7 +100,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -128,7 +130,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -152,7 +155,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -201,7 +205,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -230,7 +235,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -249,7 +255,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -273,7 +280,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -292,7 +300,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -311,7 +320,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -335,7 +345,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -359,7 +370,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -378,7 +390,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"accessControlAddress\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newAccessControl\",\"type\":\"address\"}],\"name\":\"changeAccessControl\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"realPeriapsis\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realApoapsis\",\"type\":\"int128\"}],\"name\":\"convertOrbitShape\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"realSemimajor\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realEccentricity\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"uint16\",\"name\":\"planetNumber\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"totalPlanets\",\"type\":\"uint16\"}],\"name\":\"getPlanetClass\",\"outputs\":[{\"internalType\":\"enum Macroverse.WorldClass\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"enum Macroverse.WorldClass\",\"name\":\"class\",\"type\":\"uint8\"}],\"name\":\"getPlanetInclination\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int128\",\"name\":\"realInnerRadius\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realOuterRadius\",\"type\":\"int128\"},{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"enum Macroverse.WorldClass\",\"name\":\"class\",\"type\":\"uint8\"},{\"internalType\":\"int128\",\"name\":\"realPrevClearance\",\"type\":\"int128\"}],\"name\":\"getPlanetOrbitDimensions\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"realPeriapsis\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realApoapsis\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realClearance\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"}],\"name\":\"getWorldAop\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"}],\"name\":\"getWorldLan\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"enum Macroverse.WorldClass\",\"name\":\"class\",\"type\":\"uint8\"}],\"name\":\"getWorldMass\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"}],\"name\":\"getWorldMeanAnomalyAtEpoch\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"parentSeed\",\"type\":\"bytes32\"},{\"internalType\":\"uint16\",\"name\":\"childNumber\",\"type\":\"uint16\"}],\"name\":\"getWorldSeed\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"}],\"name\":\"getWorldSpinRate\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"}],\"name\":\"getWorldYXAxisAngles\",\"outputs\":[{\"internalType\":\"int128\",\"name\":\"realYRadians\",\"type\":\"int128\"},{\"internalType\":\"int128\",\"name\":\"realXRadians\",\"type\":\"int128\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"seed\",\"type\":\"bytes32\"},{\"internalType\":\"uint16\",\"name\":\"worldNumber\",\"type\":\"uint16\"}],\"name\":\"isTidallyLocked\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{\"changeAccessControl(address)\":{\"notice\":\"Change the access control strategy of the prototype.\"},\"constructor\":\"Deploy a new copy of the MacroverseSystemGenerator.\",\"convertOrbitShape(int128,int128)\":{\"notice\":\"Convert from periapsis and apoapsis to semimajor axis and eccentricity.\"},\"getPlanetClass(bytes32,uint16,uint16)\":{\"notice\":\"Decide what kind of planet a given planet is. It depends on its place in the order. Takes the *planet*'s seed, its number, and the total planets in the system.\"},\"getPlanetInclination(bytes32,uint8)\":{\"notice\":\"Get the inclination (angle from system XZ plane to orbital plane at the ascending node) for a planet. For a moon, this is done in the moon generator instead. Inclination is always positive. If it were negative, the ascending node would really be the descending node. Result is a real in radians.\"},\"getPlanetOrbitDimensions(int128,int128,bytes32,uint8,int128)\":{\"notice\":\"Given the parent star's habitable zone bounds, the planet seed, the planet class to be generated, and the \\\"clearance\\\" radius around the previous planet in meters, produces orbit statistics (periapsis, apoapsis, and clearance) in meters. The first planet uses a previous clearance of 0. TODO: realOuterRadius from the habitable zone never gets used. We should remove it.\"},\"getWorldAop(bytes32)\":{\"notice\":\"Get the argument of periapsis (angle from ascending node to periapsis position, in the orbital plane) for a planet or moon.\"},\"getWorldLan(bytes32)\":{\"notice\":\"Get the longitude of the ascending node for a planet or moon. For planets, this is the angle from system +X to ascending node. For moons, we use system +X transformed into the planet's equatorial plane by the equatorial plane/rotation axis angles.\"},\"getWorldMass(bytes32,uint8)\":{\"notice\":\"Decide what the mass of the planet or moon is. We can't do even the mass of Jupiter in the ~88 bits we have in a real (should we have used int256 as the backing type?) so we work in Earth masses. Also produces the masses for moons.\"},\"getWorldMeanAnomalyAtEpoch(bytes32)\":{\"notice\":\"Get the mean anomaly (which sweeps from 0 at periapsis to 2 pi at the next periapsis) at epoch (time 0) for a planet or moon.\"},\"getWorldSeed(bytes32,uint16)\":{\"notice\":\"Get the seed for a planet or moon from the seed for its parent (star or planet) and its child number.\"},\"getWorldSpinRate(bytes32)\":{\"notice\":\"Get the spin rate of the world in radians per Julian year around its axis. For a tidally locked world, ignore this value and use the mean angular motion computed by the OrbitalMechanics contract, given the orbit details. Not used for asteroid belts or rings.\"},\"getWorldYXAxisAngles(bytes32)\":{\"notice\":\"Get the Y and X axis angles for a world, in radians. The world's rotation axis starts straight up in its orbital plane. Then the planet is rotated in Y, around the axis by the Y angle. Then it is rotated forward (what would be toward the viewer) in the world's transformed X by the X axis angle. Both angles are in radians. The X angle is never negative, because the Y angle would just be the opposite direction. It is also never greater than Pi, because otherwise we would just measure around the other way. Not used for asteroid belts or rings. For a tidally locked world, ignore these values and use 0 for both angles.\"},\"isTidallyLocked(bytes32,uint16)\":{\"notice\":\"Determine if the world is tidally locked, given its seed and its number out from the parent, starting with 0. Overrides getWorldZXAxisAngles and getWorldSpinRate.  Not used for asteroid belts or rings.\"}},\"notice\":\"Represents a Macroverse generator for planetary systems around stars and other stellar objects. Because of contract size limitations, some code in this contract is shared between planets and moons, while some code is planet-specific. Moon-specific code lives in the MacroverseMoonGenerator. Permission to call methods on this contract is regulated by a configurable AccessControl contract. One such set of terms might be to require that the account initiating a transaction have a certain minimum MRV token balance. The owner of this contract reserves the right to supersede it with a new version, and to modify the terms for accessing this contract, at any time, for any reason, and without notice. This includes the right to indefinitely or permanently suspend or terminate access to this contract for any person, account, or other contract, or for all persons, accounts, or other contracts. The owner also reserves the right to not do any of the above.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGenerator.sol\":\"MacroverseSystemGenerator\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0xcc9e89f4b2238f4885c974b9f36ca4b9e5bb97d301a45a5da1019f191412325b\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://147f3842bd6e7b474433a14a8749383a147b0378ee3f2e44f522261c1517208c\",\"dweb:/ipfs/QmazvLHvgJm8XeJc5tb3FHowci7hLgtUhVe8sYVZB4V4vu\"]},\"/z/home/anovak/workspace/macroverse/contracts/ControlledAccess.sol\":{\"keccak256\":\"0x26e901bb94b389ebb1aa85720c85b82506bc97a2ad9bc9dcba90099c3f40fc48\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://b56c1d321c7700c06ffe3666e711583b33daa662249b4a818ba93818423e9f23\",\"dweb:/ipfs/Qmf5treeYxy3w3rA2cMJZe9pZ2DAZUkqHWQbAv2TEqeMHu\"]},\"/z/home/anovak/workspace/macroverse/contracts/Macroverse.sol\":{\"keccak256\":\"0x6310724c21dfcb680881ac605dbc9d72982028b0bc63c5d87da4c5341ec44914\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://5f49dc347fdc1511c3e39478687d22920d9d102beab470a27be66b63fd8c2342\",\"dweb:/ipfs/QmcQkHtjY7HMzSP95YCLaCfbhVYECZ6nbC47TTFXaJVkBo\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGenerator.sol\":{\"keccak256\":\"0x27903522e7378353f23e36a5cc0171dff52a0727c2e5b64eb3a6f82d310c11d4\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://af7e87a7e0773f834d76327bbf9231752d93bc955a98c8071764e385dd3a3bba\",\"dweb:/ipfs/QmSKMW8ydKDEpNCqTF1QEwDabGUwBXTyUfVuiifiPXWwDV\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGeneratorPart1.sol\":{\"keccak256\":\"0x8cfbaa3c9596a92cb179a61002b5f8f22cb90ed5b95f8092f183ebc852b299b4\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://45a1b99a17acabb3b9f43744a3c216c4b0fdcb185652a8c2cf8d1d7f09809ab1\",\"dweb:/ipfs/QmfPebskp5Lm8BWZtdwKt2nf5u2KB5J1wBAELQ1sztk6bo\"]},\"/z/home/anovak/workspace/macroverse/contracts/MacroverseSystemGeneratorPart2.sol\":{\"keccak256\":\"0x557b71407f45d9517d6e3010a4a8d0ad965f54775693984f622936f2acc4ce95\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://10456c18a625a3ddfeca713e0a89a91b43e002a6150272dfec37b947826d1c04\",\"dweb:/ipfs/QmdgvVCYJfAhVJbEsu8KpyUFsnpWF8caaTVdc9sqXdQmau\"]},\"/z/home/anovak/workspace/macroverse/contracts/RNG.sol\":{\"keccak256\":\"0xdb1e0446d6ba6b4fad81d7c5f43a47386685eedd49340ecfd2e6fdeeb86c871e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d95f52689ac87b5cf2658bf9c68bc5dfa69130294caaed089a31021b31d58f96\",\"dweb:/ipfs/QmTLzUy6Qt9jMt8Ci1rW2pYNvMD2wB4Au8uPXMvmDP1AAc\"]},\"/z/home/anovak/workspace/macroverse/contracts/RealMath.sol\":{\"keccak256\":\"0xf9d1a71762758251fdf137b97ea14686e4f3eef1f4cd99274ea039eb1dcff461\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11b67835c43266838fd9e3da9a247a10280bdc4a80785b927ed2c64dedd438ff\",\"dweb:/ipfs/QmemMQ4q1VTBWv1XyXbgc5DxXSjCyXJC4NM9St6hAhzrR7\"]},\"openzeppelin-solidity/contracts/GSN/Context.sol\":{\"keccak256\":\"0xc6fb4c940628ca2cde81ed6d20fc9ff456b60f55aafef555f43a86a2dda7ad9f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f17dda58954a84ffca3d53c0b6435bad7f5c42ab3a9c4603db2f1aef00edae4e\",\"dweb:/ipfs/QmehW99QmmzKvnqTsprsApDF7mK2JVo6nnrZ47znhLTFjh\"]},\"openzeppelin-solidity/contracts/access/Ownable.sol\":{\"keccak256\":\"0x4bd6402ca6b3419008c2b482aff54e66836e8cb4eba2680e42ac5884ae6424fc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8f9f711fb8d0d92aeea1c327e3845d13ca1fa8f142e47f8723cd5b3106fb29a3\",\"dweb:/ipfs/QmVQUReDW9f4zGqhizwHnyU8EntMs95tbASdqkGncnikba\"]}},\"version\":1}",
@@ -6669,15 +6682,16 @@
         }
       },
       "links": {
-        "MacroverseSystemGeneratorPart1": "0xcCDA49D04f3334b1742c9fC55A8630B64570D486",
-        "MacroverseSystemGeneratorPart2": "0x156C3Bb1d84B8697647c6B164c4d7CD0Dfcb9ae7"
+        "MacroverseSystemGeneratorPart1": "0x9a126789A738634664BE8a28d62f83363ee73e87",
+        "MacroverseSystemGeneratorPart2": "0x211f915b8A5b89D42061A08180E7F3CE8c1B2102"
       },
-      "address": "0x9f27389b1a40Db4B5f0781457143DD16a204964b",
-      "transactionHash": "0xddb262fc0885be013194f86c5ceda9eadc949dfcf5b8dcdf9b380aaad4519590"
+      "address": "0x6133B521F018e66934E6e14101CfFDF08d9bB357",
+      "transactionHash": "0x073b45238af15ea66b421a986d1401107a0ee72f1c59dddb8b7aa4619ade94ae"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T02:44:30.319Z",
+  "updatedAt": "2020-06-12T03:46:39.790Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {
       "owner()": {
