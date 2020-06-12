@@ -1,6 +1,6 @@
 {
     "name": "macroverse",
-    "version": "2.0.0-beta.1",
+    "version": "2.0.0-beta.2",
     "description": "An entire universe on the Ethereum blockchain",
     "keywords": [
         "macroverse",
@@ -31,8 +31,8 @@
     },
     "devDependencies": {
         "dotenv": "^8.2.0",
-        "eth-gas-reporter": "^0.2.14",
-        "openzeppelin-solidity": "^2.5.0",
+        "eth-gas-reporter": "^0.2.17",
+        "openzeppelin-solidity": "^3.0.2",
         "truffle-keystore-provider": "^1.0.4"
     }
 }
