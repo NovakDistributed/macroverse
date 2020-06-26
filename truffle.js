@@ -72,6 +72,9 @@ module.exports = {
     }
   },
   plugins: ['truffle-plugin-verify'],
+  verify: {
+    preamble: "SPDX-License-Identifier: UNLICENSED\nSee https://github.com/OpenZeppelin/openzeppelin-contracts/blob/2a0f2a8ba807b41360e7e092c3d5bb1bfbeb8b50/LICENSE and https://github.com/NovakDistributed/macroverse/blob/eea161aff5dba9d21204681a3b0f5dbe1347e54b/LICENSE"
+  },
   api_keys: {
     // Verification is "Powered by Etherscan.io APIs"
     etherscan: env['ETHERSCAN_API_KEY']
