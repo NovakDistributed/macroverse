@@ -251,13 +251,12 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0xBbdc6753245FE8a6ffaDe298607b9B674a6a7E94",
-      "transactionHash": "0x494aaed25f336fb8240c51a3b6f0f69e9602e7d8bd6547dfcf4e483e0b8b2b6e"
+      "address": "0x46BfCC8A31ef447C5878BAB6CEc901D8b1c6F100",
+      "transactionHash": "0xc1651de5fa698ac1fe314b4ebd63bdaa0bb7a657e2cfdf875813be0a8791a43f"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T03:44:40.380Z",
-  "networkType": "ethereum",
+  "updatedAt": "2020-07-10T05:01:41.945Z",
   "devdoc": {
     "methods": {}
   },

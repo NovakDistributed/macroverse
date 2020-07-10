@@ -22,9 +22,9 @@ module.exports = async function(deployer, network, accounts) {
   deployer.link(RealMath, MacroverseStarGenerator)
 
   // Figure out where crowdsale proceeds belong
-  let beneficiary = (network == "live" ? LIVE_BENEFICIARY : accounts[0])
+  let beneficiary = (network.startsWith("live") ? LIVE_BENEFICIARY : accounts[0])
   // And the reserved tokens
-  let tokenAccount = (network == "live" ? LIVE_TOKEN_ACCOUNT : accounts[0])
+  let tokenAccount = (network.startsWith("live") ? LIVE_TOKEN_ACCOUNT : accounts[0])
   
   console.log("On network " + network + " and sending ETH to " + beneficiary + " and MRV to " + tokenAccount)
   
@@ -33,8 +33,10 @@ module.exports = async function(deployer, network, accounts) {
   // Determine the token to use.
   // On testnet we want to launch one that lets anyone mint tokens for free
   // Make sure to check startsWith to match the -fork network Truffle dry runs the migrations against.
+  // This has to pick the same contract we reference in 12_deploy_universal_registry.js,
+  // so it should match the code there.
   // TODO: Tests get upset if they try and test MRVToken but TestnetMRVToken was deployed instead.
-  let token_contract = (network.startsWith("rinkeby_infura") ? TestnetMRVToken : MRVToken)
+  let token_contract = (network.startsWith("rinkeby") ? TestnetMRVToken : MRVToken)
   
   // Deploy the token
   await deployer.deploy(token_contract, beneficiary, tokenAccount).then(function() {

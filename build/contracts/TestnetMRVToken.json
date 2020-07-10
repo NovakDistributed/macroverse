@@ -687,15 +687,15 @@
     "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/TestnetMRVToken.sol",
     "exportedSymbols": {
       "TestnetMRVToken": [
-        10565
+        10577
       ]
     },
-    "id": 10566,
+    "id": 10578,
     "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10534,
+        "id": 10546,
         "literals": [
           "solidity",
           "^",
@@ -708,9 +708,9 @@
       {
         "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MRVToken.sol",
         "file": "./MRVToken.sol",
-        "id": 10535,
+        "id": 10547,
         "nodeType": "ImportDirective",
-        "scope": 10566,
+        "scope": 10578,
         "sourceUnit": 737,
         "src": "26:24:23",
         "symbolAliases": [],
@@ -723,7 +723,7 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10537,
+              "id": 10549,
               "name": "MRVToken",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 736,
@@ -733,7 +733,7 @@
                 "typeString": "contract MRVToken"
               }
             },
-            "id": 10538,
+            "id": 10550,
             "nodeType": "InheritanceSpecifier",
             "src": "184:8:23"
           }
@@ -742,47 +742,47 @@
           97,
           202,
           736,
-          10610,
-          10719,
-          11491,
-          11569
+          10622,
+          10731,
+          11503,
+          11581
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 10536,
+          "id": 10548,
           "nodeType": "StructuredDocumentation",
           "src": "52:103:23",
           "text": " MRVToken contract which adds unrestricted minting by anyone.\n Only useful on a testnet."
         },
         "fullyImplemented": true,
-        "id": 10565,
+        "id": 10577,
         "linearizedBaseContracts": [
-          10565,
+          10577,
           736,
           97,
           202,
-          10719,
-          11491,
-          11569,
-          10610
+          10731,
+          11503,
+          11581,
+          10622
         ],
         "name": "TestnetMRVToken",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 10550,
+              "id": 10562,
               "nodeType": "Block",
               "src": "429:33:23",
               "statements": []
             },
             "documentation": {
-              "id": 10539,
+              "id": 10551,
               "nodeType": "StructuredDocumentation",
               "src": "200:112:23",
               "text": " Make a new TestnetMRVToken.\n Passes through arguments to the base MRVToken constructor."
             },
-            "id": 10551,
+            "id": 10563,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
@@ -790,11 +790,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 10546,
+                    "id": 10558,
                     "name": "sendProceedsTo",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 10541,
+                    "referencedDeclaration": 10553,
                     "src": "392:14:23",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address_payable",
@@ -803,11 +803,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 10547,
+                    "id": 10559,
                     "name": "sendTokensTo",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 10543,
+                    "referencedDeclaration": 10555,
                     "src": "408:12:23",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -815,10 +815,10 @@
                     }
                   }
                 ],
-                "id": 10548,
+                "id": 10560,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 10545,
+                  "id": 10557,
                   "name": "MRVToken",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -837,17 +837,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 10544,
+              "id": 10556,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10541,
+                  "id": 10553,
                   "mutability": "mutable",
                   "name": "sendProceedsTo",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10551,
+                  "scope": 10563,
                   "src": "329:30:23",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -856,7 +856,7 @@
                     "typeString": "address payable"
                   },
                   "typeName": {
-                    "id": 10540,
+                    "id": 10552,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "329:15:23",
@@ -871,12 +871,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 10543,
+                  "id": 10555,
                   "mutability": "mutable",
                   "name": "sendTokensTo",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10551,
+                  "scope": 10563,
                   "src": "361:20:23",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -885,7 +885,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10542,
+                    "id": 10554,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "361:7:23",
@@ -902,12 +902,12 @@
               "src": "328:54:23"
             },
             "returnParameters": {
-              "id": 10549,
+              "id": 10561,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "429:0:23"
             },
-            "scope": 10565,
+            "scope": 10577,
             "src": "317:145:23",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -915,7 +915,7 @@
           },
           {
             "body": {
-              "id": 10563,
+              "id": 10575,
               "nodeType": "Block",
               "src": "599:42:23",
               "statements": [
@@ -927,7 +927,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 10558,
+                          "id": 10570,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -938,7 +938,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 10559,
+                        "id": 10571,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -954,11 +954,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 10560,
+                        "id": 10572,
                         "name": "amount",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10554,
+                        "referencedDeclaration": 10566,
                         "src": "627:6:23",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -977,18 +977,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 10557,
+                      "id": 10569,
                       "name": "_mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11367,
+                      "referencedDeclaration": 11379,
                       "src": "609:5:23",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
                         "typeString": "function (address,uint256)"
                       }
                     },
-                    "id": 10561,
+                    "id": 10573,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1003,20 +1003,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10562,
+                  "id": 10574,
                   "nodeType": "ExpressionStatement",
                   "src": "609:25:23"
                 }
               ]
             },
             "documentation": {
-              "id": 10552,
+              "id": 10564,
               "nodeType": "StructuredDocumentation",
               "src": "472:85:23",
               "text": " Allow anyone to mint themselves any amount of tokens, for testing."
             },
             "functionSelector": "a0712d68",
-            "id": 10564,
+            "id": 10576,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1024,17 +1024,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 10555,
+              "id": 10567,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10554,
+                  "id": 10566,
                   "mutability": "mutable",
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10564,
+                  "scope": 10576,
                   "src": "576:14:23",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1043,7 +1043,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10553,
+                    "id": 10565,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "576:7:23",
@@ -1059,19 +1059,19 @@
               "src": "575:16:23"
             },
             "returnParameters": {
-              "id": 10556,
+              "id": 10568,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "599:0:23"
             },
-            "scope": 10565,
+            "scope": 10577,
             "src": "562:79:23",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 10566,
+        "scope": 10578,
         "src": "156:488:23"
       }
     ],
@@ -1081,15 +1081,15 @@
     "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/TestnetMRVToken.sol",
     "exportedSymbols": {
       "TestnetMRVToken": [
-        10565
+        10577
       ]
     },
-    "id": 10566,
+    "id": 10578,
     "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 10534,
+        "id": 10546,
         "literals": [
           "solidity",
           "^",
@@ -1102,9 +1102,9 @@
       {
         "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/MRVToken.sol",
         "file": "./MRVToken.sol",
-        "id": 10535,
+        "id": 10547,
         "nodeType": "ImportDirective",
-        "scope": 10566,
+        "scope": 10578,
         "sourceUnit": 737,
         "src": "26:24:23",
         "symbolAliases": [],
@@ -1117,7 +1117,7 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 10537,
+              "id": 10549,
               "name": "MRVToken",
               "nodeType": "UserDefinedTypeName",
               "referencedDeclaration": 736,
@@ -1127,7 +1127,7 @@
                 "typeString": "contract MRVToken"
               }
             },
-            "id": 10538,
+            "id": 10550,
             "nodeType": "InheritanceSpecifier",
             "src": "184:8:23"
           }
@@ -1136,47 +1136,47 @@
           97,
           202,
           736,
-          10610,
-          10719,
-          11491,
-          11569
+          10622,
+          10731,
+          11503,
+          11581
         ],
         "contractKind": "contract",
         "documentation": {
-          "id": 10536,
+          "id": 10548,
           "nodeType": "StructuredDocumentation",
           "src": "52:103:23",
           "text": " MRVToken contract which adds unrestricted minting by anyone.\n Only useful on a testnet."
         },
         "fullyImplemented": true,
-        "id": 10565,
+        "id": 10577,
         "linearizedBaseContracts": [
-          10565,
+          10577,
           736,
           97,
           202,
-          10719,
-          11491,
-          11569,
-          10610
+          10731,
+          11503,
+          11581,
+          10622
         ],
         "name": "TestnetMRVToken",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 10550,
+              "id": 10562,
               "nodeType": "Block",
               "src": "429:33:23",
               "statements": []
             },
             "documentation": {
-              "id": 10539,
+              "id": 10551,
               "nodeType": "StructuredDocumentation",
               "src": "200:112:23",
               "text": " Make a new TestnetMRVToken.\n Passes through arguments to the base MRVToken constructor."
             },
-            "id": 10551,
+            "id": 10563,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [
@@ -1184,11 +1184,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 10546,
+                    "id": 10558,
                     "name": "sendProceedsTo",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 10541,
+                    "referencedDeclaration": 10553,
                     "src": "392:14:23",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address_payable",
@@ -1197,11 +1197,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 10547,
+                    "id": 10559,
                     "name": "sendTokensTo",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 10543,
+                    "referencedDeclaration": 10555,
                     "src": "408:12:23",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1209,10 +1209,10 @@
                     }
                   }
                 ],
-                "id": 10548,
+                "id": 10560,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 10545,
+                  "id": 10557,
                   "name": "MRVToken",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
@@ -1231,17 +1231,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 10544,
+              "id": 10556,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10541,
+                  "id": 10553,
                   "mutability": "mutable",
                   "name": "sendProceedsTo",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10551,
+                  "scope": 10563,
                   "src": "329:30:23",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1250,7 +1250,7 @@
                     "typeString": "address payable"
                   },
                   "typeName": {
-                    "id": 10540,
+                    "id": 10552,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "329:15:23",
@@ -1265,12 +1265,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 10543,
+                  "id": 10555,
                   "mutability": "mutable",
                   "name": "sendTokensTo",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10551,
+                  "scope": 10563,
                   "src": "361:20:23",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1279,7 +1279,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 10542,
+                    "id": 10554,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "361:7:23",
@@ -1296,12 +1296,12 @@
               "src": "328:54:23"
             },
             "returnParameters": {
-              "id": 10549,
+              "id": 10561,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "429:0:23"
             },
-            "scope": 10565,
+            "scope": 10577,
             "src": "317:145:23",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1309,7 +1309,7 @@
           },
           {
             "body": {
-              "id": 10563,
+              "id": 10575,
               "nodeType": "Block",
               "src": "599:42:23",
               "statements": [
@@ -1321,7 +1321,7 @@
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 10558,
+                          "id": 10570,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -1332,7 +1332,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 10559,
+                        "id": 10571,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -1348,11 +1348,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 10560,
+                        "id": 10572,
                         "name": "amount",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 10554,
+                        "referencedDeclaration": 10566,
                         "src": "627:6:23",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1371,18 +1371,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 10557,
+                      "id": 10569,
                       "name": "_mint",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 11367,
+                      "referencedDeclaration": 11379,
                       "src": "609:5:23",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
                         "typeString": "function (address,uint256)"
                       }
                     },
-                    "id": 10561,
+                    "id": 10573,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1397,20 +1397,20 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 10562,
+                  "id": 10574,
                   "nodeType": "ExpressionStatement",
                   "src": "609:25:23"
                 }
               ]
             },
             "documentation": {
-              "id": 10552,
+              "id": 10564,
               "nodeType": "StructuredDocumentation",
               "src": "472:85:23",
               "text": " Allow anyone to mint themselves any amount of tokens, for testing."
             },
             "functionSelector": "a0712d68",
-            "id": 10564,
+            "id": 10576,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -1418,17 +1418,17 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 10555,
+              "id": 10567,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 10554,
+                  "id": 10566,
                   "mutability": "mutable",
                   "name": "amount",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 10564,
+                  "scope": 10576,
                   "src": "576:14:23",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1437,7 +1437,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 10553,
+                    "id": 10565,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "576:7:23",
@@ -1453,19 +1453,19 @@
               "src": "575:16:23"
             },
             "returnParameters": {
-              "id": 10556,
+              "id": 10568,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "599:0:23"
             },
-            "scope": 10565,
+            "scope": 10577,
             "src": "562:79:23",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 10566,
+        "scope": 10578,
         "src": "156:488:23"
       }
     ],
@@ -1613,13 +1613,12 @@
         }
       },
       "links": {},
-      "address": "0x45fADE0eF81524c32B129D8dcb8da205fE729A2F",
-      "transactionHash": "0x633061800b0ba9599a36d250d16f9eadf1796a96640d86b9d1f4c923234cfc2e"
+      "address": "0xb55dBA776bF90B191D4Cbd2c6210EC04329177eF",
+      "transactionHash": "0x54c5fac5b6d16a2a0c97c283bf588009f2131c18daf3953d149a29530f2df8d8"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T03:48:09.903Z",
-  "networkType": "ethereum",
+  "updatedAt": "2020-07-10T05:01:42.148Z",
   "devdoc": {
     "methods": {
       "allowance(address,address)": {

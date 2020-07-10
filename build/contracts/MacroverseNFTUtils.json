@@ -23,8 +23,7 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [
@@ -43,8 +42,7 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function",
-      "constant": true
+      "type": "function"
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"token\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"childTokenAtIndex\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"token\",\"type\":\"uint256\"}],\"name\":\"tokenIsCanonical\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"childTokenAtIndex(uint256,uint256)\":{\"notice\":\"If a token has a possible child for which childIndexOfToken would return the given index, returns that child. Fails otherwise. Index must not be wider than uint16 or it may be truncated.\"},\"tokenIsCanonical(uint256)\":{\"notice\":\"Not all uint256 values are valid tokens. Returns true if the token represents something that may exist in the Macroverse world. Only does validation of the bitstring representation (i.e. no extraneous set bits). We still need to check in with the generator to validate that the system/planet/moon actually exists.\"}},\"notice\":\"This library contains utility functions for creating, parsing, and manipulating Macroverse virtual real estate non-fungible token (NFT) identifiers. The uint256 that identifies a piece of Macroverse virtual real estate includes the type of object that is claimed and its location in the macroverse world, as defined by this library. NFT tokens carry metadata about the object they describe, in the form of a bit-packed keypath in the 192 low bits of a uint256. Form LOW to HIGH bits, the fields are: - token type (5): sector (0), system (1), planet (2), moon (3),   land on planet or moon at increasing granularity (4-31) - sector x (16) - sector y (16) - sector z (16) - star number (16) or 0 if a sector - planet number (16) or 0 if a star - moon number (16) or 0 if a planet, or -1 if land on a planet - 0 to 27 trixel numbers, at 3 bits each More specific claims use more of the higher-value bits, producing larger numbers in general. The \\\"trixel\\\" numbers refer to dubdivisions of the surface of a planet or moon, or the area of an asteroid belt or ring. See the documentation for the MacroverseUniversalRegistry for more information on the trixel system. Small functions in the library are internal, because inlining them will take less space than a call. Larger functions are public.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/MacroverseNFTUtils.sol\":\"MacroverseNFTUtils\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/MacroverseNFTUtils.sol\":{\"keccak256\":\"0x6e96a68cd20a24d48e2e4c3ed58ae9317741996509c3042c8817ae0389558e1a\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://2c5d5b8ed0abafe4f96af6accbae68e47207a576c24924a8b2413398bba1c592\",\"dweb:/ipfs/QmWc2Yc4ASXRooPkxxjafUsHRVL4LjWeKCNzrZnLBwRgyA\"]}},\"version\":1}",
@@ -26957,13 +26955,12 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x81f7eED7903dBf0fd92D3c52291A63A7695d0bF8",
-      "transactionHash": "0xd685214bcde34179cca9fb6de8317a8c7eca46e9412c1c9a32a337baf54ebc94"
+      "address": "0xb4c41Acb9d3828A6f7606EC45764D22a134Dc4BB",
+      "transactionHash": "0x11f7b5c7186a80c54b2bc5a6bf8f53f75362d21d5048c35ca4833da71381802e"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-06-12T03:48:09.910Z",
-  "networkType": "ethereum",
+  "updatedAt": "2020-07-10T05:01:41.976Z",
   "devdoc": {
     "methods": {}
   },
