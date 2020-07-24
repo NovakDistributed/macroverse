@@ -643,7 +643,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
       console.log('Planet land level ' + i + ' cost: ' +
         Web3Utils.fromWei(planet_land_cost.toString(), 'ether') + ' MRV @ ' + planet_land_area + ' Earth-acres or ' +
         parseFloat(Web3Utils.fromWei(planet_land_cost.toString(), "ether"))/planet_land_area + " MRV per acre on Earth")
-      let expected_planet_cost = parseFloat(Web3Utils.toWei((100 / Math.pow(2, i + 1)).toFixed(18), "ether").toString())
+      let expected_planet_cost = parseFloat(Web3Utils.toWei(Math.max(1, Math.floor(100 / Math.pow(2, i + 1))).toFixed(18), "ether").toString())
       assert.approximately(parseFloat(planet_land_cost.toString()),
         expected_planet_cost,
         expected_planet_cost * 0.001,
@@ -657,7 +657,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
       let moon_land_cost = (await instance.getMinDepositToCreate(mv.keypathToToken(moon_land_keypath)))
       console.log('Moon land level ' + i + ' cost: ' +
         Web3Utils.fromWei(moon_land_cost.toString(), 'ether') + ' MRV')
-      let expected_moon_cost = 25 / Math.pow(2, i + 1)
+      let expected_moon_cost = Math.max(1, Math.floor(25 / Math.pow(2, i + 1)))
       assert.approximately(parseFloat(Web3Utils.fromWei(moon_land_cost.toString(), "ether")),
         expected_moon_cost,
         expected_moon_cost * 0.001,

@@ -468,7 +468,19 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
             // So all the small claims is twice as expensive as the big claim.
             uint256 subdivisions = token.getTokenTrixelCount();
             // Divide by an extra 2 at first because the first level has 8 trixels and not 4.
-            return whole_cost >> (subdivisions + 1);
+            uint256 wanted_cost = whole_cost >> (subdivisions + 1);
+            
+            // But then don't let the land derposit be less than 1/1000 of the
+            // system cost, and round to ticks of that size so that we aren't
+            // heckling users for uselessly small amounts of the token.
+            uint256 tick_size = minSystemDepositInAtomicUnits.div(1000);
+            uint256 overness = wanted_cost.mod(tick_size);
+            
+            if (overness == wanted_cost || wanted_cost == tick_size) {
+                return tick_size;
+            } else {
+                return wanted_cost.sub(overness);
+            }
         }
     }
 
