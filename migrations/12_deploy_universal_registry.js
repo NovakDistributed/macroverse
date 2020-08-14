@@ -26,7 +26,7 @@ module.exports = async function(deployer, network, accounts) {
   // them ought to be worth, when you could have just claimed it before. Plus,
   // for extra security, a legit reveal can use a higher gas price, which an
   // attacker has to beat for several blocks.
-  return deployer.deploy(MacroverseRealEstate).then(function() {
+  return deployer.deploy(MacroverseRealEstate, "api.macroverse.io").then(function() {
     return deployer.deploy(MacroverseUniversalRegistry, MacroverseRealEstate.address,
       MacroverseExistenceChecker.address, token_contract.address, 
       Web3Utils.toWei("1000", "ether"), 5 * 60)

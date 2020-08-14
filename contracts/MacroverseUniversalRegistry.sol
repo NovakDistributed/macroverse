@@ -592,7 +592,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         // Compute the committing hash that this is the preimage for
         bytes32 hash = keccak256(abi.encodePacked(token, nonce));
         
-        // Look up the right commitment for this hash and owner.
+        // Look up the right commitment for this hash and owner._setBaseURI
         bytes32 commitment_key = keccak256(abi.encodePacked(hash, msg.sender));
         Commitment storage commitment = commitments[commitment_key];
 
@@ -931,6 +931,13 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         
         // Make the transfer. If it doesn't work, we can try again later.
         other.transfer(owner(), excessBalance);
+    }
+    
+    /**
+     * Allow owner to change the ERC721 metadata URI domain used by the owned MacroverseRealEstate contract.
+     */
+    function setTokenMetadataDomain(string memory domain) external onlyOwner {
+        backend.setTokenMetadataDomain(domain);
     }
 }
 

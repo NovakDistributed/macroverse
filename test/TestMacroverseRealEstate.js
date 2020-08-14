@@ -8,6 +8,15 @@ let mv = require('../src')
 const BN = require('bn.js')
 const Web3Utils = require('web3-utils')
 
+async function assert_throws(promise, message) {
+  try {
+    await promise
+    assert.ok(false, message)
+  } catch {
+    // OK
+  }
+}
+
 async function getChainID() {
   if (typeof web3.eth.getChainId !== 'undefined') {
     // We actually have the API that lets us query this
@@ -45,7 +54,6 @@ contract('MacroverseRealEstate', function(accounts) {
     let mrv = await MRVToken.deployed()
     
     let chainId = (await getChainID()).toString(10)
-
     let keypath = '0.0.0.33.2'
     let tokenNumber = mv.keypathToToken(keypath).toString(10)
     
@@ -59,10 +67,57 @@ contract('MacroverseRealEstate', function(accounts) {
     await reg.reveal(tokenNumber, nonce)
 
     let url = await instance.tokenURI.call(tokenNumber)
-
     assert.equal(url, 'https://api.macroverse.io/vre/v1/chain/' + chainId + '/token/' + tokenNumber, "We got the expected URL")
     
+  })
+  
+  it("should prohibit non-owners changing token URI domain", async function() {
+    let instance = await MacroverseRealEstate.deployed()
+    
+    let chainId = (await getChainID()).toString(10)
+    let keypath = '0.0.0.33.2'
+    let tokenNumber = mv.keypathToToken(keypath).toString(10)
+    
+    await assert_throws(instance.setTokenMetadataDomain('google.biz'), "Changed token domain")
+    
+    let url = await instance.tokenURI.call(tokenNumber)
+    assert.equal(url, 'https://api.macroverse.io/vre/v1/chain/' + chainId + '/token/' + tokenNumber, "We got the expected URL")
+  })
+  
+  it("should prohibit non-owners changing token URI domain via the MacroverseUniversalRegistry", async function() {
+    let instance = await MacroverseRealEstate.deployed()
+    let reg = await MacroverseUniversalRegistry.deployed()
+    
+    let chainId = (await getChainID()).toString(10)
+    let keypath = '0.0.0.33.2'
+    let tokenNumber = mv.keypathToToken(keypath).toString(10)
+    
+    await assert_throws(reg.setTokenMetadataDomain('google.biz', {from: accounts[1]}), "Changed token domain")
+    
+    let url = await instance.tokenURI.call(tokenNumber)
+    assert.equal(url, 'https://api.macroverse.io/vre/v1/chain/' + chainId + '/token/' + tokenNumber, "We got the expected URL")
+  })
+  
+  it("should allow owners changing token URI domain via the MacroverseUniversalRegistry", async function() {
+    let instance = await MacroverseRealEstate.deployed()
+    let reg = await MacroverseUniversalRegistry.deployed()
+    
+    let chainId = (await getChainID()).toString(10)
+    let keypath = '0.0.0.33.2'
+    let tokenNumber = mv.keypathToToken(keypath).toString(10)
+    
+    await reg.setTokenMetadataDomain('google.biz')
+    
+    let url = await instance.tokenURI.call(tokenNumber)
+    assert.equal(url, 'https://google.biz/vre/v1/chain/' + chainId + '/token/' + tokenNumber, "We got the expected URL")
+    
+    // Make sure to change it back
+    await reg.setTokenMetadataDomain('api.macroverse.io')
+    
+    let url2 = await instance.tokenURI.call(tokenNumber)
+    assert.equal(url2, 'https://api.macroverse.io/vre/v1/chain/' + chainId + '/token/' + tokenNumber, "We got the expected URL")
+    
+    // Release token we've been holding for all the tests.
     await reg.release(tokenNumber)
-
   })
 })

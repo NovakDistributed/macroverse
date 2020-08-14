@@ -21,15 +21,30 @@ contract MacroverseRealEstate is ERC721, Ownable {
     
     /**
      * Deploy the backend, taking mint, burn, and set-user commands from the deployer.
+     * Use the given domain as the domain for token URIs.
      */
-    constructor() public ERC721("Macroverse Real Estate", "MRE") {
+    constructor(string memory domain) public ERC721("Macroverse Real Estate", "MRE") {
+        _setTokenMetadataDomain(domain);
+    }
+    
+    /**
+     * Allow this contract to change the ERC721 metadata URI domain.
+     */
+    function _setTokenMetadataDomain(string memory domain) internal {
         // Set up new OpenZeppelin 3.0 automatic token URI system.
         // Good thing we match their format or we'd have to fork OZ.
         uint chainId = 0;
         assembly {
             chainId := chainid()
         }
-        _setBaseURI(string(abi.encodePacked("https://api.macroverse.io/vre/v1/chain/", Strings.toString(chainId), "/token/")));
+        _setBaseURI(string(abi.encodePacked("https://", domain, "/vre/v1/chain/", Strings.toString(chainId), "/token/")));
+    }
+    
+    /**
+     * Allow this the owner to change the ERC721 metadata URI domain.
+     */
+    function setTokenMetadataDomain(string memory domain) external onlyOwner {
+        _setTokenMetadataDomain(domain);
     }
 
     /**
