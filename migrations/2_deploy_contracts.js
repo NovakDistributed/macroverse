@@ -14,7 +14,7 @@ const Web3Utils = require('web3-utils')
 var LIVE_BENEFICIARY="0x2fe5bdc68d73b1f570b97422021a0c9cdccae79f"
 var LIVE_TOKEN_ACCOUNT="0x368651F6c2b3a7174ac30A5A062b65F2342Fb6F1"
 
-module.exports = function(deployer, network, accounts) {
+module.exports = async function(deployer, network, accounts) {
   deployer.deploy(RealMath)
   deployer.link(RealMath, RNG)
   deployer.deploy(RNG)
@@ -39,15 +39,16 @@ module.exports = function(deployer, network, accounts) {
   let token_contract = (network.startsWith("rinkeby") ? TestnetMRVToken : MRVToken)
   
   // Deploy the token
-  deployer.deploy(token_contract, beneficiary, tokenAccount)
+  await deployer.deploy(token_contract, beneficiary, tokenAccount).then(function() {
 
-  // Deploy a minimum balance access control strategy, with a 100 MRV minimum balance requirement.
-  deployer.deploy(MinimumBalanceAccessControl, token_contract.address, Web3Utils.toWei("100", "ether"))
+    // Deploy a minimum balance access control strategy, with a 100 MRV minimum balance requirement.
+    return deployer.deploy(MinimumBalanceAccessControl, token_contract.address, Web3Utils.toWei("100", "ether")).then(async function() {
+      // Deploy the actual MG prototype and point it initially at that access control contract.
+      // New Truffle no longer lets a string just become bytes32 if not hex.
+      await deployer.deploy(MacroverseStarGenerator, "0x46696174426c6f636b73", MinimumBalanceAccessControl.address)
+      // Deploy the star ownership registry, with a 1000 MRV minimum ownership deposit.
+      await deployer.deploy(MacroverseStarRegistry, token_contract.address, Web3Utils.toWei("1000", "ether"))
+    })
+  })
   
-  // Deploy the actual MG prototype and point it initially at that access control contract.
-  // New Truffle no longer lets a string just become bytes32 if not hex.
-  deployer.deploy(MacroverseStarGenerator, "0x46696174426c6f636b73", MinimumBalanceAccessControl.address)
-  
-  // Deploy the star ownership registry, with a 1000 MRV minimum ownership deposit.
-  deployer.deploy(MacroverseStarRegistry, token_contract.address, Web3Utils.toWei("1000", "ether"))
-}
+};
