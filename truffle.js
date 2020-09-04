@@ -8,16 +8,26 @@ const KeystoreProvider = require('truffle-keystore-provider')
 
 // We need memoization or we will be prompted for a password every time.
 // See https://github.com/yondonfu/truffle-keystore-provider
-let providers = {}
-function makeKeystoreProvider(account, dataDir, providerUrl) {
-  if (providerUrl in providers) {
-    return providers[providerUrl]
-  } else {
-    const provider = new KeystoreProvider(account, dataDir, providerUrl)
-    providers[providerUrl] = provider
-    return provider
-  }
+const memoizeKeystoreProviderCreator = () => {
+    let providers = {}
+
+    // KEYSTORE_DIR must have a ./keystore under it.
+    // KEYSTORE_NAME is a file under that keystore directory
+
+    return (network, account, dataDir, providerUrl) => {
+        let key = JSON.stringify([dataDir, account, providerUrl])
+        console.log('Get provider ' + network + ' with key: ' + key)
+        if (key in providers) {
+            return providers[key]
+        } else {
+            const provider = new KeystoreProvider(account, dataDir, providerUrl)
+            providers[key] = provider
+            return provider
+        }
+    }
 }
+
+const createKeystoreProvider = memoizeKeystoreProviderCreator()
 
 
 
@@ -39,29 +49,28 @@ module.exports = {
       host: "localhost",
       port: 8546,   // Different than the default
       from: "0x368651F6c2b3a7174ac30A5A062b65F2342Fb6F1",
-      gas: 8000000, // Knock down because it has to be les than block gas limit
-      gasPrice: 4000000000 // Defaults to 100 gwei = 100 shannon = 100 billion, which is extremely high.
+      gas: 8000000, // Knock down because it has to be less than block gas limit
+      gasPrice: 4000000000 
+    },
+    live_local: {
+      network_id: 1,
+      host: "localhost", // Ignored
+      provider: () => {  return createKeystoreProvider('live_local', env['LIVE_KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'http://localhost:8545/') },
+      gas: 8000000, // Knock down because it has to be less than block gas limit
+      gasPrice: 200000000000 
     },
     rinkeby_local: {
       network_id: 4,
       host: "localhost", // Ignored
-      provider: function() {
-        // KEYSTORE_DIR must have a ./keystore under it.
-        // KEYSTORE_NAME is a file under that keystore directory
-        return makeKeystoreProvider(env['KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'http://localhost:8546/')
-      },
-      gas: 8000000, // Knock down because it has to be les than block gas limit
+      provider: () => { return createKeystoreProvider('rinkeby_local', env['RINKEBY_KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'http://localhost:8546/') },
+      gas: 8000000, // Knock down because it has to be less than block gas limit
       gasPrice: 4000000000 // Defaults to 100 gwei = 100 shannon = 100 billion, which is extremely high.
     },
     rinkeby_infura: {
       network_id: 4,
       host: "localhost", // Ignored
-      provider: function() {
-        // KEYSTORE_DIR must have a ./keystore under it.
-        // KEYSTORE_NAME is a file under that keystore directory
-        return makeKeystoreProvider(env['KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'https://rinkeby.infura.io/v3/' + env['INFURA_PROJECT'])
-      },
-      gas: 8000000, // Knock down because it has to be les than block gas limit
+      provider: () => { return createKeystoreProvider('rinkeby_infura', env['RINKEBY_KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'https://rinkeby.infura.io/v3/' + env['INFURA_PROJECT']) },
+      gas: 8000000, // Knock down because it has to be less than block gas limit
       gasPrice: 4000000000 // Defaults to 100 gwei = 100 shannon = 100 billion, which is extremely high.
     }
   },
