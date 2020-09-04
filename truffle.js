@@ -12,7 +12,7 @@ const memoizeKeystoreProviderCreator = () => {
     let providers = {}
 
     // KEYSTORE_DIR must have a ./keystore under it.
-    // KEYSTORE_NAME is a file under that keystore directory
+    // KEYSTORE_NAME is a file under that keystore directory and must be lowercase (supposed to be an address)
 
     return (network, account, dataDir, providerUrl) => {
         let key = JSON.stringify([dataDir, account, providerUrl])
@@ -83,7 +83,7 @@ module.exports = {
       host: "localhost", // Ignored
       provider: () => { return createKeystoreProvider('rinkeby_infura', env['LIVE_KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'https://mainnet.infura.io/v3/' + env['INFURA_PROJECT']) },
       gas: 8000000, // Knock down because it has to be less than block gas limit
-      gasPrice: 200000000000,
+      gasPrice: 140000000000,
       timeoutBlocks: 1000
     }
   },
