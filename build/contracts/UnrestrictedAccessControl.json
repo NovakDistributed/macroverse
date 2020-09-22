@@ -23,16 +23,17 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowQuery\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"allowQuery(address,address)\":{\"notice\":\"Always approve access, ignoring the addresses passed in. Note that this raises solidity compiler warnings about unused variables.\"}},\"notice\":\"Represents an access control strategy where all requests are accepted.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":\"UnrestrictedAccessControl\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0x40920b51cb0dd04c7385af8241d48853928f57e3ec8139c82d35e635ec075a68\",\"urls\":[\"bzz-raw://13901c7502106a3aaae636f1ff93f343e8c26eea0e9720549d06abcd177ba303\",\"dweb:/ipfs/QmWbwe2K8uvnTkjZfvipA2zJpp1QvN5ti3vUuE2GgHPD3F\"]},\"/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":{\"keccak256\":\"0x60764ec30c922b1f6b2ebe5ab5bc2ce831e68c117c9d6fd3bf6c40b619e99bde\",\"urls\":[\"bzz-raw://d1b240910bd144bd1b26e5f4c8bf415a8acf41bf0f8922d2cde21ce95c959cb3\",\"dweb:/ipfs/QmZdHRuLMvGP4w1WoWVV3db4xzh7TRLpAjq48ofc5PDsLn\"]}},\"version\":1}",
-  "bytecode": "0x608060405234801561001057600080fd5b5060e88061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80634af5fb0f14602d575b600080fd5b608c60048036036040811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505060a6565b604051808215151515815260200191505060405180910390f35b6000600190509291505056fea26469706673582212208d7260393bec914baec2204107388989b7429f79eb1ca2b01da97c1e672ebd3f64736f6c634300060a0033",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80634af5fb0f14602d575b600080fd5b608c60048036036040811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505060a6565b604051808215151515815260200191505060405180910390f35b6000600190509291505056fea26469706673582212208d7260393bec914baec2204107388989b7429f79eb1ca2b01da97c1e672ebd3f64736f6c634300060a0033",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.10+commit.00c0fcaf\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"allowQuery\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{\"allowQuery(address,address)\":{\"notice\":\"Always approve access, ignoring the addresses passed in. Note that this raises solidity compiler warnings about unused variables.\"}},\"notice\":\"Represents an access control strategy where all requests are accepted.\"}},\"settings\":{\"compilationTarget\":{\"/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":\"UnrestrictedAccessControl\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/z/home/anovak/workspace/macroverse/contracts/AccessControl.sol\":{\"keccak256\":\"0x12c9c4e546ae4463b953ba167e877af9897a9414880252d75bb9cc6fe45b204d\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://7f8aaaad6ec7426068ddde1e4e547dfdbe5754ff06c3b7d61ae92d7600a8c281\",\"dweb:/ipfs/QmWJKyxFcL6vMNkctmx4SCDys33A6TKPAGJtDRWvDAjWtt\"]},\"/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol\":{\"keccak256\":\"0xd0978b6320663a73bafc43860afdae7d63284b6419b446b4e966c2e5a6e84347\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://0bdcaedd0ef49b8f6b2738ab8ca3bde8b008d3a91e9a249e61fb8a53c679e240\",\"dweb:/ipfs/QmQcTJKHoMqtBk8guiPJyoEdBS3Fz7NrV4zUUU1vTZroeM\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060e88061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80634af5fb0f14602d575b600080fd5b608c60048036036040811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505060a6565b604051808215151515815260200191505060405180910390f35b6000600190509291505056fea2646970667358221220d1e0deaa1180fbc9ab1f0942782a6dcad1ba1c6d52963828903b9170aaa66abc64736f6c634300060a0033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80634af5fb0f14602d575b600080fd5b608c60048036036040811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919050505060a6565b604051808215151515815260200191505060405180910390f35b6000600190509291505056fea2646970667358221220d1e0deaa1180fbc9ab1f0942782a6dcad1ba1c6d52963828903b9170aaa66abc64736f6c634300060a0033",
   "immutableReferences": {},
   "sourceMap": "139:322:24:-:0;;;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "139:322:24:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;340:119;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;425:4;448;441:11;;340:119;;;;:::o",
-  "source": "pragma solidity ^0.6.10;\n\nimport \"./AccessControl.sol\";\n\n/**\n * Represents an access control strategy where all requests are accepted.\n */\ncontract UnrestrictedAccessControl {\n    /**\n     * Always approve access, ignoring the addresses passed in.\n     * Note that this raises solidity compiler warnings about unused variables.\n     */\n    function allowQuery(address /* sender */, address /* origin */) public pure returns (bool) {\n        return true;\n    }\n}\n\n// This code is part of Macroverse and is licensed: UNLICENSED\n",
+  "source": "pragma solidity ^0.6.10;\n\nimport \"./AccessControl.sol\";\n\n/**\n * Represents an access control strategy where all requests are accepted.\n */\ncontract UnrestrictedAccessControl {\n    /**\n     * Always approve access, ignoring the addresses passed in.\n     * Note that this raises solidity compiler warnings about unused variables.\n     */\n    function allowQuery(address /* sender */, address /* origin */) public pure returns (bool) {\n        return true;\n    }\n}\n\n// SPDX-License-Identifier: UNLICENSED\n",
   "sourcePath": "/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol",
   "ast": {
     "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol",
@@ -42,7 +43,7 @@
       ]
     },
     "id": 10672,
-    "license": null,
+    "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -243,7 +244,7 @@
         "src": "139:322:24"
       }
     ],
-    "src": "0:526:24"
+    "src": "0:502:24"
   },
   "legacyAST": {
     "absolutePath": "/z/home/anovak/workspace/macroverse/contracts/UnrestrictedAccessControl.sol",
@@ -253,7 +254,7 @@
       ]
     },
     "id": 10672,
-    "license": null,
+    "license": "UNLICENSED",
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -454,7 +455,7 @@
         "src": "139:322:24"
       }
     ],
-    "src": "0:526:24"
+    "src": "0:502:24"
   },
   "compiler": {
     "name": "solc",
@@ -472,10 +473,17 @@
       "links": {},
       "address": "0xB72949842ecf22e2E8b9EF76d9F0a1a4c229e6e8",
       "transactionHash": "0x06ca9cb57492902efacf6f9f7e9efdb9a38cb0643cf64a286257129eaab7195f"
+    },
+    "5777": {
+      "events": {},
+      "links": {},
+      "address": "0xd8585565E6DD5C3c68fc10Eeb24C125B4894f00B",
+      "transactionHash": "0x3f1cfab88508e81d6c60858813d675b12670f207f3ccfc7038b1328d44318594"
     }
   },
   "schemaVersion": "3.1.0",
-  "updatedAt": "2020-09-04T05:38:56.914Z",
+  "updatedAt": "2020-09-11T05:00:32.637Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },
