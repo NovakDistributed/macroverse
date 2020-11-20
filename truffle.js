@@ -85,6 +85,11 @@ module.exports = {
       gas: 8000000, // Knock down because it has to be less than block gas limit
       gasPrice: 100000000000,
       timeoutBlocks: 1000
+    },
+    ganacheFork: {
+      network_id: 1,
+      host: "127.0.0.1",
+      port: 8549
     }
   },
   mocha: {

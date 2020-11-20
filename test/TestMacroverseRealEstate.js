@@ -18,33 +18,43 @@ async function assert_throws(promise, message) {
 }
 
 async function getChainID() {
+  var net = undefined;
   if (typeof web3.eth.getChainId !== 'undefined') {
     // We actually have the API that lets us query this
-    return web3.eth.getChainId()
-  }
-  if (typeof web3.version.getNetwork !== 'undefined') {
+    net = web3.eth.getChainId()
+  } else if (typeof web3.version.getNetwork !== 'undefined') {
     // We have getNetwork, so guess based on that.
     // In many cases the chain ID and the network are the same.
-    return web3.version.getNetwork()
-  }
-  if (typeof web3.eth.net.getNetworkType !== 'undefined') {
+    net = web3.version.getNetwork()
+  } else if (typeof web3.eth.net.getNetworkType !== 'undefined') {
     // Try and go form string to network ID
     let nettype = await web3.eth.net.getNetworkType()
     console.log('Network type: ', nettype)
     switch(nettype) {
       case 'main':
-        return 1
+        net = 1
+        break
       case 'rinkeby':
-        return 4
+        net = 4
+        break
       case 'private':
         // Truffle test claims to be chain 1...
         // TODO: What does ganache say/look like?
-        return 1
+        net = 1
+        break
       default:
-        return 12345
+        net = 12345
+        break
     }
+  } else {
+    throw new Error('No way to inspect network')
   }
-  throw new Error('No way to inspect network')
+  
+  if (net == 1337 || net.toString(10) == '1337') {
+    // This Truffle test network really looks like 1 to the on-chain code.
+    net = 1
+  }
+  return net
 }
 
 contract('MacroverseRealEstate', function(accounts) {

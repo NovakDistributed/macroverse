@@ -4,6 +4,7 @@ import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "./HasNoEther.sol";
 import "./HasNoContracts.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol";
 
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 
@@ -102,6 +103,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
 
     using SafeMath for uint256;
     using MacroverseNFTUtils for uint256;
+    using SafeERC20 for IERC20;
 
     // These constants are shared with the TokenUtils library
 
@@ -515,7 +517,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         expectedDepositBalance = expectedDepositBalance.add(deposit);
 
         // Make sure we can take the deposit
-        require(depositTokenContract.transferFrom(msg.sender, address(this), deposit), "Deposit not approved");
+        depositTokenContract.safeTransferFrom(msg.sender, address(this), deposit);
 
         // Compute the commitment key
         bytes32 commitment_key = keccak256(abi.encodePacked(hash, msg.sender));
@@ -567,7 +569,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         expectedDepositBalance = expectedDepositBalance.sub(refund);
 
         // Return the deposit
-        require(depositTokenContract.transfer(msg.sender, refund));
+        depositTokenContract.safeTransfer(msg.sender, refund);
 
         // Emit a Cancel event
         emit Cancel(hash, msg.sender);
@@ -679,7 +681,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         expectedDepositBalance = expectedDepositBalance.sub(deposit);
 
         // Return the deposit
-        require(depositTokenContract.transfer(msg.sender, deposit));
+        depositTokenContract.safeTransfer(msg.sender, deposit);
     }
 
     //
@@ -753,7 +755,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         expectedDepositBalance = expectedDepositBalance.add(additional_deposit);
 
         // Make sure we can take the deposit
-        require(depositTokenContract.transferFrom(msg.sender, address(this), additional_deposit), "Deposit not approved");
+        depositTokenContract.safeTransferFrom(msg.sender, address(this), additional_deposit);
 
         // Add in the new deposit
         deposit = deposit.add(additional_deposit);
@@ -888,7 +890,7 @@ contract MacroverseUniversalRegistry is Ownable, HasNoEther, HasNoContracts {
         expectedDepositBalance = expectedDepositBalance.sub(withdraw_deposit);
 
         // Return the deposit
-        require(depositTokenContract.transfer(msg.sender, withdraw_deposit));
+        depositTokenContract.safeTransfer(msg.sender, withdraw_deposit);
     }
 
     //
