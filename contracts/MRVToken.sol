@@ -1,10 +1,10 @@
 pragma solidity ^0.6.10;
 
 
-import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "./HasNoTokens.sol";
 import "./HasNoContracts.sol";
+import "./OZ1StandardToken.sol";
 
 
 /**
@@ -57,20 +57,20 @@ import "./HasNoContracts.sol";
  *   the contract's account. During normal crowdsale operation, ETH is not stored in the contract's
  *   account, and is instead sent directly to the beneficiary.
  */
-contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
+contract MRVToken is OZ1StandardToken, Ownable, HasNoTokens, HasNoContracts {
 
     // Token Parameters
 
     // From StandardToken we inherit balances and totalSupply.
     
     // What is the full name of the token?
-    // Not allowed by current Solidity/OpenZeppelin: string override public constant name = "Macroverse Token";
+    string public constant name = "Macroverse Token";
     // What is its suggested symbol?
-    // Not allowed by current Solidity/OpenZeppelin: string override public constant symbol = "MRV";
+    string public constant symbol = "MRV";
     // How many of the low base-10 digits are to the right of the decimal point?
     // Note that this is not constant! After the crowdsale, the contract owner can
     // adjust the decimal places, allowing for 10-to-1 splits and merges.
-    // Not allowed by current Solidity/OpenZeppelin: uint8 public decimals;
+    uint8 public decimals;
     
     // Crowdsale Parameters
     
@@ -103,16 +103,16 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
     * Deploy a new MRVToken contract, paying crowdsale proceeds to the given address,
     * and awarding reserved tokens to the other given address.
     */
-    constructor(address payable sendProceedsTo, address sendTokensTo) ERC20("Macroverse Token", "MRV") public {
+    constructor(address payable sendProceedsTo, address sendTokensTo) public {
         // Proceeds of the crowdsale go here.
         beneficiary = sendProceedsTo;
         
         // Start with 18 decimals, same as ETH
-        _setupDecimals(18);
+        decimals = 18;
         
         // Initially, the reserved tokens belong to the given address.
-        // TODO: This change for OZ 2.0 compatibility causes the code to differ from the behavior of the mainnet deployed contract!
-        _mint(sendTokensTo, wholeTokensReserved * 10 ** 18);
+        totalSupply = wholeTokensReserved * 10 ** 18;
+        balances[sendTokensTo] = totalSupply;
         
         // Initially the crowdsale has not yet started or ended.
         crowdsaleStarted = false;
@@ -317,7 +317,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
 
         uint tokens = msg.value.mul(wholeTokensPerEth); // Exploits the fact that we have 18 decimals, like ETH.
         
-        uint256 newTotalSupply = totalSupply().add(tokens);
+        uint256 newTotalSupply = totalSupply.add(tokens);
         
         if (newTotalSupply > (wholeTokensReserved + maxCrowdsaleSupplyInWholeTokens) * 10 ** 18) {
             // This would be too many tokens issued.
@@ -326,9 +326,9 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
         }
         
         // Otherwise, we can fill the order entirely, so make the tokens and put them in the specified account.
-        // TODO: This has been updated for OZ 2.0; the deployed contract on chain does NOT use the OZ minting logic.
-        // In particular, it did not emit transfer events for minted tokens, which confuses some blockchain viewers.
-        _mint(recipient, tokens);
+        // POST-DEPLOY NOTE: This does not emit transfer events for minted tokens, which confuses some blockchain viewers.
+        totalSupply = newTotalSupply;
+        balances[recipient] = balances[recipient].add(tokens);
         
         // Announce the purchase
         emit TokenPurchase(now, msg.value, recipient);
@@ -363,7 +363,7 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
      */
     function setDecimals(uint8 newDecimals) public onlyOwner onlyAfterClosed {
         // Change the decimals
-        _setupDecimals(newDecimals);
+        decimals = newDecimals;
         // Announce the change
         emit DecimalChange(newDecimals);
     }
@@ -376,26 +376,6 @@ contract MRVToken is ERC20, Ownable, HasNoTokens, HasNoContracts {
         // Send the ETH. Make sure it worked.
         // Go through uint160 to make owner payable
         assert(address(uint160(owner())).send(address(this).balance));
-    }
-
-    // TODO: the following two functions do NOT exist in the on-chain mainnet
-    // version of the contract. They are here to allow the project to build
-    // with newer versions of OpenZeppelin.
-
-    /**
-     * Block the increaseAllowance method which is not in the mainned deployed
-     * contract, but which OZ added to their library after we deployed.
-     */
-    function increaseAllowance(address /* spender */, uint256 /* addedValue */) override public returns (bool) {
-        revert();
-    }
-
-    /**
-     * Block the decreaseAllowance method which is not in the mainned deployed
-     * contract, but which OZ added to their library after we deployed.
-     */
-    function decreaseAllowance(address /* spender */, uint256 /* addedValue */) override public returns (bool) {
-        revert();
     }
 
 }
