@@ -22,11 +22,10 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let instance = await MacroverseUniversalRegistry.deployed()
     let mrv = await MRVToken.deployed()
 
-    console.log('Check starting balance')
     assert.equal((await mrv.balanceOf.call(accounts[0])), Web3Utils.toWei("5000", "ether"), "We start with the expected amount of MRV for the test")
-    console.log('Checked starting balance')
 
     // Approve the deposit tokens
+    await mrv.approve(instance.address, 0)
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[0]))
 
     // Decide what to claim: system 0 of sector 0,0,0
@@ -215,6 +214,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let mrv = await MRVToken.deployed()
 
     // Approve the deposit tokens
+    await mrv.approve(instance.address, 0)
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[0]))
 
     // Use the same token as the last test
@@ -317,6 +317,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
 
     // Get and approve the deposit tokens (plus 100 to pass the minimum balance control)
     await mrv.transfer(accounts[1], Web3Utils.toWei("1100", "ether"))
+    await mrv.approve(instance.address, 0, {from: accounts[1]})
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
 
     // Try to get a child (some land on a planet) of the token (system) we already claimed for account 0
@@ -443,6 +444,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let mrv = await MRVToken.deployed()
 
     // Approve the deposit tokens
+    await mrv.approve(instance.address, 0, {from: accounts[1]})
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
 
     // This is a child of the land token we have been working with
@@ -468,6 +470,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let mrv = await MRVToken.deployed()
 
     // Approve the deposit tokens
+    await mrv.approve(instance.address, 0, {from: accounts[1]})
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
 
     // This is a parent of the land token we have been working with
@@ -537,6 +540,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let mrv = await MRVToken.deployed()
 
     // Approve the deposit tokens
+    await mrv.approve(instance.address, 0, {from: accounts[1]})
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
 
     // This is land on an asteroid belt
@@ -562,6 +566,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let mrv = await MRVToken.deployed()
 
     // Approve the deposit tokens
+    await mrv.approve(instance.address, 0, {from: accounts[1]})
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[1]), {from: accounts[1]})
 
     // This is land on a ring
@@ -587,6 +592,7 @@ contract('MacroverseUniversalRegistry', function(accounts) {
     let mrv = await MRVToken.deployed()
 
     // Approve the deposit tokens
+    await mrv.approve(instance.address, 0)
     await mrv.approve(instance.address, await mrv.balanceOf.call(accounts[0]))
 
     // This is land on a ring
