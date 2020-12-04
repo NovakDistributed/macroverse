@@ -81,7 +81,7 @@ module.exports = {
     live_infura: {
       network_id: 1,
       host: "localhost", // Ignored
-      provider: () => { return createKeystoreProvider('rinkeby_infura', env['LIVE_KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'https://mainnet.infura.io/v3/' + env['INFURA_PROJECT']) },
+      provider: () => { return createKeystoreProvider('live_infura', env['LIVE_KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'https://mainnet.infura.io/v3/' + env['INFURA_PROJECT']) },
       gas: 8000000, // Knock down because it has to be less than block gas limit
       gasPrice: 100000000000,
       timeoutBlocks: 1000
@@ -90,6 +90,12 @@ module.exports = {
       network_id: 1,
       host: "127.0.0.1",
       port: 8549
+    },
+    ganacheLiveFork: {
+      network_id: 1,
+      host: "127.0.0.1",
+      port: 8549,
+      provider: () => {  return createKeystoreProvider('ganacheLiveFork', env['LIVE_KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'http://localhost:8549/') }
     }
   },
   mocha: {
