@@ -21,11 +21,11 @@ async function getChainID() {
   var net = undefined;
   if (typeof web3.eth.getChainId !== 'undefined') {
     // We actually have the API that lets us query this
-    net = web3.eth.getChainId()
+    net = await web3.eth.getChainId()
   } else if (typeof web3.version.getNetwork !== 'undefined') {
     // We have getNetwork, so guess based on that.
     // In many cases the chain ID and the network are the same.
-    net = web3.version.getNetwork()
+    net = await web3.version.getNetwork()
   } else if (typeof web3.eth.net.getNetworkType !== 'undefined') {
     // Try and go form string to network ID
     let nettype = await web3.eth.net.getNetworkType()
