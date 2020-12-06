@@ -51,7 +51,7 @@ module.exports = {
       port: 8546,   // Different than the default
       from: "0x368651F6c2b3a7174ac30A5A062b65F2342Fb6F1",
       gas: 8000000, // Knock down because it has to be less than block gas limit
-      gasPrice: 100000000000, // 100 Gwei
+      gasPrice: 20000000000, // 100 Gwei = 100000000000, 10 Gwei = 10000000000
       timeoutBlocks: 1000
     },
     live_local: {
@@ -59,7 +59,7 @@ module.exports = {
       host: "localhost", // Ignored
       provider: () => {  return createKeystoreProvider('live_local', env['LIVE_KEYSTORE_NAME'], env['KEYSTORE_DIR'], 'http://localhost:8545/') },
       gas: 8000000, // Knock down because it has to be less than block gas limit
-      gasPrice: 100000000000,
+      gasPrice: 20000000000,
       timeoutBlocks: 1000
     },
     rinkeby_local: {
