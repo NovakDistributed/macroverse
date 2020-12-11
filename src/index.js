@@ -449,12 +449,12 @@ mv.formatStar = function(x, y, z, s) {
 
 // Format a planet for display given its sector coordinates, star number, and planet number
 mv.formatPlanet = function(x, y, z, s, p) {
-  return mv.formatStar(x, y, z, s) + ' ' + roman(parseInt(p))
+  return mv.formatStar(x, y, z, s) + ' ' + mv.roman(parseInt(p))
 }
 
 // Format a moon for display given its sector coordinates and star, planet, and moon numbers
 mv.formatMoon = function(x, y, z, s, p, m) {
-  return mv.formatPlanet(x, y, z, s, p) + letter(parseInt(m))
+  return mv.formatPlanet(x, y, z, s, p) + mv.letter(parseInt(m))
 }
 
 // Turn a keypath into a human-readable description
@@ -477,7 +477,7 @@ mv.keypathToDesignator = function(keypath) {
   }
   
   // It has a star
-  let s = parts[4]
+  let s = parts[3]
 
   if (parts.length < 5) {
     // It's a system.
@@ -485,14 +485,14 @@ mv.keypathToDesignator = function(keypath) {
   }
   
   // It has a planet
-  let p = parts[5]
+  let p = parts[4]
 
   if (parts.length < 6) {
     // It's a planet
     return mv.formatPlanet(x, y, z, s, p)
   }
 
-  let m = parts[6]
+  let m = parts[5]
 
   if (parts.length < 7) {
     // It's a moon
