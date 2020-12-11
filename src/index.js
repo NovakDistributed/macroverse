@@ -392,6 +392,117 @@ mv.tokenToKeypath = function(token) {
   return keypath
 }
 
+// Format a number as an ordinal (1st, 23rd, etc.)
+mv.ordinal = function(i) {
+  let baseNumber = i.toString()
+  let suffix = undefined
+  switch(baseNumber) {
+  case '11':
+    // Fall through
+  case '12':
+    // Fall through
+  case '13':
+    // Teens are special
+    suffix = 'th'
+    break
+  default:
+    switch(baseNumber[baseNumber.length - 1]) {
+    case '1':
+      suffix = 'st'
+      break
+    case '2':
+      suffix = 'nd'
+      break
+    case '3':
+      suffix = 'rd'
+      break
+    default:
+      suffix = 'th'
+      break
+    }
+  }
+
+  // We don't go up past 100 to get to e.g. one hundred and eleventh
+
+  return baseNumber + suffix
+}
+
+// Format a number as a Roman numeral
+mv.roman = function(i) {
+  return ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'][i]
+}
+
+// Format a number as a lowercase moon letter.
+mv.letter = function(i) {
+  return ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'][i]
+}
+
+// Format a sector for display given its coordinates
+mv.formatSector = function(x, y, z) {
+  return '(' + x + ',' + y + ',' + z + ')'
+}
+
+// Format a star for display given its sector coordinates and number
+mv.formatStar = function(x, y, z, s) {
+  return mv.formatSector(x, y, z) + '::' + (parseInt(s) + 1)
+}
+
+// Format a planet for display given its sector coordinates, star number, and planet number
+mv.formatPlanet = function(x, y, z, s, p) {
+  return mv.formatStar(x, y, z, s) + ' ' + roman(parseInt(p))
+}
+
+// Format a moon for display given its sector coordinates and star, planet, and moon numbers
+mv.formatMoon = function(x, y, z, s, p, m) {
+  return mv.formatPlanet(x, y, z, s, p) + letter(parseInt(m))
+}
+
+// Turn a keypath into a human-readable description
+mv.keypathToDesignator = function(keypath) {
+
+  let parts = keypath.split('.')
+
+  if (parts.length < 3) {
+    // Token is invalid
+    throw new Error('Designator for keypath ' + keypath + ' cannot be constructed')
+  }
+  
+  let x = parts[0]
+  let y = parts[1]
+  let z = parts[2]
+  
+  if (parts.length < 4) {
+    // It's a sector (not a real token that can be claimed)
+    return mv.formatSector(x, y, z)
+  }
+  
+  // It has a star
+  let s = parts[4]
+
+  if (parts.length < 5) {
+    // It's a system.
+    return mv.formatStar(x, y, z, s)
+  }
+  
+  // It has a planet
+  let p = parts[5]
+
+  if (parts.length < 6) {
+    // It's a planet
+    return mv.formatPlanet(x, y, z, s, p)
+  }
+
+  let m = parts[6]
+
+  if (parts.length < 7) {
+    // It's a moon
+    return mv.formatMoon(x, y, z, s, p, m)
+  }
+  
+  // It's land
+  return 'Land'
+}
+
 // Generate a string nonce as a hex number (0x...) of up to 256 bits.
 mv.generateNonce = function() {
   if (typeof window !== 'undefined' && typeof window.crypto !== 'undefined') {
