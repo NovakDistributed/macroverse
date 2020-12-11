@@ -1,5 +1,6 @@
 *~
 *.swp
 .env
+.gitattributes
 keystore/*
 node_modules/*
