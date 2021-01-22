@@ -1,0 +1,178 @@
+<!doctype HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <canvas id="myCanvas" width=800 height=800>
+  </canvas>
+  <script type="text/javascript">
+    let canvasElement = document.querySelector("#myCanvas")
+    let context = canvasElement.getContext("2d")
+    
+    /// Draw a triangle between the given x, y points, in the given color
+    function triangle(c, color) {
+      let [c1, c2, c3] = c
+      context.beginPath()
+      context.moveTo(c1[0], c1[1])
+      context.lineTo(c2[0], c2[1])
+      context.lineTo(c3[0], c3[1])
+      context.closePath()
+      
+      /*context.lineWidth = 2
+      context.strokeStyle = '#666666'
+      context.stroke()*/
+      
+      context.fillStyle = color
+      context.fill()
+    }
+    
+    // Convert 0-1 float to a hex byte
+    function to_hex_byte(f) {
+      let b = Math.min(255, Math.floor(256 * f)).toString(16)
+      if (b.length < 2) {
+        b = '0' + b
+      }
+      return b
+    }
+    
+    /// Turn 0-1 floats into a hex color string
+    function to_hex(rgb) {
+      return '#' + to_hex_byte(rgb[0]) +
+                   to_hex_byte(rgb[1]) +
+                   to_hex_byte(rgb[2])
+    }
+    
+    /// Get coordinates of a centered equilateral triangle
+    function center_triangle(line_size, canvas_size) {
+      let height = Math.sqrt(3)/2 * line_size
+      return [[(canvas_size - line_size) / 2, (canvas_size - height) / 2 + height],
+              [(canvas_size - line_size) / 2 + line_size, (canvas_size - height) / 2 + height],
+              [canvas_size / 2, (canvas_size - height) / 2]]
+    }
+    
+    /// Interpolate two RGB colors
+    function clerp(c1, c2, distance) {
+      return [c1[0] + (c2[0] - c1[0]) * distance,
+              c1[1] + (c2[1] - c1[1]) * distance,
+              c1[2] + (c2[2] - c1[2]) * distance]
+    }
+    
+    /// Get the midpoint between two 2d points
+    function midpoint(c1, c2) {
+      return [(c1[0] + c2[0])/2, (c1[1] + c2[1])/2]
+    }
+    
+    /// Return child triangles 0-3, as point coordinates, from the given parent
+    /// triangle.
+    /// Parent is laid out clockwise starting from the lower left.
+    /// Children are laid out counter-clockwise starting from the parent's
+    /// vertex, except 3 which is laid out counter-clockwise starting from the
+    /// upper right.
+    ///   2
+    ///   3
+    /// 0   1
+    /// See https://www.microsoft.com/en-us/research/wp-content/uploads/2005/09/tr-2005-123.pdf 
+    function child_triangle(parent, number) {
+      switch (number) {
+      case 0:
+        return [parent[0], midpoint(parent[0], parent[1]), midpoint(parent[0], parent[2])]
+        break;
+      case 1:
+        return [parent[1], midpoint(parent[1], parent[2]), midpoint(parent[0], parent[1])]
+        break;
+      case 2:
+        return [parent[2], midpoint(parent[0], parent[2]), midpoint(parent[1], parent[2])]
+        break;
+      case 3:
+        return [midpoint(parent[1], parent[2]), midpoint(parent[0], parent[2]), midpoint(parent[0], parent[1])]
+        break;
+      }
+    }
+    
+    /// Get the hex color at a given height
+    function color_at(height) {
+      return to_hex(clerp([0, 0, 0], [1, 1, 1], height))
+    }
+    
+    /// Given the seed of a triangle, get the seed for the given child triangle.
+    function child_seed(seed, child) {
+      // See https://stackoverflow.com/a/52171480
+      let h1 = 0xdeadbeef ^ seed
+      let h2 = 0x41c6ce57 ^ seed
+      h1 = Math.imul(h1 ^ child, 2654435761)
+      h2 = Math.imul(h2 ^ child, 1597334677)
+      h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909)
+      h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909)
+      return 4294967296 * (2097151 & h2) + (h1>>>0)
+    }
+    
+    /// Generate a 0-1 float from the given seed
+    function seed_to_float(seed) {
+      // See https://stackoverflow.com/a/65793426
+      // Robert Jenkins’ 32 bit integer hash function
+      seed = ((seed + 0x7ED55D16) + (seed << 12))  & 0xFFFFFFFF;
+      seed = ((seed ^ 0xC761C23C) ^ (seed >>> 19)) & 0xFFFFFFFF;
+      seed = ((seed + 0x165667B1) + (seed << 5))   & 0xFFFFFFFF;
+      seed = ((seed + 0xD3A2646C) ^ (seed << 9))   & 0xFFFFFFFF;
+      seed = ((seed + 0xFD7046C5) + (seed << 3))   & 0xFFFFFFFF;
+      seed = ((seed ^ 0xB55A4F09) ^ (seed >>> 16)) & 0xFFFFFFFF;
+      return (seed & 0xFFFFFFF) / 0x10000000;
+    }
+    
+    /// Given the seed of a triangle, get the offsets for all the child triangles.
+    function child_offsets(seed) {
+      // Compute base offsets
+      let offsets = [seed_to_float(child_seed(seed, 0)),
+                     seed_to_float(child_seed(seed, 1)),
+                     seed_to_float(child_seed(seed, 2)),
+                     seed_to_float(child_seed(seed, 3))]
+                     
+      // Average
+      let average = (offsets[0] + offsets[1] + offsets[2] + offsets[3])/4
+      
+      // Subtract average
+      offsets[0] -= average
+      offsets[1] -= average
+      offsets[2] -= average
+      offsets[3] -= average
+      
+      return offsets
+    }
+    
+   
+    const CANVAS_SIZE = 800
+   
+    // Define the root trixel
+    let root = center_triangle(CANVAS_SIZE - 10, CANVAS_SIZE)
+    
+    let path = [0, 0, 1, 2, 3]
+    
+    /// Render all the child triangles down to max_depth
+    function render_children(here, seed, height, depth, max_depth) {
+      triangle(here, color_at(height))
+      
+      if (depth < max_depth) {
+        let children = [child_triangle(here, 0),
+                        child_triangle(here, 1),
+                        child_triangle(here, 2),
+                        child_triangle(here, 3)]
+        let offsets = child_offsets(seed)
+        let heights = []
+        
+        for (let i = 0; i < 4; i++) {
+          heights.push(Math.min(1, Math.max(0, height + offsets[i] / (2 * Math.pow(1.5, depth)))))
+          render_children(children[i], child_seed(seed, i), heights[i], depth + 1, max_depth)
+        }
+      }
+    }
+    
+    let here = root
+    let seed = 0
+    let height = 0.5
+    let depth = 0
+    render_children(here, seed, height, depth, 9)
+  
+  </script>
+</body>
+</html>
