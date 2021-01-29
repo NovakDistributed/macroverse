@@ -253,11 +253,13 @@
               [[midpoints[0], midpoints[1], midpoints[2]], [midpoint_heights[0], midpoint_heights[1], midpoint_heights[2]]]]
     }
     
+    const BASE_SEED = 7
+    
     /// Get a seed for computing the height of a normalized tripple.
     function tripple_to_seed(tripple) {
       str = '' + tripple
       
-      seed = 0
+      seed = BASE_SEED
       
       for (let i = 0; i < str.length; i++) {
         seed = derive_seed(seed, str.charCodeAt(i))
@@ -285,12 +287,30 @@
     
     /// Mix in a level of fractal noise (value) on top of base level base at depth depth
     function add_noise(base, value, depth) {
-      return Math.min(1, Math.max(0, base + value / (2 * Math.pow(1.5, depth))))
+      return Math.min(1, Math.max(0, base + value / (2 * Math.pow(2, depth))))
     }
     
     /// Get the hex color at a given height
     function color_at(height) {
-      return to_hex(clerp([0, 0, 0], [1, 1, 1], height))
+      const WATER_TO_BEACH = 0.35
+      const BEACH_TO_LAND = 0.37
+      const LAND_TO_MOUNTAIN = 0.4
+    
+      //return to_hex(clerp([0, 0, 0], [1, 1, 1], height))
+    
+      if (height < WATER_TO_BEACH) {
+        // Water
+        return to_hex(clerp([0, 0, 0.5], [0, 0, 1], height / WATER_TO_BEACH))
+      } else if (height >= WATER_TO_BEACH && height < BEACH_TO_LAND) {
+        // Beach
+        return to_hex(clerp([0, 0, 1], [1, 204/255, 102/255], (height - WATER_TO_BEACH) / (BEACH_TO_LAND - WATER_TO_BEACH)))
+      } else if (height >= BEACH_TO_LAND && height < LAND_TO_MOUNTAIN) {
+        // Ground
+        return to_hex(clerp([1, 204/255, 102/255], [0, 1, 0.1], (height - BEACH_TO_LAND) / (LAND_TO_MOUNTAIN - BEACH_TO_LAND)))
+      } else { 
+        // Mountain
+        return to_hex(clerp([0, 1, 0.1], [0.5, 0.5, 0.5], (height - LAND_TO_MOUNTAIN) / (1.0 - LAND_TO_MOUNTAIN)))
+      }
     }
     
    
@@ -324,7 +344,7 @@
         let children = shatter(trixel_heights, depth)
       
         for (let i = 0; i < 4; i++) {
-          if (Math.random() < 0.99) {
+          if (Math.random() < 0.95) {
             // Recurse almost all the time, but sometimes leave some areas at this level.
             render_children(children[i], depth + 1, max_depth)
           }
