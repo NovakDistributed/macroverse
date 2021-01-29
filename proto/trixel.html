@@ -225,31 +225,49 @@
       return offsets
     }
     
-    /// Given a trixel (as x, y pairs for the vertices), and seeds (as seeds
-    /// for vertex herights and a seed for making children), return an array of 4
-    /// similar structures for the child trixels
-    function shatter(triangle_and_seeds) {
-      let [parent, seeds] = triangle_and_seeds
+    /// Given a trixel (as tripples) and vertex heights (3 floats)
+    /// return an array of 4 similar structures for the child trixels
+    function shatter(trixel_heights, depth) {
+      let [parent, heights] = trixel_heights
       
-      // The last seed is the one for deriving all the child seeds
-      let descendant_seed = seeds[3]
-      let next_seed_index = 0
+      // Number the midpoints as in the paper
+      let midpoints = [midpoint_tripples(parent[1], parent[2]),
+                       midpoint_tripples(parent[0], parent[2]),
+                       midpoint_tripples(parent[0], parent[1])]
+                       
+      // Compute heights for them from interpolation
+      let midpoint_heights = [(heights[1] + heights[2]) / 2,
+                              (heights[0] + heights[2]) / 2,
+                              (heights[0] + heights[1]) / 2]
       
-      // Get 4 seeds for a child
-      function get_seeds() {
-        let to_return = []
-        for (let i = 0; i < 4; i++) {
-          to_return.push(derive_seed(descendant_seed, next_seed_index))
-          next_seed_index++
-        }
-        return to_return
+      
+      // Add in the fractal noise
+      for (let i = 0; i < 3; i++) {
+        midpoint_heights[i] = add_noise(midpoint_heights[i], seed_to_float(tripple_to_seed(midpoints[i])) - 0.5, depth)
       }
       
-      // Return a bunch of triangle_and_seeds pairs for the children.
-      return [[[parent[0], midpoint(parent[0], parent[1]), midpoint(parent[0], parent[2])], get_seeds()],
-              [[parent[1], midpoint(parent[1], parent[2]), midpoint(parent[0], parent[1])], get_seeds()],
-              [[parent[2], midpoint(parent[0], parent[2]), midpoint(parent[1], parent[2])], get_seeds()],
-              [[midpoint(parent[1], parent[2]), midpoint(parent[0], parent[2]), midpoint(parent[0], parent[1])], get_seeds()]]
+      // Return a bunch of triangles and heights.
+      return [[[parent[0], midpoints[2], midpoints[1]], [heights[0], midpoint_heights[2], midpoint_heights[1]]],
+              [[parent[1], midpoints[0], midpoints[2]], [heights[1], midpoint_heights[0], midpoint_heights[2]]],
+              [[parent[2], midpoints[1], midpoints[0]], [heights[2], midpoint_heights[1], midpoint_heights[0]]],
+              [[midpoints[0], midpoints[1], midpoints[2]], [midpoint_heights[0], midpoint_heights[1], midpoint_heights[2]]]]
+    }
+    
+    /// Get a seed for computing the height of a normalized tripple.
+    function tripple_to_seed(tripple) {
+      str = '' + tripple
+      
+      seed = 0
+      
+      for (let i = 0; i < str.length; i++) {
+        seed = derive_seed(seed, str.charCodeAt(i))
+      }
+      
+      return seed
+      
+      // TODO: we'll need to do this with an awareness of face so we get consistent seeds along shared edges.
+      // TODO: better math than hashing the string oif the seed???
+      // TODO: what can we do here in a shader if our ints may be quite big?
     }
     
     /// Generate a 0-1 float from the given seed
@@ -263,6 +281,11 @@
       seed = ((seed + 0xFD7046C5) + (seed << 3))   & 0xFFFFFFFF;
       seed = ((seed ^ 0xB55A4F09) ^ (seed >>> 16)) & 0xFFFFFFFF;
       return (seed & 0xFFFFFFF) / 0x10000000;
+    }
+    
+    /// Mix in a level of fractal noise (value) on top of base level base at depth depth
+    function add_noise(base, value, depth) {
+      return Math.min(1, Math.max(0, base + value / (2 * Math.pow(1.5, depth))))
     }
     
     /// Get the hex color at a given height
@@ -281,37 +304,37 @@
     
     /// Render all the child triangles down to max_depth
     /// Triangles are represented as integer tripples.
-    function render_children(here, seed, height, depth, max_depth) {
+    /// We also bring in the cumulative vertex heights of all the triangle's vertexes.
+    function render_children(trixel_heights, depth, max_depth) {
     
-      console.log('At depth ' + depth + ': ', here)
+      let trixel = trixel_heights[0]
+      let heights = trixel_heights[1]
     
       // Convert from integers tripples to 2d coordinates
-      coord_triangle = [tripple_to_coord(here[0], corners),
-                        tripple_to_coord(here[1], corners),
-                        tripple_to_coord(here[2], corners)]
+      coord_triangle = [tripple_to_coord(trixel[0], corners),
+                        tripple_to_coord(trixel[1], corners),
+                        tripple_to_coord(trixel[2], corners)]
       
-      triangle(coord_triangle, color_at(height))
+      // Draw the triangle at its average height
+      // TODO: work out how to draw triangle gradients
+      triangle(coord_triangle, color_at((heights[0] + heights[1] + heights[2])/3))
+      
       
       if (depth < max_depth) {
-        let children = [child_triangle_tripples(here, 0),
-                        child_triangle_tripples(here, 1),
-                        child_triangle_tripples(here, 2),
-                        child_triangle_tripples(here, 3)]
-        let offsets = child_offsets(seed)
-        let heights = []
-        
+        let children = shatter(trixel_heights, depth)
+      
         for (let i = 0; i < 4; i++) {
-          heights.push(Math.min(1, Math.max(0, height + offsets[i] / (2 * Math.pow(1.5, depth)))))
-          render_children(children[i], derive_seed(seed, i), heights[i], depth + 1, max_depth)
+          if (Math.random() < 0.99) {
+            // Recurse almost all the time, but sometimes leave some areas at this level.
+            render_children(children[i], depth + 1, max_depth)
+          }
         }
       }
     }
     
-    let here = root
-    let seed = 0
-    let height = 0.5
+    let here = [root, [0.5, 0.5, 0.5]]
     let depth = 0
-    render_children(here, seed, height, depth, 4)
+    render_children(here, depth, 9)
   
   </script>
 </body>
