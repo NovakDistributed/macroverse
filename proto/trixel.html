@@ -10,6 +10,18 @@
     let canvasElement = document.querySelector("#myCanvas")
     let context = canvasElement.getContext("2d")
     
+    /// Given a seed, get the seed for the given child number.
+    function derive_seed(seed, child) {
+      // See https://stackoverflow.com/a/52171480
+      let h1 = 0xdeadbeef ^ seed
+      let h2 = 0x41c6ce57 ^ seed
+      h1 = Math.imul(h1 ^ child, 2654435761)
+      h2 = Math.imul(h2 ^ child, 1597334677)
+      h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909)
+      h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909)
+      return 4294967296 * (2097151 & h2) + (h1>>>0)
+    }
+    
     /// Draw a triangle between the given x, y points, in the given color
     function triangle(c, color) {
       let [c1, c2, c3] = c
@@ -51,6 +63,19 @@
               [canvas_size / 2, (canvas_size - height) / 2]]
     }
     
+    // We represent points as 3-tuples of integers, where each integer is a weight on one of the vertices.
+    // The corners are [1, 0, 0], [0, 1, 0], and [0, 0, 1].
+    // Multiples are equal to the original.
+    // To move in a direction, double the vector and add 1 in the appropriate channel.
+    
+    /// Generate 3 vertex seeds and a child seed and store them in the seed structure we use for triangles
+    function seed_triangle(root_seed) {
+      return [derive_seed(root_seed, 0),
+              derive_seed(root_seed, 1),
+              derive_seed(root_seed, 2),
+              derive_seed(root_seed, 3)]
+    }
+    
     /// Interpolate two RGB colors
     function clerp(c1, c2, distance) {
       return [c1[0] + (c2[0] - c1[0]) * distance,
@@ -90,21 +115,141 @@
       }
     }
     
-    /// Get the hex color at a given height
-    function color_at(height) {
-      return to_hex(clerp([0, 0, 0], [1, 1, 1], height))
+    /// We represent vertices as integer tripples.
+    /// They always sum to 2^n, where n is the level of subdivision at chich the vertex first appeared.
+    /// And to move at a given level, you move one unit from one of the integers to another.
+    /// This finction takes these coordinates for a triangle, in vertex order,
+    /// and returns the coordinates for one of the children, reduced to canonical
+    /// form.
+    function child_triangle_tripples(parent, number) {
+      switch (number) {
+      case 0:
+        return [parent[0], midpoint_tripples(parent[0], parent[1]), midpoint_tripples(parent[0], parent[2])]
+        break;
+      case 1:
+        return [parent[1], midpoint_tripples(parent[1], parent[2]), midpoint_tripples(parent[0], parent[1])]
+        break;
+      case 2:
+        return [parent[2], midpoint_tripples(parent[0], parent[2]), midpoint_tripples(parent[1], parent[2])]
+        break;
+      case 3:
+        return [midpoint_tripples(parent[1], parent[2]), midpoint_tripples(parent[0], parent[2]), midpoint_tripples(parent[0], parent[1])]
+        break;
+      }
     }
     
-    /// Given the seed of a triangle, get the seed for the given child triangle.
-    function child_seed(seed, child) {
-      // See https://stackoverflow.com/a/52171480
-      let h1 = 0xdeadbeef ^ seed
-      let h2 = 0x41c6ce57 ^ seed
-      h1 = Math.imul(h1 ^ child, 2654435761)
-      h2 = Math.imul(h2 ^ child, 1597334677)
-      h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909)
-      h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909)
-      return 4294967296 * (2097151 & h2) + (h1>>>0)
+    /// Normalize a vertex tripple so it has at least one non-even coordinate.
+    function normalize_tripple(tripple) {
+      while(tripple[0] % 2 == 0 && tripple[1] % 2 == 0 && tripple[2] % 2 == 0 &&
+            (tripple[0] != 0 || tripple[1] != 0 || tripple[2] != 0)) {
+          
+        tripple[0] /= 2
+        tripple[1] /= 2
+        tripple[2] /= 2
+      }
+      return tripple
+    }
+    
+    /// Express the given vertex tripple as at the given level
+    function denormalize_tripple(tripple, level) {
+      wanted_total = Math.pow(2, level)
+      have_total = tripple[0] + tripple[1] + tripple[2]
+      while (have_total < wanted_total) {
+        have_total *= 2
+        tripple[0] *= 2
+        tripple[1] *= 2
+        tripple[2] *= 2
+      }
+      return tripple
+    }
+    
+    /// Get the midpoint of two tripples, as a tripple.
+    /// Tripples are assumed to be adjacent at some level, and normalized.
+    function midpoint_tripples(t1, t2) {
+      // Bring both to the level where they ara adjacent
+      while (t1[0] + t1[1] + t1[2] < t2[0] + t2[1] + t2[2]) {
+        t1[0] *= 2
+        t1[1] *= 2
+        t1[2] *= 2
+      }
+      while (t1[0] + t1[1] + t1[2] > t2[0] + t2[1] + t2[2]) {
+        t2[0] *= 2
+        t2[1] *= 2
+        t2[2] *= 2
+      }
+      
+      // When they have equal sums, they differ along a pair of dimensions by 1.
+      // We can just sum them and normalize again
+      return normalize_tripple([t1[0] + t2[0], t1[1] + t2[1], t1[2] + t2[2]])
+    }
+    
+    /// Given an integer tripple, and 3 basis 2d coordinate points, interpolate a 2d point.
+    function tripple_to_coord(tripple, basis) {
+      to_return = []
+      for (let i = 0; i < 2; i++) {
+        // For each coord dimension
+        let total_weight = 0;
+        let value = 0
+        for (let j = 0; j < 3; j++) {
+          // For each point to weight
+          // Record the weight
+          total_weight += tripple[j]
+          // Weigh in the point
+          value += tripple[j] * basis[j][i]
+        }
+        // Average
+        value /= total_weight
+        to_return.push(value)
+      }
+      return to_return
+    }
+    
+    
+    /// Given the seed of a triangle, get the offsets for all the child triangles.
+    function child_offsets(seed) {
+      // Compute base offsets
+      let offsets = [seed_to_float(derive_seed(seed, 0)),
+                     seed_to_float(derive_seed(seed, 1)),
+                     seed_to_float(derive_seed(seed, 2)),
+                     seed_to_float(derive_seed(seed, 3))]
+                     
+      // Average
+      let average = (offsets[0] + offsets[1] + offsets[2] + offsets[3])/4
+      
+      // Subtract average
+      offsets[0] -= average
+      offsets[1] -= average
+      offsets[2] -= average
+      offsets[3] -= average
+      
+      return offsets
+    }
+    
+    /// Given a trixel (as x, y pairs for the vertices), and seeds (as seeds
+    /// for vertex herights and a seed for making children), return an array of 4
+    /// similar structures for the child trixels
+    function shatter(triangle_and_seeds) {
+      let [parent, seeds] = triangle_and_seeds
+      
+      // The last seed is the one for deriving all the child seeds
+      let descendant_seed = seeds[3]
+      let next_seed_index = 0
+      
+      // Get 4 seeds for a child
+      function get_seeds() {
+        let to_return = []
+        for (let i = 0; i < 4; i++) {
+          to_return.push(derive_seed(descendant_seed, next_seed_index))
+          next_seed_index++
+        }
+        return to_return
+      }
+      
+      // Return a bunch of triangle_and_seeds pairs for the children.
+      return [[[parent[0], midpoint(parent[0], parent[1]), midpoint(parent[0], parent[2])], get_seeds()],
+              [[parent[1], midpoint(parent[1], parent[2]), midpoint(parent[0], parent[1])], get_seeds()],
+              [[parent[2], midpoint(parent[0], parent[2]), midpoint(parent[1], parent[2])], get_seeds()],
+              [[midpoint(parent[1], parent[2]), midpoint(parent[0], parent[2]), midpoint(parent[0], parent[1])], get_seeds()]]
     }
     
     /// Generate a 0-1 float from the given seed
@@ -120,49 +265,44 @@
       return (seed & 0xFFFFFFF) / 0x10000000;
     }
     
-    /// Given the seed of a triangle, get the offsets for all the child triangles.
-    function child_offsets(seed) {
-      // Compute base offsets
-      let offsets = [seed_to_float(child_seed(seed, 0)),
-                     seed_to_float(child_seed(seed, 1)),
-                     seed_to_float(child_seed(seed, 2)),
-                     seed_to_float(child_seed(seed, 3))]
-                     
-      // Average
-      let average = (offsets[0] + offsets[1] + offsets[2] + offsets[3])/4
-      
-      // Subtract average
-      offsets[0] -= average
-      offsets[1] -= average
-      offsets[2] -= average
-      offsets[3] -= average
-      
-      return offsets
+    /// Get the hex color at a given height
+    function color_at(height) {
+      return to_hex(clerp([0, 0, 0], [1, 1, 1], height))
     }
     
    
     const CANVAS_SIZE = 800
    
-    // Define the root trixel
-    let root = center_triangle(CANVAS_SIZE - 10, CANVAS_SIZE)
+    // Define the root trixel as a tripple
+    let root = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
     
-    let path = [0, 0, 1, 2, 3]
+    // Work out where the corner basis is
+    let corners = center_triangle(CANVAS_SIZE - 10, CANVAS_SIZE)
     
     /// Render all the child triangles down to max_depth
+    /// Triangles are represented as integer tripples.
     function render_children(here, seed, height, depth, max_depth) {
-      triangle(here, color_at(height))
+    
+      console.log('At depth ' + depth + ': ', here)
+    
+      // Convert from integers tripples to 2d coordinates
+      coord_triangle = [tripple_to_coord(here[0], corners),
+                        tripple_to_coord(here[1], corners),
+                        tripple_to_coord(here[2], corners)]
+      
+      triangle(coord_triangle, color_at(height))
       
       if (depth < max_depth) {
-        let children = [child_triangle(here, 0),
-                        child_triangle(here, 1),
-                        child_triangle(here, 2),
-                        child_triangle(here, 3)]
+        let children = [child_triangle_tripples(here, 0),
+                        child_triangle_tripples(here, 1),
+                        child_triangle_tripples(here, 2),
+                        child_triangle_tripples(here, 3)]
         let offsets = child_offsets(seed)
         let heights = []
         
         for (let i = 0; i < 4; i++) {
           heights.push(Math.min(1, Math.max(0, height + offsets[i] / (2 * Math.pow(1.5, depth)))))
-          render_children(children[i], child_seed(seed, i), heights[i], depth + 1, max_depth)
+          render_children(children[i], derive_seed(seed, i), heights[i], depth + 1, max_depth)
         }
       }
     }
@@ -171,7 +311,7 @@
     let seed = 0
     let height = 0.5
     let depth = 0
-    render_children(here, seed, height, depth, 9)
+    render_children(here, seed, height, depth, 4)
   
   </script>
 </body>
