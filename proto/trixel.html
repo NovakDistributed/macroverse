@@ -344,7 +344,7 @@
         let children = shatter(trixel_heights, depth)
       
         for (let i = 0; i < 4; i++) {
-          if (Math.random() < 0.95) {
+          if (Math.random() < 1.0) {
             // Recurse almost all the time, but sometimes leave some areas at this level.
             render_children(children[i], depth + 1, max_depth)
           }
