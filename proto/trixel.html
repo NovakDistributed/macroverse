@@ -10,6 +10,66 @@
     let canvasElement = document.querySelector("#myCanvas")
     let context = canvasElement.getContext("2d")
     
+    // We will generate "tiles". Each tile is centered on one of its vertices,
+    // and consists of a trixel subdivided to a certain level, with optionally
+    // a subtrixel at that level or above left out.
+    
+    // Get all the vertex positions for a tile with a given number of subdivisions.
+    // Takes the top-level trixel as integer tripples, its vertex heights, and
+    // the number of subdivision levels, as well as the corners of the global
+    // tripple space in 2D. Defines the triangle with the origin at the first
+    // corner. Returns a Float32Array of vertex positions, and a Uint16Array of
+    // indexes. Needs the current subdivision depth for height generation.
+    function make_tile([trixel, heights], global_corners, subdivisions, current_depth) {
+    
+      // We need 3 dimensions per vertex, we start with 3 vertices, and we double on every subdivision.
+      // TODO: Coalesce shared vertices?
+      let vertices = new Float32Array(3 * 3 * Math.pow(2, subdivisions))
+      let indices = new Uint16Array(3 * Math.pow(2, subdivisions))
+      
+      // Have a cursor to walk the buffer and fill it
+      let cursor = 0
+      
+      // Define the origin point
+      origin = tripple_to_coord2(trixel[0], global_corners)
+      
+      function recurse([trixel, heights], depth) {
+        // Convert from integers tripples to 2d coordinates
+        coord_triangle = [tripple_to_coord2(trixel[0], global_corners),
+                          tripple_to_coord2(trixel[1], global_corners),
+                          tripple_to_coord2(trixel[2], global_corners)]
+        
+        
+        // Emit the triangle to the buffers
+        for (let i = 0; i < 3; i++) {
+          // For each vertex
+          for (let dim = 0; dim < 2; dim++) {
+            // For each dimension in the plane, save it to the vertex buffer, translating 
+            vertices[cursor * 3 + dim] = (coord_triangle[i][dim] - origin[dim])
+          }
+          // Save the height
+          vertices[cursor * 3 + 2] = heights[i]
+          // And save the point triangle in the index buffer
+          indices[cursor] = cursor
+          // And advance
+          cursor++
+        }
+        
+        if (depth < current_depth + subdivisions) {
+          let children = shatter([trixel, heights], depth)
+        
+          for (let i = 0; i < 4; i++) {
+            recurse(children[i], depth + 1)
+          }
+        }
+      }
+      
+      // Subdivide
+      recurse([trixel, heights], current_depth)
+      
+      return [vertices, indices]
+    }
+    
     /// Given a seed, get the seed for the given child number.
     function derive_seed(seed, child) {
       // See https://stackoverflow.com/a/52171480
@@ -183,10 +243,10 @@
       return normalize_tripple([t1[0] + t2[0], t1[1] + t2[1], t1[2] + t2[2]])
     }
     
-    /// Given an integer tripple, and 3 basis 2d coordinate points, interpolate a 2d point.
-    function tripple_to_coord(tripple, basis) {
+    /// Given an integer tripple, and 3 basis N-dimensional coordinate points, interpolate an N-dimensional point.
+    function tripple_to_coord(tripple, basis, dimensions) {
       to_return = []
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < dimensions; i++) {
         // For each coord dimension
         let total_weight = 0;
         let value = 0
@@ -202,6 +262,14 @@
         to_return.push(value)
       }
       return to_return
+    }
+    
+    function tripple_to_coord2(tripple, basis) {
+      return tripple_to_coord(tripple, basis, 2)
+    }
+    
+    function tripple_to_coord3(tripple, basis) {
+      return tripple_to_coord(tripple, basis, 3)
     }
     
     
@@ -331,9 +399,9 @@
       let heights = trixel_heights[1]
     
       // Convert from integers tripples to 2d coordinates
-      coord_triangle = [tripple_to_coord(trixel[0], corners),
-                        tripple_to_coord(trixel[1], corners),
-                        tripple_to_coord(trixel[2], corners)]
+      coord_triangle = [tripple_to_coord2(trixel[0], corners),
+                        tripple_to_coord2(trixel[1], corners),
+                        tripple_to_coord2(trixel[2], corners)]
       
       // Draw the triangle at its average height
       // TODO: work out how to draw triangle gradients
@@ -355,6 +423,8 @@
     let here = [root, [0.5, 0.5, 0.5]]
     let depth = 0
     render_children(here, depth, 9)
+    
+    console.log(make_tile(here, corners, 1, 0))  
   
   </script>
 </body>
