@@ -8,11 +8,95 @@
   </canvas>
   <script type="text/javascript">
     let canvasElement = document.querySelector("#myCanvas")
-    let context = canvasElement.getContext("2d")
+    //let context = canvasElement.getContext("2d")
+    let gl = canvasElement.getContext("webgl2")
     
     // We will generate "tiles". Each tile is centered on one of its vertices,
     // and consists of a trixel subdivided to a certain level, with optionally
     // a subtrixel at that level or above left out.
+    
+    // Get the length of a vector.
+    function norm3([x, y, z]) {
+      return Math.sqrt(x * x + y * y + z * z)
+    }
+    
+    // Subtract the second vector from the first.
+    function sub3([x1, y1, z1], [x2, y2, z2]) {
+      return [x1 - x2, y1 - y2, z1 - z2]
+    }
+    
+    // Add the second vector to the first
+    function add3([x1, y1, z1], [x2, y2, z2]) {
+      return [x1 + x2, y1 + y2, z1 + z2]
+    }
+    
+    // Scale a vector by a scalar
+    function scale3([x, y, z], s) {
+      return [x * s, y * s, z * s]
+    }
+    
+    // Cross two vectors
+    function cross3([x1, y1, z1], [x2, y2, z2]) {
+      return [y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2]
+    }
+    
+    // Convert a 2d point to a 3d point in the xy plane
+    function addz([x, y]) {
+      return [x, y, 0]
+    }
+    
+    // Find the unit normal on the sphere with the given center, in line with
+    // the given point
+    function unit_normal_on_sphere(coord, sphere_center) {
+      let coord_sphere_centered = sub3(coord, sphere_center)
+      return scale3(coord_sphere_centered, 1/norm3(coord_sphere_centered))
+    }
+    
+    // Given a 3D point, snap it to the surface of the sphere with the given
+    // center and radius.
+    function snap_to_sphere(coord, sphere_center, radius) {
+      // Find point in sphere-centered Cartesian coordinates
+      let coord_sphere_centered = sub3(coord, sphere_center)
+      // Find how much longer it should be
+      let length_scale = radius / norm3(coord_sphere_centered)
+      // Rescale it
+      let on_sphere_sphere_centered = scale3(coord_sphere_centered, length_scale)
+      // Convert to original-origin Cartesian coordinates
+      return add3(on_sphere_sphere_centered, sphere_center)
+    }
+    
+    // Given the corners of a top-level equilateral trixel in CCW order, find
+    // the center and radius of the sphere they belong to.
+    function sphere_from_top_level_trixel(global_corners3) {
+      // See https://en.wikipedia.org/wiki/Octahedron#Dimensions
+      const OCTAHEDRON_INSCRIBED_SPHERE_RADIUS_PER_EDGE_LENGTH = Math.sqrt(2)/2
+    
+      // Get the edge length
+      let edge_length = norm3(sub3(global_corners3[1], global_corners3[0]))
+      // Find the radius of the enclosing sphere from the octahedron side length.
+      // See <https://geometryhelp.net/square-inscribed-in-a-circle/>
+      let radius = edge_length / Math.sqrt(2)
+      // Find the center of the side
+      let face_center = scale3(add3(add3(global_corners3[0], global_corners3[1]), global_corners3[2]), 1/3)
+      // Get the distance from the center of the side to the center of the sphere
+      let face_center_radius = OCTAHEDRON_INSCRIBED_SPHERE_RADIUS_PER_EDGE_LENGTH * edge_length
+      // Get the normal
+      let normal = cross3(sub3(global_corners3[1], global_corners3[0]), sub3(global_corners3[2], global_corners3[0]))
+      let unit_normal = scale3(normal, 1 / norm3(normal))
+      // Find the center of the sphere by gowing down the normal
+      let sphere_center = add3(face_center, scale3(unit_normal, -face_center_radius));
+      
+      return [sphere_center, radius]
+    }
+    
+    // Given a coordinate on a top-level trixel facet of the sphere, and the
+    // global coordinates of the corners of that facet, project the coordinates
+    // onto the sphere. Global coordinates go CCW and thus define the normal.
+    function plane_to_sphere(coord, global_corners3) {
+      let [sphere_center, radius] = sphere_from_top_level_trixel(global_corners3)
+      
+      return snap_to_sphere(coord, sphere_center, radius)
+    }
     
     // Get all the vertex positions for a tile with a given number of subdivisions.
     // Takes the top-level trixel as integer tripples, its vertex heights, and
@@ -20,9 +104,15 @@
     // tripple space in 2D. Defines the triangle with the origin at the first
     // corner. Returns a Float32Array of vertex positions, and a Uint16Array of
     // indexes. Needs the current subdivision depth for height generation.
-    function make_tile([trixel, heights], global_corners, subdivisions, current_depth) {
+    function make_tile([trixel, heights], global_corners2, subdivisions, current_depth) {
+      // Convert the 2d global corners into 3d space, with Z up away from the plane of the top-level trixel.
+      let global_corners3 = global_corners2.map(addz)
+      
+      // Find the sphere info, which will be constant across the whole tile.
+      let [sphere_center, radius] = sphere_from_top_level_trixel(global_corners3)
     
       // We need 3 dimensions per vertex, we start with 3 vertices, and we double on every subdivision.
+      // So work out how much space we need to save the vertices.
       // TODO: Coalesce shared vertices?
       let vertices = new Float32Array(3 * 3 * Math.pow(2, subdivisions))
       let indices = new Uint16Array(3 * Math.pow(2, subdivisions))
@@ -30,25 +120,30 @@
       // Have a cursor to walk the buffer and fill it
       let cursor = 0
       
-      // Define the origin point
-      origin = tripple_to_coord2(trixel[0], global_corners)
+      // Define the origin point for the output space
+      origin = addz(tripple_to_coord2(trixel[0], global_corners2))
       
       function recurse([trixel, heights], depth) {
         // Convert from integers tripples to 2d coordinates
-        coord_triangle = [tripple_to_coord2(trixel[0], global_corners),
-                          tripple_to_coord2(trixel[1], global_corners),
-                          tripple_to_coord2(trixel[2], global_corners)]
+        triangle2 = [tripple_to_coord2(trixel[0], global_corners2),
+                     tripple_to_coord2(trixel[1], global_corners2),
+                     tripple_to_coord2(trixel[2], global_corners2)]
         
+        // Bring into 3d, and snap each point onto the sphere
+        triangle3 = triangle2.map(addz) //.map((p) => snap_to_sphere(p, sphere_center, radius))
+        
+        for (let i = 0; i < 3; i++) {
+          // Adjust out by the heights
+          //triangle3[i] = add3(triangle3[i], scale3(unit_normal_on_sphere(triangle3[i], sphere_center), heights[i]))
+        }
         
         // Emit the triangle to the buffers
         for (let i = 0; i < 3; i++) {
           // For each vertex
-          for (let dim = 0; dim < 2; dim++) {
+          for (let dim = 0; dim < 3; dim++) {
             // For each dimension in the plane, save it to the vertex buffer, translating 
-            vertices[cursor * 3 + dim] = (coord_triangle[i][dim] - origin[dim])
+            vertices[cursor * 3 + dim] = (triangle3[i][dim] - origin[dim])
           }
-          // Save the height
-          vertices[cursor * 3 + 2] = heights[i]
           // And save the point triangle in the index buffer
           indices[cursor] = cursor
           // And advance
@@ -83,12 +178,13 @@
     }
     
     /// Draw a triangle between the given x, y points, in the given color
+    /// Takes +x = right and +y = up, but converts internally to canvas coordinates
     function triangle(c, color) {
       let [c1, c2, c3] = c
       context.beginPath()
-      context.moveTo(c1[0], c1[1])
-      context.lineTo(c2[0], c2[1])
-      context.lineTo(c3[0], c3[1])
+      context.moveTo(c1[0], CANVAS_SIZE - c1[1])
+      context.lineTo(c2[0], CANVAS_SIZE - c2[1])
+      context.lineTo(c3[0], CANVAS_SIZE - c3[1])
       context.closePath()
       
       /*context.lineWidth = 2
@@ -116,11 +212,12 @@
     }
     
     /// Get coordinates of a centered equilateral triangle
+    /// Uses +x = right and +y = up
     function center_triangle(line_size, canvas_size) {
       let height = Math.sqrt(3)/2 * line_size
-      return [[(canvas_size - line_size) / 2, (canvas_size - height) / 2 + height],
-              [(canvas_size - line_size) / 2 + line_size, (canvas_size - height) / 2 + height],
-              [canvas_size / 2, (canvas_size - height) / 2]]
+      return [[(canvas_size - line_size) / 2, (canvas_size - height) / 2],
+              [(canvas_size - line_size) / 2 + line_size, (canvas_size - height) / 2],
+              [canvas_size / 2, (canvas_size - height) / 2 + height]]
     }
     
     // We represent points as 3-tuples of integers, where each integer is a weight on one of the vertices.
@@ -420,11 +517,52 @@
       }
     }
     
+    
     let here = [root, [0.5, 0.5, 0.5]]
     let depth = 0
-    render_children(here, depth, 9)
+    //render_children(here, depth, 9)
     
-    console.log(make_tile(here, corners, 1, 0))  
+    let [vertices, indices] = make_tile(here, corners, 1, 0)
+    console.log(vertices)
+    
+    let vertex_shader = gl.createShader(gl.VERTEX_SHADER)
+    gl.shaderSource(vertex_shader, `
+      attribute vec4 aVertexPosition;
+
+      void main() {
+        gl_Position = aVertexPosition;
+      }
+    `)
+    gl.compileShader(vertex_shader)
+    let fragment_shader = gl.createShader(gl.FRAGMENT_SHADER)
+    gl.shaderSource(fragment_shader, `
+      void main() {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+      }
+    `)
+    gl.compileShader(fragment_shader)    
+    
+    let shader_program = gl.createProgram()
+    gl.attachShader(shader_program, vertex_shader)
+    gl.attachShader(shader_program, fragment_shader)
+    gl.linkProgram(shader_program)
+    
+    let vertex_buffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer)
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
+    
+    gl.clearColor(0.0, 0.0, 0.0, 1.0)
+    gl.clearDepth(1.0);
+    gl.enable(gl.DEPTH_TEST)
+    gl.depthFunc(gl.LEQUAL)
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
+    gl.vertexAttribPointer(gl.getAttribLocation(shader_program, 'aVertexPosition'), 3, gl.FLOAT, false, 0, 0)
+    gl.enableVertexAttribArray(gl.getAttribLocation(shader_program, 'aVertexPosition'))
+    
+    gl.useProgram(shader_program)
+    
+    gl.drawArrays(gl.TRIANGLES, 0, vertices.length/3)
   
   </script>
 </body>
