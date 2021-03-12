@@ -141,11 +141,10 @@
                        tripple_to_coord2(trixel[2], global_corners2)]
           
           // Bring into 3d, and snap each point onto the sphere
-          triangle3 = triangle2.map(addz) //.map((p) => snap_to_sphere(p, sphere_center, radius))
-          
+          triangle3 = triangle2.map(addz).map((p) => snap_to_sphere(p, sphere_center, radius))
           for (let i = 0; i < 3; i++) {
             // Adjust out by the heights
-            //triangle3[i] = add3(triangle3[i], scale3(unit_normal_on_sphere(triangle3[i], sphere_center), heights[i]))
+            triangle3[i] = add3(triangle3[i], scale3(unit_normal_on_sphere(triangle3[i], sphere_center), (heights[i] - 0.5) * radius/2))
           }
           
           // Emit the triangle to the buffers
@@ -526,7 +525,7 @@
     let depth = 0
     //render_children(here, depth, 9)
     
-    let [vertices, indices] = make_tile(here, corners, 1, 0)
+    let [vertices, indices] = make_tile(here, corners, 6, 0)
     console.log(vertices, indices)
     let tile_geometry = new THREE.BufferGeometry()
     tile_geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3))
@@ -543,7 +542,7 @@
     
     let material = new THREE.MeshBasicMaterial({color: 0x00ff00})
     let tile_faces = new THREE.Mesh(tile_geometry, material)
-    //tile_node.add(tile_faces)
+    tile_node.add(tile_faces)
     
     let tile_wireframe_geometry = new THREE.WireframeGeometry(tile_geometry)
     let tile_lines = new THREE.LineSegments(tile_wireframe_geometry)
