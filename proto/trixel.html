@@ -6,10 +6,11 @@
 <body>
   <canvas id="myCanvas" width=800 height=800>
   </canvas>
+  <script src="three.js"></script>
   <script type="text/javascript">
     let canvasElement = document.querySelector("#myCanvas")
-    //let context = canvasElement.getContext("2d")
     let gl = canvasElement.getContext("webgl2")
+    //let context = canvasElement.getContext("2d")
     
     // We will generate "tiles". Each tile is centered on one of its vertices,
     // and consists of a trixel subdivided to a certain level, with optionally
@@ -102,8 +103,9 @@
     // Takes the top-level trixel as integer tripples, its vertex heights, and
     // the number of subdivision levels, as well as the corners of the global
     // tripple space in 2D. Defines the triangle with the origin at the first
-    // corner. Returns a Float32Array of vertex positions, and a Uint16Array of
-    // indexes. Needs the current subdivision depth for height generation.
+    // corner. Returns a Float32Array of vertex positions, and a JavaScript
+    // array of indexes. Needs the current subdivision depth for height
+    // generation.
     function make_tile([trixel, heights], global_corners2, subdivisions, current_depth) {
       // Convert the 2d global corners into 3d space, with Z up away from the plane of the top-level trixel.
       let global_corners3 = global_corners2.map(addz)
@@ -111,11 +113,11 @@
       // Find the sphere info, which will be constant across the whole tile.
       let [sphere_center, radius] = sphere_from_top_level_trixel(global_corners3)
     
-      // We need 3 dimensions per vertex, we start with 3 vertices, and we double on every subdivision.
+      // We need 3 dimensions per vertex, we start with 3 vertices, and we quadruple on every subdivision.
       // So work out how much space we need to save the vertices.
       // TODO: Coalesce shared vertices?
-      let vertices = new Float32Array(3 * 3 * Math.pow(2, subdivisions))
-      let indices = new Uint16Array(3 * Math.pow(2, subdivisions))
+      let vertices = new Float32Array(3 * 3 * Math.pow(4, subdivisions))
+      let indices = [] 
       
       // Have a cursor to walk the buffer and fill it
       let cursor = 0
@@ -124,37 +126,39 @@
       origin = addz(tripple_to_coord2(trixel[0], global_corners2))
       
       function recurse([trixel, heights], depth) {
-        // Convert from integers tripples to 2d coordinates
-        triangle2 = [tripple_to_coord2(trixel[0], global_corners2),
-                     tripple_to_coord2(trixel[1], global_corners2),
-                     tripple_to_coord2(trixel[2], global_corners2)]
-        
-        // Bring into 3d, and snap each point onto the sphere
-        triangle3 = triangle2.map(addz) //.map((p) => snap_to_sphere(p, sphere_center, radius))
-        
-        for (let i = 0; i < 3; i++) {
-          // Adjust out by the heights
-          //triangle3[i] = add3(triangle3[i], scale3(unit_normal_on_sphere(triangle3[i], sphere_center), heights[i]))
-        }
-        
-        // Emit the triangle to the buffers
-        for (let i = 0; i < 3; i++) {
-          // For each vertex
-          for (let dim = 0; dim < 3; dim++) {
-            // For each dimension in the plane, save it to the vertex buffer, translating 
-            vertices[cursor * 3 + dim] = (triangle3[i][dim] - origin[dim])
-          }
-          // And save the point triangle in the index buffer
-          indices[cursor] = cursor
-          // And advance
-          cursor++
-        }
-        
         if (depth < current_depth + subdivisions) {
+          // Keep recursing
           let children = shatter([trixel, heights], depth)
         
           for (let i = 0; i < 4; i++) {
             recurse(children[i], depth + 1)
+          }
+        } else {
+          // Actually generate geometry at the bottom
+          // Convert from integers tripples to 2d coordinates
+          triangle2 = [tripple_to_coord2(trixel[0], global_corners2),
+                       tripple_to_coord2(trixel[1], global_corners2),
+                       tripple_to_coord2(trixel[2], global_corners2)]
+          
+          // Bring into 3d, and snap each point onto the sphere
+          triangle3 = triangle2.map(addz) //.map((p) => snap_to_sphere(p, sphere_center, radius))
+          
+          for (let i = 0; i < 3; i++) {
+            // Adjust out by the heights
+            //triangle3[i] = add3(triangle3[i], scale3(unit_normal_on_sphere(triangle3[i], sphere_center), heights[i]))
+          }
+          
+          // Emit the triangle to the buffers
+          for (let i = 0; i < 3; i++) {
+            // For each vertex
+            for (let dim = 0; dim < 3; dim++) {
+              // For each dimension in the plane, save it to the vertex buffer, translating 
+              vertices[cursor * 3 + dim] = (triangle3[i][dim] - origin[dim])
+            }
+            // And save the point triangle in the index buffer
+            indices.push(cursor)
+            // And advance
+            cursor++
           }
         }
       }
@@ -523,47 +527,48 @@
     //render_children(here, depth, 9)
     
     let [vertices, indices] = make_tile(here, corners, 1, 0)
-    console.log(vertices)
+    console.log(vertices, indices)
+    let tile_geometry = new THREE.BufferGeometry()
+    tile_geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3))
+    tile_geometry.setIndex(indices)
     
-    let vertex_shader = gl.createShader(gl.VERTEX_SHADER)
-    gl.shaderSource(vertex_shader, `
-      attribute vec4 aVertexPosition;
+    let scene = new THREE.Scene()
+    let camera = new THREE.PerspectiveCamera(75, CANVAS_SIZE / CANVAS_SIZE, 0.1, 10000)
 
-      void main() {
-        gl_Position = aVertexPosition;
+    let renderer = new THREE.WebGLRenderer({context: gl})
+    renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
+    
+    let tile_node = new THREE.Group()
+    scene.add(tile_node)
+    
+    let material = new THREE.MeshBasicMaterial({color: 0x00ff00})
+    let tile_faces = new THREE.Mesh(tile_geometry, material)
+    //tile_node.add(tile_faces)
+    
+    let tile_wireframe_geometry = new THREE.WireframeGeometry(tile_geometry)
+    let tile_lines = new THREE.LineSegments(tile_wireframe_geometry)
+    tile_lines.material.color = {r: 1, g: 0, b: 0}
+    tile_lines.material.linewidth = 3
+    tile_lines.material.depthTest = false
+    tile_lines.material.opacity = 0.25
+    tile_lines.material.transparent = true
+    tile_node.add(tile_lines)
+
+    camera.position.z = 1000
+    camera.position.x = CANVAS_SIZE / 2
+    camera.position.y = CANVAS_SIZE / 2
+    
+    function animate() {
+      try {
+        tile_node.rotation.x += 0.01
+        tile_node.rotation.y += 0.01
+        renderer.render(scene, camera)
+        requestAnimationFrame(animate)
+      } catch (e) {
+        console.error(e)
       }
-    `)
-    gl.compileShader(vertex_shader)
-    let fragment_shader = gl.createShader(gl.FRAGMENT_SHADER)
-    gl.shaderSource(fragment_shader, `
-      void main() {
-        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-      }
-    `)
-    gl.compileShader(fragment_shader)    
-    
-    let shader_program = gl.createProgram()
-    gl.attachShader(shader_program, vertex_shader)
-    gl.attachShader(shader_program, fragment_shader)
-    gl.linkProgram(shader_program)
-    
-    let vertex_buffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer)
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
-    
-    gl.clearColor(0.0, 0.0, 0.0, 1.0)
-    gl.clearDepth(1.0);
-    gl.enable(gl.DEPTH_TEST)
-    gl.depthFunc(gl.LEQUAL)
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
-    gl.vertexAttribPointer(gl.getAttribLocation(shader_program, 'aVertexPosition'), 3, gl.FLOAT, false, 0, 0)
-    gl.enableVertexAttribArray(gl.getAttribLocation(shader_program, 'aVertexPosition'))
-    
-    gl.useProgram(shader_program)
-    
-    gl.drawArrays(gl.TRIANGLES, 0, vertices.length/3)
-  
+    }
+    animate()
   </script>
 </body>
 </html>
