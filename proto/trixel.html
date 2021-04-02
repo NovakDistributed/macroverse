@@ -7,6 +7,7 @@
   <canvas id="myCanvas" width=800 height=800>
   </canvas>
   <script src="three.js"></script>
+  <script src="OrbitControls.js"></script>
   <script type="text/javascript">
     let canvasElement = document.querySelector("#myCanvas")
     let gl = canvasElement.getContext("webgl2")
@@ -119,14 +120,28 @@
       let sphere_center = scale3(add3(basis[0], basis[5]), 0.5)
       let radius = norm3(sub3(basis[0], basis[5])) / 2
       
-      // We need 3 dimensions per vertex, we start with 3 vertices, and we quadruple on every subdivision.
-      // So work out how much space we need to save the vertices.
-      // TODO: Coalesce shared vertices?
-      let vertices = new Array(3 * 3 * Math.pow(4, subdivisions))
+      // Vertexes are stored flat, all components next to each other
+      let vertex_components = []
       let indices = [] 
       
-      // Have a cursor to walk the buffer and fill it
-      let cursor = 0
+      // For smooth normals we need all instances of a given vertex to be deduplicated
+      let sextet_to_index = {}
+      
+      /// Get or create the index for the position of a sextet, given that it should be at the given height
+      function get_sextet_index(sextet, height) {
+        key = '' + sextet
+        if (sextet_to_index[key] == undefined) {
+          let p = sextet_to_coord3(sextet, basis)
+          p = snap_to_sphere(p, sphere_center, radius)
+          p = add3(p, scale3(unit_normal_on_sphere(p, sphere_center), (height - 0.5) * radius / 2))
+          // Flatten into vertex buffer
+          vertex_components.push(p[0])
+          vertex_components.push(p[1])
+          vertex_components.push(p[2])
+          sextet_to_index[key] = (vertex_components.length / 3) - 1
+        }
+        return sextet_to_index[key]
+      }
       
       function recurse([trixel, heights], depth) {
         if (depth < current_depth + subdivisions) {
@@ -138,29 +153,10 @@
           }
         } else {
           // Actually generate geometry at the bottom
-          // Convert from integers sectets to 3d coordinates
-          let triangle3 = [sextet_to_coord3(trixel[0], basis),
-                           sextet_to_coord3(trixel[1], basis),
-                           sextet_to_coord3(trixel[2], basis)]
-          
-          // Snap each point onto the sphere
-          triangle3 = triangle3.map((p) => snap_to_sphere(p, sphere_center, radius))
           for (let i = 0; i < 3; i++) {
-            // Adjust out by the heights
-            triangle3[i] = add3(triangle3[i], scale3(unit_normal_on_sphere(triangle3[i], sphere_center), (heights[i] - 0.5) * radius/2))
-          }
-          
-          // Emit the triangle to the buffers
-          for (let i = 0; i < 3; i++) {
-            // For each vertex
-            for (let dim = 0; dim < 3; dim++) {
-              // For each dimension in the plane, save it to the vertex buffer
-              vertices[cursor * 3 + dim] = triangle3[i][dim]
-            }
-            // And save the point triangle in the index buffer
-            indices.push(cursor)
-            // And advance
-            cursor++
+            // Only generate one vertex per unique sextet.
+            let v_index = get_sextet_index(trixel[i], heights[i])
+            indices.push(v_index)
           }
         }
       }
@@ -168,7 +164,7 @@
       // Subdivide
       recurse([trixel, heights], current_depth)
       
-      return [vertices, indices]
+      return [vertex_components, indices]
     }
     
     /// Given a seed, get the seed for the given child number.
@@ -502,6 +498,7 @@
     
    
     const CANVAS_SIZE = 800
+    const SHOW_NORMALS = false
    
     // Define the octahedron corners
     let basis = make_octahedron([0, 0, 0], 1)
@@ -509,6 +506,73 @@
     let topology = make_octahedron_topology()
     
     let planet = new THREE.Group()
+    
+    const PLANET_FRAGMENT_SHADER = `
+      in vec3 vWorldPosition;
+      in vec3 vNormal;
+      
+      // TODO: A bunch of this light stuff is copied from random three.js
+      // shader files because they don't define a real documented interface.
+      uniform vec3 ambientLightColor;
+      struct DirectionalLight {
+        vec3 direction;
+        vec3 color;
+      };
+      uniform DirectionalLight directionalLights[NUM_DIR_LIGHTS];
+      // TODO: Directional light direction needs to respect camera matrices: vertex shader?
+      
+      void main() {
+        vec3 ambientMaterial = vec3(1, 1, 1);
+        vec3 diffuseMaterial = ambientMaterial;
+        vec3 specularMaterial = vec3(0, 0, 0);
+        
+        vec3 color;
+        
+        for (int i = 0; i < NUM_DIR_LIGHTS; i++) {
+          // Basic logic is taken from https://stackoverflow.com/questions/38210386
+          vec3 fromLight = normalize(directionalLights[0].direction);
+          vec3 toLight = -fromLight;
+          vec3 reflectLight = reflect(toLight, vNormal);
+
+          float litness = dot(toLight, vNormal);
+          float reflectness = max(0.0, dot(reflectLight, vNormal));
+          
+          color += ambientMaterial * ambientLightColor;
+          color += diffuseMaterial * directionalLights[0].color * litness;
+          color += specularMaterial * directionalLights[0].color * reflectness;
+        }
+      
+        gl_FragColor = vec4(color, 1);
+      }
+    `
+    
+    const PLANET_VERTEX_SHADER = `
+      out vec3 vWorldPosition;
+      out vec3 vNormal;
+      
+      void main() {
+
+        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+        vWorldPosition = worldPosition.xyz;
+        
+        vNormal = normal;
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+      }
+    `
+    
+    // Add the lighting uniforms to any custom planet material uniforms
+    // TODO: Uniforms should include which trixel this tile is maybe?
+    let tile_uniforms = THREE.UniformsUtils.merge([THREE.UniformsLib.lights, {}])
+    
+    let tile_material = SHOW_NORMALS ? new THREE.MeshNormalMaterial() : 
+        new THREE.ShaderMaterial({
+          vertexShader: PLANET_VERTEX_SHADER, 
+          fragmentShader: PLANET_FRAGMENT_SHADER, 
+          uniforms: tile_uniforms, 
+          lights: true
+        })
     
     for (let root_indices of topology) {
       // For each three vertices that form a face
@@ -521,15 +585,17 @@
       let here = [root, [0.5, 0.5, 0.5]]
       let depth = 0
       
-      let [vertices, indices] = make_tile(here, basis, 5, 0)
+      let [vertex_components, indices] = make_tile(here, basis, 5, 0)
+      console.log(vertex_components, indices)
       let tile_geometry = new THREE.BufferGeometry()
-      tile_geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3))
+      tile_geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertex_components), 3))
       tile_geometry.setIndex(indices)
+      // Give it some smoothed normals
+      tile_geometry.computeFaceNormals()
+      tile_geometry.computeVertexNormals()
       
       let tile_node = new THREE.Group()
-      
-      let material = new THREE.MeshNormalMaterial()
-      let tile_faces = new THREE.Mesh(tile_geometry, material)
+      let tile_faces = new THREE.Mesh(tile_geometry, tile_material)
       tile_node.add(tile_faces)
       
       let tile_wireframe_geometry = new THREE.WireframeGeometry(tile_geometry)
@@ -539,7 +605,7 @@
       tile_lines.material.depthTest = false
       tile_lines.material.opacity = 0.25
       tile_lines.material.transparent = true
-      tile_node.add(tile_lines)
+      //tile_node.add(tile_lines)
       
       planet.add(tile_node)
     }
@@ -548,16 +614,20 @@
     
     scene.add(planet)
     
-    // TODO: Light won't work until we add normals and a material that uses it
     let light = new THREE.DirectionalLight(0xffffee, 0.5)
     light.position.x = -5
     light.position.y = 0
     light.position.z = 2
     light.target = planet
-    scene.add(light)
+    let light_arm = new THREE.Group()
+    light_arm.add(light)
+    scene.add(light_arm)
+    
+    let ambient = new THREE.AmbientLight(0x101010)
+    scene.add(ambient)
     
     let camera = new THREE.PerspectiveCamera(75, CANVAS_SIZE / CANVAS_SIZE, 0.1, 10000)
-
+    
     let renderer = new THREE.WebGLRenderer({context: gl})
     renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
 
@@ -565,13 +635,15 @@
     camera.position.x = 0
     camera.position.y = 0
     
+    // Orbit controls come from their own file
+    let controls = new THREE.OrbitControls(camera, canvasElement)
+    controls.update()
+    
     let time = 0
     function animate() {
-      time += 0.001
+      time += 0.001 
       try {
-        planet.rotation.z = 2 * Math.PI * Math.sin(time)
-        planet.rotation.y = 2 * Math.PI * Math.sin(time/5)
-        planet.rotation.x = 2 * Math.PI * Math.sin(time/7)
+        light_arm.rotation.y += 0.001
         renderer.render(scene, camera)
         requestAnimationFrame(animate)
       } catch (e) {
