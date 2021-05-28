@@ -6,166 +6,9 @@
 <body>
   <canvas id="myCanvas" width=800 height=800>
   </canvas>
-  <script src="three.js"></script>
-  <script src="OrbitControls.js"></script>
   <script type="text/javascript">
     let canvasElement = document.querySelector("#myCanvas")
-    let gl = canvasElement.getContext("webgl2")
-    //let context = canvasElement.getContext("2d")
-    
-    // We will generate "tiles". Each tile is centered on one of its vertices,
-    // and consists of a trixel subdivided to a certain level, with optionally
-    // a subtrixel at that level or above left out.
-    
-    // Get the length of a vector.
-    function norm3([x, y, z]) {
-      return Math.sqrt(x * x + y * y + z * z)
-    }
-    
-    // Subtract the second vector from the first.
-    function sub3([x1, y1, z1], [x2, y2, z2]) {
-      return [x1 - x2, y1 - y2, z1 - z2]
-    }
-    
-    // Add the second vector to the first
-    function add3([x1, y1, z1], [x2, y2, z2]) {
-      return [x1 + x2, y1 + y2, z1 + z2]
-    }
-    
-    // Scale a vector by a scalar
-    function scale3([x, y, z], s) {
-      return [x * s, y * s, z * s]
-    }
-    
-    // Cross two vectors
-    function cross3([x1, y1, z1], [x2, y2, z2]) {
-      return [y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2]
-    }
-    
-    // Find the unit normal on the sphere with the given center, in line with
-    // the given point
-    function unit_normal_on_sphere(coord, sphere_center) {
-      let coord_sphere_centered = sub3(coord, sphere_center)
-      return scale3(coord_sphere_centered, 1/norm3(coord_sphere_centered))
-    }
-    
-    // Given a 3D point, snap it to the surface of the sphere with the given
-    // center and radius.
-    function snap_to_sphere(coord, sphere_center, radius) {
-      // Find point in sphere-centered Cartesian coordinates
-      let coord_sphere_centered = sub3(coord, sphere_center)
-      // Find how much longer it should be
-      let length_scale = radius / norm3(coord_sphere_centered)
-      // Rescale it
-      let on_sphere_sphere_centered = scale3(coord_sphere_centered, length_scale)
-      // Convert to original-origin Cartesian coordinates
-      return add3(on_sphere_sphere_centered, sphere_center)
-    }
-    
-    // Given a center point and a radius, produce an octahedron.
-    // The octahedron consists of an array of 8 points.
-    // Points are laid out as in Szalay et al. 2005 "Indexing the Sphere with
-    // the Hierarchical Triangular Mesh"
-    function make_octahedron([x, y, z], radius) {
-      return [[x, y, z + radius],
-              [x + radius, y, z],
-              [x, y + radius, z],
-              [x - radius, y, z],
-              [x, y - radius, z],
-              [x, y, z - radius]]
-    }
-    
-    // Get the topology of the octahedron as triangle vertex indices.
-    // Returns an array of arrays of indices.
-    // South faces come first, then north.
-    function make_octahedron_topology() {
-      return [[1, 5, 2],
-              [2, 5, 3],
-              [3, 5, 4],
-              [4, 5, 1],
-              [1, 0, 4],
-              [4, 0, 3],
-              [3, 0, 2],
-              [2, 0, 1]]
-    }
-    
-    // Return the sextet representation of the octahedron corners, in the same
-    // order as make_octahedron().
-    function make_basis_sextets() {
-      let corners = []
-      for (let i = 0; i < 6; i++) {
-        let corner = []
-        for (let j = 0; j < 6; j++) {
-          if (i == j) {
-            // Each corenr is 100% itself
-            corner.push(1)
-          } else {
-            corner.push(0)
-          }
-        }
-        corners.push(corner)
-      }
-      return corners
-    }
-    
-    // Get all the vertex positions for a tile with a given number of subdivisions.
-    // Takes the top-level trixel as integer sextets, its vertex heights, and
-    // the number of subdivision levels, as well as the corners of the global
-    // sextet space in 3D (i.e. the octahedron corners). Returns a Javascript
-    // array of vertex positions, and a JavaScript array of indexes. Needs the
-    // current subdivision depth for height generation.
-    function make_tile([trixel, heights], basis, subdivisions, current_depth) {
-      
-      // Find the sphere info again
-      let sphere_center = scale3(add3(basis[0], basis[5]), 0.5)
-      let radius = norm3(sub3(basis[0], basis[5])) / 2
-      
-      // Vertexes are stored flat, all components next to each other
-      let vertex_components = []
-      let indices = [] 
-      
-      // For smooth normals we need all instances of a given vertex to be deduplicated
-      let sextet_to_index = {}
-      
-      /// Get or create the index for the position of a sextet, given that it should be at the given height
-      function get_sextet_index(sextet, height) {
-        key = '' + sextet
-        if (sextet_to_index[key] == undefined) {
-          let p = sextet_to_coord3(sextet, basis)
-          p = snap_to_sphere(p, sphere_center, radius)
-          p = add3(p, scale3(unit_normal_on_sphere(p, sphere_center), (height - 0.5) * radius / 2))
-          // Flatten into vertex buffer
-          vertex_components.push(p[0])
-          vertex_components.push(p[1])
-          vertex_components.push(p[2])
-          sextet_to_index[key] = (vertex_components.length / 3) - 1
-        }
-        return sextet_to_index[key]
-      }
-      
-      function recurse([trixel, heights], depth) {
-        if (depth < current_depth + subdivisions) {
-          // Keep recursing
-          let children = shatter([trixel, heights], depth)
-        
-          for (let i = 0; i < 4; i++) {
-            recurse(children[i], depth + 1)
-          }
-        } else {
-          // Actually generate geometry at the bottom
-          for (let i = 0; i < 3; i++) {
-            // Only generate one vertex per unique sextet.
-            let v_index = get_sextet_index(trixel[i], heights[i])
-            indices.push(v_index)
-          }
-        }
-      }
-      
-      // Subdivide
-      recurse([trixel, heights], current_depth)
-      
-      return [vertex_components, indices]
-    }
+    let context = canvasElement.getContext("2d")
     
     /// Given a seed, get the seed for the given child number.
     function derive_seed(seed, child) {
@@ -180,13 +23,12 @@
     }
     
     /// Draw a triangle between the given x, y points, in the given color
-    /// Takes +x = right and +y = up, but converts internally to canvas coordinates
     function triangle(c, color) {
       let [c1, c2, c3] = c
       context.beginPath()
-      context.moveTo(c1[0], CANVAS_SIZE - c1[1])
-      context.lineTo(c2[0], CANVAS_SIZE - c2[1])
-      context.lineTo(c3[0], CANVAS_SIZE - c3[1])
+      context.moveTo(c1[0], c1[1])
+      context.lineTo(c2[0], c2[1])
+      context.lineTo(c3[0], c3[1])
       context.closePath()
       
       /*context.lineWidth = 2
@@ -211,6 +53,14 @@
       return '#' + to_hex_byte(rgb[0]) +
                    to_hex_byte(rgb[1]) +
                    to_hex_byte(rgb[2])
+    }
+    
+    /// Get coordinates of a centered equilateral triangle
+    function center_triangle(line_size, canvas_size) {
+      let height = Math.sqrt(3)/2 * line_size
+      return [[(canvas_size - line_size) / 2, (canvas_size - height) / 2 + height],
+              [(canvas_size - line_size) / 2 + line_size, (canvas_size - height) / 2 + height],
+              [canvas_size / 2, (canvas_size - height) / 2]]
     }
     
     // We represent points as 3-tuples of integers, where each integer is a weight on one of the vertices.
@@ -265,126 +115,93 @@
       }
     }
     
-    /// We represent vertices as integer sextets.
+    /// We represent vertices as integer tripples.
     /// They always sum to 2^n, where n is the level of subdivision at chich the vertex first appeared.
     /// And to move at a given level, you move one unit from one of the integers to another.
     /// This finction takes these coordinates for a triangle, in vertex order,
     /// and returns the coordinates for one of the children, reduced to canonical
     /// form.
-    function child_triangle_sextets(parent, number) {
+    function child_triangle_tripples(parent, number) {
       switch (number) {
       case 0:
-        return [parent[0], midpoint_sextets(parent[0], parent[1]), midpoint_sextets(parent[0], parent[2])]
+        return [parent[0], midpoint_tripples(parent[0], parent[1]), midpoint_tripples(parent[0], parent[2])]
         break;
       case 1:
-        return [parent[1], midpoint_sextets(parent[1], parent[2]), midpoint_sextets(parent[0], parent[1])]
+        return [parent[1], midpoint_tripples(parent[1], parent[2]), midpoint_tripples(parent[0], parent[1])]
         break;
       case 2:
-        return [parent[2], midpoint_sextets(parent[0], parent[2]), midpoint_sextets(parent[1], parent[2])]
+        return [parent[2], midpoint_tripples(parent[0], parent[2]), midpoint_tripples(parent[1], parent[2])]
         break;
       case 3:
-        return [midpoint_sextets(parent[1], parent[2]), midpoint_sextets(parent[0], parent[2]), midpoint_sextets(parent[0], parent[1])]
+        return [midpoint_tripples(parent[1], parent[2]), midpoint_tripples(parent[0], parent[2]), midpoint_tripples(parent[0], parent[1])]
         break;
       }
     }
     
-    // Return true if the given integer sextet is normalized (has at least one
-    // non-even coordinate)
-    function is_normalized(sextet) {
-      for (let coord of sextet) {
-        if (coord % 2 !== 0) {
-          return true
-        }
+    /// Normalize a vertex tripple so it has at least one non-even coordinate.
+    function normalize_tripple(tripple) {
+      while(tripple[0] % 2 == 0 && tripple[1] % 2 == 0 && tripple[2] % 2 == 0 &&
+            (tripple[0] != 0 || tripple[1] != 0 || tripple[2] != 0)) {
+          
+        tripple[0] /= 2
+        tripple[1] /= 2
+        tripple[2] /= 2
       }
-      return false
+      return tripple
     }
     
-    /// Normalize a vertex sextet so it has at least one non-even coordinate.
-    function normalize_sextet(sextet) {
-      while(!is_normalized(sextet)) {
-        for (let i = 0; i < sextet.length; i++) {
-          sextet[i] /= 2
-        }
-      }
-      return sextet
-    }
-    
-    /// Express the given vertex sextet as at the given level
-    function denormalize_sextet(sextet, level) {
+    /// Express the given vertex tripple as at the given level
+    function denormalize_tripple(tripple, level) {
       wanted_total = Math.pow(2, level)
-      have_total = sum_sextet(sextet)
+      have_total = tripple[0] + tripple[1] + tripple[2]
       while (have_total < wanted_total) {
         have_total *= 2
-        double_sextet_in_place(sextet)
+        tripple[0] *= 2
+        tripple[1] *= 2
+        tripple[2] *= 2
       }
-      return sextet
+      return tripple
     }
     
-    // Double all coordinates of a sextet in palce
-    function double_sextet_in_place(sextet) {
-      for (let i = 0; i < sextet.length; i++) {
-        sextet[i] *= 2
-      }
-    }
-    
-    // Return the sum of all sextet coordinates
-    function sum_sextet(sextet) {
-      total = 0
-      for (let coord of sextet) {
-        total += coord
-      }
-      return total
-    }
-    
-    // Add two sextets component-wise
-    function add_sextets(t1, t2) {
-      let result = []
-      for (let i = 0; i < 6; i++) {
-        result.push(t1[i] + t2[i])
-      }
-      return result
-    }
-    
-    /// Get the midpoint of two sextets, as a sextet.
+    /// Get the midpoint of two tripples, as a tripple.
     /// Tripples are assumed to be adjacent at some level, and normalized.
-    function midpoint_sextets(t1, t2) {
-      // Bring both to the level where they are adjacent
-      while (sum_sextet(t1) < sum_sextet(t2)) {
-        double_sextet_in_place(t1)
+    function midpoint_tripples(t1, t2) {
+      // Bring both to the level where they ara adjacent
+      while (t1[0] + t1[1] + t1[2] < t2[0] + t2[1] + t2[2]) {
+        t1[0] *= 2
+        t1[1] *= 2
+        t1[2] *= 2
       }
-      while (sum_sextet(t1) > sum_sextet(t2)) {
-        double_sextet_in_place(t2)
+      while (t1[0] + t1[1] + t1[2] > t2[0] + t2[1] + t2[2]) {
+        t2[0] *= 2
+        t2[1] *= 2
+        t2[2] *= 2
       }
       
       // When they have equal sums, they differ along a pair of dimensions by 1.
       // We can just sum them and normalize again
-      return normalize_sextet(add_sextets(t1, t2))
+      return normalize_tripple([t1[0] + t2[0], t1[1] + t2[1], t1[2] + t2[2]])
     }
     
-    // Given an integer sextet, and 6 basis N-dimensional coordinate points,
-    // interpolate an N-dimensional point.
-    function sextet_to_coord(sextet, basis, dimensions) {
+    /// Given an integer tripple, and 3 basis 2d coordinate points, interpolate a 2d point.
+    function tripple_to_coord(tripple, basis) {
       to_return = []
-      for (let i = 0; i < dimensions; i++) {
+      for (let i = 0; i < 2; i++) {
         // For each coord dimension
         let total_weight = 0;
         let value = 0
-        for (let j = 0; j < 6; j++) {
+        for (let j = 0; j < 3; j++) {
           // For each point to weight
           // Record the weight
-          total_weight += sextet[j]
+          total_weight += tripple[j]
           // Weigh in the point
-          value += sextet[j] * basis[j][i]
+          value += tripple[j] * basis[j][i]
         }
         // Average
         value /= total_weight
         to_return.push(value)
       }
       return to_return
-    }
-    
-    function sextet_to_coord3(sextet, basis) {
-      return sextet_to_coord(sextet, basis, 3)
     }
     
     
@@ -408,39 +225,119 @@
       return offsets
     }
     
-    /// Given a trixel (as sextets) and vertex heights (3 floats)
+    /// Randomly select an item from an array given some noise
+    function choose(array, noise) {
+      let index = Math.floor(noise * array.length)
+      return array[index]
+    }
+    
+    let grammar = {
+      a: [
+        {
+          scale: 0,
+          thresholds: [0, 0],
+          children: ['flat', 'flat', 'flat', 'mountain']
+        }
+      ],
+      flat: [
+        {
+          scale: 0,
+          thresholds: [0, 0],
+          children: ['flat', 'flat', 'flat', 'flat']
+        }
+      ],
+      c: [
+        {
+          scale: 0.2,
+          thresholds: [0.1, 0.9],
+          children: ['a', 'a', 'a', 'a']
+        }
+      ],
+      premountain: [
+        {
+          scale: 0,
+          thresholds: [0, 0],
+          // Child 0 of our children always points away from our center.
+          children: ['flat', 'flat', 'flat', 'flat']
+        }
+      ],
+      mountain: [
+        {
+          scale: 0.2,
+          thresholds: [0, 0],
+          // Child 0 of our children always points away from our center.
+          children: ['down0', 'down0', 'down0', 'premountain']
+        }
+      ],
+      down0: [
+        {
+          scale: 0,
+          thresholds: [0, 0],
+          children: ['down', 'flat', 'flat', 'flat']
+        }
+      ],
+      up12: [
+        {
+          scale: 0,
+          thresholds: [0, 0],
+          children: ['flat', 'up', 'up', 'up']
+        }
+      ],
+      up: [
+        {
+          scale: 0.2,
+          thresholds: [0, 0],
+          children: ['flat', 'flat', 'flat', 'flat']
+        }
+      ],
+      down: [
+        {
+          scale: 0.2,
+          thresholds: [1, 1],
+          children: ['flat', 'flat', 'flat', 'flat']
+        }
+      ]
+    }
+    
+    /// Given a trixel (as tripples) and vertex heights (3 floats)
     /// return an array of 4 similar structures for the child trixels
     function shatter(trixel_heights, depth) {
-      let [parent, heights] = trixel_heights
+      let [parent, heights, state] = trixel_heights
       
       // Number the midpoints as in the paper
-      let midpoints = [midpoint_sextets(parent[1], parent[2]),
-                       midpoint_sextets(parent[0], parent[2]),
-                       midpoint_sextets(parent[0], parent[1])]
+      let midpoints = [midpoint_tripples(parent[1], parent[2]),
+                       midpoint_tripples(parent[0], parent[2]),
+                       midpoint_tripples(parent[0], parent[1])]
                        
-      // Compute heights for them from interpolation
-      let midpoint_heights = [(heights[1] + heights[2]) / 2,
-                              (heights[0] + heights[2]) / 2,
-                              (heights[0] + heights[1]) / 2]
+      // All triangles but the center one are at our base height
+      let outer_height = heights[0]
+      let outer_heights = [outer_height, outer_height, outer_height]
       
+      let noise1 = Math.random()
+      let noise2 = Math.random()
+      let noise3 = Math.random()
       
-      // Add in the fractal noise
-      for (let i = 0; i < 3; i++) {
-        midpoint_heights[i] = add_noise(midpoint_heights[i], seed_to_float(sextet_to_seed(midpoints[i])) - 0.5, depth)
-      }
+      // Find the rules we can use
+      let rules = grammar[state]
+      let rule = choose(rules, noise1)
       
+      let height_change = noise3 > rule.thresholds[0] ? noise3 > rule.thresholds[1] ? rule.scale : 0 : -rule.scale
+      let inner_height = Math.max(-1, Math.min(1, outer_height + height_change))
+      let inner_heights = [inner_height, inner_height, inner_height]
+      
+                       
       // Return a bunch of triangles and heights.
-      return [[[parent[0], midpoints[2], midpoints[1]], [heights[0], midpoint_heights[2], midpoint_heights[1]]],
-              [[parent[1], midpoints[0], midpoints[2]], [heights[1], midpoint_heights[0], midpoint_heights[2]]],
-              [[parent[2], midpoints[1], midpoints[0]], [heights[2], midpoint_heights[1], midpoint_heights[0]]],
-              [[midpoints[0], midpoints[1], midpoints[2]], [midpoint_heights[0], midpoint_heights[1], midpoint_heights[2]]]]
+      return [[[parent[0], midpoints[2], midpoints[1]], inner_heights, rule.children[0]],
+              [[parent[1], midpoints[0], midpoints[2]], inner_heights, rule.children[1]],
+              [[parent[2], midpoints[1], midpoints[0]], inner_heights, rule.children[2]],
+              [[midpoints[0], midpoints[1], midpoints[2]], inner_heights, rule.children[3]]]
     }
     
     const BASE_SEED = 7
     
-    /// Get a seed for computing the height of a normalized sextet.
-    function sextet_to_seed(sextet) {
-      str = '' + sextet
+    /// Get a seed for computing the height of a normalized tripple.
+    function tripple_to_seed(tripple) {
+      str = '' + tripple
       
       seed = BASE_SEED
       
@@ -498,159 +395,49 @@
     
    
     const CANVAS_SIZE = 800
-    const SHOW_NORMALS = false
    
-    // Define the octahedron corners
-    let basis = make_octahedron([0, 0, 0], 1)
-    let basis_sextets = make_basis_sextets()
-    let topology = make_octahedron_topology()
+    // Define the root trixel as a tripple
+    let root = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
     
-    let planet = new THREE.Group()
+    // Work out where the corner basis is
+    let corners = center_triangle(CANVAS_SIZE - 10, CANVAS_SIZE)
     
-    const PLANET_FRAGMENT_SHADER = `
-      in vec3 vWorldPosition;
-      in vec3 vNormal;
+    /// Render all the child triangles down to max_depth
+    /// Triangles are represented as integer tripples.
+    /// We also bring in the cumulative vertex heights of all the triangle's vertexes.
+    function render_children(trixel_heights, depth, max_depth) {
+    
+      let trixel = trixel_heights[0]
+      let heights = trixel_heights[1]
+    
+      // Convert from integers tripples to 2d coordinates
+      coord_triangle = [tripple_to_coord(trixel[0], corners),
+                        tripple_to_coord(trixel[1], corners),
+                        tripple_to_coord(trixel[2], corners)]
       
-      // TODO: A bunch of this light stuff is copied from random three.js
-      // shader files because they don't define a real documented interface.
-      uniform vec3 ambientLightColor;
-      struct DirectionalLight {
-        vec3 direction;
-        vec3 color;
-      };
-      uniform DirectionalLight directionalLights[NUM_DIR_LIGHTS];
-      // TODO: Directional light direction needs to respect camera matrices: vertex shader?
+      // Draw the triangle at its average height
+      // TODO: work out how to draw triangle gradients
+      triangle(coord_triangle, color_at((heights[0] + heights[1] + heights[2])/3))
       
-      void main() {
-        vec3 ambientMaterial = vec3(1, 1, 1);
-        vec3 diffuseMaterial = ambientMaterial;
-        vec3 specularMaterial = vec3(0, 0, 0);
-        
-        vec3 color;
-        
-        for (int i = 0; i < NUM_DIR_LIGHTS; i++) {
-          // Basic logic is taken from https://stackoverflow.com/questions/38210386
-          vec3 fromLight = normalize(directionalLights[0].direction);
-          vec3 toLight = -fromLight;
-          vec3 reflectLight = reflect(toLight, vNormal);
-
-          float litness = dot(toLight, vNormal);
-          float reflectness = max(0.0, dot(reflectLight, vNormal));
-          
-          color += ambientMaterial * ambientLightColor;
-          color += diffuseMaterial * directionalLights[0].color * litness;
-          color += specularMaterial * directionalLights[0].color * reflectness;
+      
+      if (depth < max_depth) {
+        let children = shatter(trixel_heights, depth)
+      
+        for (let i = 0; i < 4; i++) {
+          if (Math.random() < 1.0) {
+            // Recurse almost all the time, but sometimes leave some areas at this level.
+            render_children(children[i], depth + 1, max_depth)
+          }
         }
-      
-        gl_FragColor = vec4(color, 1);
-      }
-    `
-    
-    const PLANET_VERTEX_SHADER = `
-      out vec3 vWorldPosition;
-      out vec3 vNormal;
-      
-      void main() {
-
-        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-        vWorldPosition = worldPosition.xyz;
-        
-        vNormal = normal;
-
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-
-      }
-    `
-    
-    // Add the lighting uniforms to any custom planet material uniforms
-    // TODO: Uniforms should include which trixel this tile is maybe?
-    let tile_uniforms = THREE.UniformsUtils.merge([THREE.UniformsLib.lights, {}])
-    
-    let tile_material = SHOW_NORMALS ? new THREE.MeshNormalMaterial() : 
-        new THREE.ShaderMaterial({
-          vertexShader: PLANET_VERTEX_SHADER, 
-          fragmentShader: PLANET_FRAGMENT_SHADER, 
-          uniforms: tile_uniforms, 
-          lights: true
-        })
-    
-    for (let root_indices of topology) {
-      // For each three vertices that form a face
-      
-      // Define the root trixel as a sextet
-      let root = [basis_sextets[root_indices[0]],
-                  basis_sextets[root_indices[1]],
-                  basis_sextets[root_indices[2]]]
-      
-      let here = [root, [0.5, 0.5, 0.5]]
-      let depth = 0
-      
-      let [vertex_components, indices] = make_tile(here, basis, 5, 0)
-      console.log(vertex_components, indices)
-      let tile_geometry = new THREE.BufferGeometry()
-      tile_geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertex_components), 3))
-      tile_geometry.setIndex(indices)
-      // Give it some smoothed normals
-      tile_geometry.computeFaceNormals()
-      tile_geometry.computeVertexNormals()
-      
-      let tile_node = new THREE.Group()
-      let tile_faces = new THREE.Mesh(tile_geometry, tile_material)
-      tile_node.add(tile_faces)
-      
-      let tile_wireframe_geometry = new THREE.WireframeGeometry(tile_geometry)
-      let tile_lines = new THREE.LineSegments(tile_wireframe_geometry)
-      tile_lines.material.color = {r: 1, g: 0, b: 0}
-      tile_lines.material.linewidth = 3
-      tile_lines.material.depthTest = false
-      tile_lines.material.opacity = 0.25
-      tile_lines.material.transparent = true
-      //tile_node.add(tile_lines)
-      
-      planet.add(tile_node)
-    }
-    
-    let scene = new THREE.Scene()
-    
-    scene.add(planet)
-    
-    let light = new THREE.DirectionalLight(0xffffee, 0.5)
-    light.position.x = -5
-    light.position.y = 0
-    light.position.z = 2
-    light.target = planet
-    let light_arm = new THREE.Group()
-    light_arm.add(light)
-    scene.add(light_arm)
-    
-    let ambient = new THREE.AmbientLight(0x101010)
-    scene.add(ambient)
-    
-    let camera = new THREE.PerspectiveCamera(75, CANVAS_SIZE / CANVAS_SIZE, 0.1, 10000)
-    
-    let renderer = new THREE.WebGLRenderer({context: gl})
-    renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
-
-    camera.position.z = 3
-    camera.position.x = 0
-    camera.position.y = 0
-    
-    // Orbit controls come from their own file
-    let controls = new THREE.OrbitControls(camera, canvasElement)
-    controls.update()
-    
-    let time = 0
-    function animate() {
-      time += 0.001 
-      try {
-        light_arm.rotation.y += 0.001
-        renderer.render(scene, camera)
-        requestAnimationFrame(animate)
-      } catch (e) {
-        console.error(e)
       }
     }
-    animate()
+    
+    let here = [root, [0.5, 0.5, 0.5], "a"]
+    let depth = 0
+    render_children(here, depth, 9)
+  
   </script>
 </body>
 </html>
+
+
