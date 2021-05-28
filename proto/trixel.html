@@ -232,69 +232,43 @@
     }
     
     let grammar = {
-      a: [
-        {
-          scale: 0,
-          thresholds: [0, 0],
-          children: ['flat', 'flat', 'flat', 'mountain']
-        }
-      ],
+      root: [{
+        delta: 0,
+        child_deltas: [0, 0, 0, 0.1],
+        children: ['flat', 'flat', 'flat', 'down012']
+      }],
       flat: [
         {
-          scale: 0,
-          thresholds: [0, 0],
+          delta: 0,
+          child_deltas: [0, 0, 0, 0],
           children: ['flat', 'flat', 'flat', 'flat']
-        }
-      ],
-      c: [
+        },
         {
-          scale: 0.2,
-          thresholds: [0.1, 0.9],
-          children: ['a', 'a', 'a', 'a']
-        }
-      ],
-      premountain: [
-        {
-          scale: 0,
-          thresholds: [0, 0],
-          // Child 0 of our children always points away from our center.
+          delta: 0,
+          child_deltas: [0, 0, 0, 0],
           children: ['flat', 'flat', 'flat', 'flat']
-        }
-      ],
-      mountain: [
+        },
         {
-          scale: 0.2,
-          thresholds: [0, 0],
-          // Child 0 of our children always points away from our center.
-          children: ['down0', 'down0', 'down0', 'premountain']
-        }
-      ],
-      down0: [
-        {
-          scale: 0,
-          thresholds: [0, 0],
-          children: ['down', 'flat', 'flat', 'flat']
-        }
-      ],
-      up12: [
-        {
-          scale: 0,
-          thresholds: [0, 0],
-          children: ['flat', 'up', 'up', 'up']
-        }
-      ],
-      up: [
-        {
-          scale: 0.2,
-          thresholds: [0, 0],
+          delta: 0,
+          child_deltas: [0, 0, 0, 0],
           children: ['flat', 'flat', 'flat', 'flat']
+        },
+        {
+          delta: 0,
+          child_deltas: [0, 0, 0, 0],
+          children: ['flat', 'flat', 'flat', 'root']
         }
       ],
-      down: [
+      down012: [
         {
-          scale: 0.2,
-          thresholds: [1, 1],
+          delta: 0,
+          child_deltas: [-0.1, -0.1, -0.1, 0],
           children: ['flat', 'flat', 'flat', 'flat']
+        },
+        {
+          delta: 0,
+          child_deltas: [-0.1, -0.1, -0.1, 0],
+          children: ['flat', 'flat', 'flat', 'root']
         }
       ]
     }
@@ -308,11 +282,7 @@
       let midpoints = [midpoint_tripples(parent[1], parent[2]),
                        midpoint_tripples(parent[0], parent[2]),
                        midpoint_tripples(parent[0], parent[1])]
-                       
-      // All triangles but the center one are at our base height
-      let outer_height = heights[0]
-      let outer_heights = [outer_height, outer_height, outer_height]
-      
+                      
       let noise1 = Math.random()
       let noise2 = Math.random()
       let noise3 = Math.random()
@@ -320,17 +290,21 @@
       // Find the rules we can use
       let rules = grammar[state]
       let rule = choose(rules, noise1)
+                      
+      let base_height = heights[0] + rule.delta
       
-      let height_change = noise3 > rule.thresholds[0] ? noise3 > rule.thresholds[1] ? rule.scale : 0 : -rule.scale
-      let inner_height = Math.max(-1, Math.min(1, outer_height + height_change))
-      let inner_heights = [inner_height, inner_height, inner_height]
-      
+      // Rule defines additional deltas to apply for child heights in addition to state changes.
+      let child_heights = []
+      for (let i = 0; i < 4; i++) {
+        let child_height = base_height + rule.child_deltas[i]
+        child_heights.push([child_height, child_height, child_height])
+      }
                        
       // Return a bunch of triangles and heights.
-      return [[[parent[0], midpoints[2], midpoints[1]], inner_heights, rule.children[0]],
-              [[parent[1], midpoints[0], midpoints[2]], inner_heights, rule.children[1]],
-              [[parent[2], midpoints[1], midpoints[0]], inner_heights, rule.children[2]],
-              [[midpoints[0], midpoints[1], midpoints[2]], inner_heights, rule.children[3]]]
+      return [[[parent[0], midpoints[2], midpoints[1]], child_heights[0], rule.children[0]],
+              [[parent[1], midpoints[0], midpoints[2]], child_heights[1], rule.children[1]],
+              [[parent[2], midpoints[1], midpoints[0]], child_heights[2], rule.children[2]],
+              [[midpoints[0], midpoints[1], midpoints[2]], child_heights[3], rule.children[3]]]
     }
     
     const BASE_SEED = 7
@@ -432,7 +406,7 @@
       }
     }
     
-    let here = [root, [0.5, 0.5, 0.5], "a"]
+    let here = [root, [0.5, 0.5, 0.5], 'root']
     let depth = 0
     render_children(here, depth, 9)
   
