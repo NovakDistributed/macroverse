@@ -231,21 +231,68 @@
       return array[index]
     }
     
-    /// Given two edge endpoint heights and a noise, compute the height for the
-    //edge midpoint
-    function break_edge(h1, h2, noise) {
-      let bounds = [h1, h2]
-      bounds.sort()
-      let key = '' + bounds
-      let choices = {
-        '0,0': [0, 0, 0, 0.5],
-        '0,0.5': [0, 0.5],
-        '0.5,0.5': [0.5, 0.5, 1, 0],
-        '0.5,1': [0.5, 1],
-        '1,1': [1, 1, 1, 0.5],
-        '0,1': [0.5, 0.5, 0.5, 0, 1]
-      }[key]
-      return choose(choices, noise)
+    // Given two edge endpoint heights, their states, noise, and a given depth,
+    // compute the height and state for the edge midpoint.
+    function break_edge(h1, s1, h2, s2, noise, depth) {
+      let states = [s1, s2]
+      states.sort()
+      let key = states[0] + ',' + states[1]
+      
+      const EARLY_CHOICES = {
+        'l,l': ['l', 'l', 'l', 'm'],
+        'l,m': ['l', 'm'],
+        'm,m': ['m', 'm', 'h', 'l'],
+        'h,m': ['m', 'h'],
+        'h,h': ['h', 'h', 'h', 'm'],
+        'h,l': ['m', 'm', 'm', 'l', 'h']
+      }
+      
+      const LATE_CHOICES = {
+        'l,l': ['l'],
+        'l,m': ['l', 'm'],
+        'm,m': ['m'],
+        'h,m': ['h', 'm'],
+        'h,h': ['h'],
+        'h,l': ['m']
+      }
+      
+      // By letting different states crop up in uniform areas of other states
+      // only at low depths, and then refining the borders, we get cool fractal
+      // biomes for cheap, without having to do things like threshold noise.
+      let choices = (depth > 3 ? LATE_CHOICES : EARLY_CHOICES)[key]
+      
+      if (choices == undefined) {
+        console.error("Missing: " + key)
+        throw new Error("Missing: " + key)
+      }
+      
+      let new_state = choose(choices, noise)
+      
+      // Factors are: average neighbor height weight, noise weight, raw base
+      // height, noise denominator exponent base
+      const MD_FACTORS = {
+        'l': [1, 0.1, 0, 2],
+        'm': [1, 0.5, 0, 2],
+        'h': [1, 0.6, 0, 2],
+      }
+      
+      const BASE_HEIGHT_FACTORS = {
+        'l': [0, 0, 0, 1],
+        'm': [0, 0, 0.5, 1],
+        'h': [0, 0, 1, 1]
+      }
+      
+      const MIXED_FACTORS = {
+        'l': [0.9, 0, 0, 1],
+        'm': [0.9, 0, 0, 1],
+        'h': [0.9, 0, 0.1, 1]
+      }
+      
+      let factors = MD_FACTORS[new_state]
+      
+      let new_height = Math.min(1, Math.max(0, (h1 + h2) * 0.5 * factors[0] + (noise - 0.5) * factors[1] / Math.pow(factors[3], depth) + factors[2]))
+      
+      return [new_height, new_state]
     }
     
     /// Given a trixel (as tripples) and vertex heights (3 floats)
@@ -260,15 +307,19 @@
       let midpoint_seeds = midpoints.map(tripple_to_seed)
       let midpoint_noise = midpoint_seeds.map(seed_to_float)
      
-      let midpoint_heights = [break_edge(heights[1], heights[2], midpoint_noise[0]),
-                              break_edge(heights[0], heights[2], midpoint_noise[1]),
-                              break_edge(heights[0], heights[1], midpoint_noise[2])]
+      let midpoint_results = [break_edge(heights[1], states[1], heights[2], states[2], midpoint_noise[0], depth),
+                              break_edge(heights[0], states[0], heights[2], states[2], midpoint_noise[1], depth),
+                              break_edge(heights[0], states[0], heights[1], states[1], midpoint_noise[2], depth)]
       
-      // Return a bunch of triangles and heights.
-      return [[[parent[0], midpoints[2], midpoints[1]], [heights[0], midpoint_heights[2], midpoint_heights[1]], states],
-              [[parent[1], midpoints[0], midpoints[2]], [heights[1], midpoint_heights[0], midpoint_heights[2]], states],
-              [[parent[2], midpoints[1], midpoints[0]], [heights[2], midpoint_heights[1], midpoint_heights[0]], states],
-              [[midpoints[0], midpoints[1], midpoints[2]], [midpoint_heights[0], midpoint_heights[1], midpoint_heights[2]], states]]
+      let midpoint_heights = [midpoint_results[0][0], midpoint_results[1][0], midpoint_results[2][0]]
+      let midpoint_states = [midpoint_results[0][1], midpoint_results[1][1], midpoint_results[2][1]]
+      
+      
+      // Return a bunch of triangles and heights and states.
+      return [[[parent[0], midpoints[2], midpoints[1]], [heights[0], midpoint_heights[2], midpoint_heights[1]], [states[0], midpoint_states[2], midpoint_states[1]]],
+              [[parent[1], midpoints[0], midpoints[2]], [heights[1], midpoint_heights[0], midpoint_heights[2]], [states[1], midpoint_states[0], midpoint_states[2]]],
+              [[parent[2], midpoints[1], midpoints[0]], [heights[2], midpoint_heights[1], midpoint_heights[0]], [states[2], midpoint_states[1], midpoint_states[0]]],
+              [[midpoints[0], midpoints[1], midpoints[2]], [midpoint_heights[0], midpoint_heights[1], midpoint_heights[2]], [midpoint_states[0], midpoint_states[1], midpoint_states[2]]]]
     }
     
     const BASE_SEED = 7
@@ -367,9 +418,9 @@
       }
     }
     
-    let here = [root, [0.5, 0.5, 0.5], 'root']
+    let here = [root, [0.5, 0.5, 0.5], ['m', 'm', 'm']]
     let depth = 0
-    let maxdepth = 0
+    let maxdepth = 9
     
     function render_frame() {
       render_children(here, depth, maxdepth)
@@ -377,7 +428,7 @@
       if (maxdepth == 10) {
         maxdepth = 0
       }
-      window.setTimeout(render_frame, 2000)
+      //window.setTimeout(render_frame, 2000)
     }
     
     render_frame()
