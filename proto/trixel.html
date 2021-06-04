@@ -268,29 +268,22 @@
       
       let new_state = choose(choices, noise)
       
-      // Factors are: average neighbor height weight, noise weight, raw base
-      // height, noise denominator exponent base
-      const MD_FACTORS = {
-        'l': [1, 0.1, 0, 2],
-        'm': [1, 0.5, 0, 2],
-        'h': [1, 0.6, 0, 2],
+      // Factors are: bumpiness, min height, max height
+      const MD_RANGES = {
+        'l': [1, 0, 0.5],
+        'm': [1, 0.25, 0.75],
+        'h': [2, 0.5, 1.0],
       }
       
-      const BASE_HEIGHT_FACTORS = {
-        'l': [0, 0, 0, 1],
-        'm': [0, 0, 0.5, 1],
-        'h': [0, 0, 1, 1]
+      const BASE_HEIGHT_RANGES = {
+        'l': [0, 0, 0],
+        'm': [0, 0.5, 0.5],
+        'h': [0, 1, 1]
       }
       
-      const MIXED_FACTORS = {
-        'l': [0.9, 0, 0, 1],
-        'm': [0.9, 0, 0, 1],
-        'h': [0.9, 0, 0.1, 1]
-      }
+      let factors = MD_RANGES[new_state]
       
-      let factors = MD_FACTORS[new_state]
-      
-      let new_height = Math.min(1, Math.max(0, (h1 + h2) * 0.5 * factors[0] + (noise - 0.5) * factors[1] / Math.pow(factors[3], depth) + factors[2]))
+      let new_height = Math.min(factors[2], Math.max(factors[1], (h1 + h2) * 0.5 + (noise - 0.5) * factors[0] / Math.pow(2, depth)))
       
       return [new_height, new_state]
     }
@@ -420,15 +413,16 @@
     
     let here = [root, [0.5, 0.5, 0.5], ['m', 'm', 'm']]
     let depth = 0
-    let maxdepth = 9
+    let maxdepth = 0
     
     function render_frame() {
       render_children(here, depth, maxdepth)
       maxdepth += 1
       if (maxdepth == 10) {
         maxdepth = 0
+      } else {
+        window.setTimeout(render_frame, 500)
       }
-      //window.setTimeout(render_frame, 2000)
     }
     
     render_frame()
