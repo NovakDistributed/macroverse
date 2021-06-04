@@ -231,80 +231,44 @@
       return array[index]
     }
     
-    let grammar = {
-      root: [{
-        delta: 0,
-        child_deltas: [0, 0, 0, 0.1],
-        children: ['flat', 'flat', 'flat', 'down012']
-      }],
-      flat: [
-        {
-          delta: 0,
-          child_deltas: [0, 0, 0, 0],
-          children: ['flat', 'flat', 'flat', 'flat']
-        },
-        {
-          delta: 0,
-          child_deltas: [0, 0, 0, 0],
-          children: ['flat', 'flat', 'flat', 'flat']
-        },
-        {
-          delta: 0,
-          child_deltas: [0, 0, 0, 0],
-          children: ['flat', 'flat', 'flat', 'flat']
-        },
-        {
-          delta: 0,
-          child_deltas: [0, 0, 0, 0],
-          children: ['flat', 'flat', 'flat', 'root']
-        }
-      ],
-      down012: [
-        {
-          delta: 0,
-          child_deltas: [-0.1, -0.1, -0.1, 0],
-          children: ['flat', 'flat', 'flat', 'flat']
-        },
-        {
-          delta: 0,
-          child_deltas: [-0.1, -0.1, -0.1, 0],
-          children: ['flat', 'flat', 'flat', 'root']
-        }
-      ]
+    /// Given two edge endpoint heights and a noise, compute the height for the
+    //edge midpoint
+    function break_edge(h1, h2, noise) {
+      let bounds = [h1, h2]
+      bounds.sort()
+      let key = '' + bounds
+      let choices = {
+        '0,0': [0, 0, 0, 0.5],
+        '0,0.5': [0, 0.5],
+        '0.5,0.5': [0.5, 0.5, 1, 0],
+        '0.5,1': [0.5, 1],
+        '1,1': [1, 1, 1, 0.5],
+        '0,1': [0.5, 0.5, 0.5, 0, 1]
+      }[key]
+      return choose(choices, noise)
     }
     
     /// Given a trixel (as tripples) and vertex heights (3 floats)
     /// return an array of 4 similar structures for the child trixels
     function shatter(trixel_heights, depth) {
-      let [parent, heights, state] = trixel_heights
-      
+      let [parent, heights, states] = trixel_heights
       // Number the midpoints as in the paper
       let midpoints = [midpoint_tripples(parent[1], parent[2]),
                        midpoint_tripples(parent[0], parent[2]),
                        midpoint_tripples(parent[0], parent[1])]
-                      
-      let noise1 = Math.random()
-      let noise2 = Math.random()
-      let noise3 = Math.random()
       
-      // Find the rules we can use
-      let rules = grammar[state]
-      let rule = choose(rules, noise1)
-                      
-      let base_height = heights[0] + rule.delta
+      let midpoint_seeds = midpoints.map(tripple_to_seed)
+      let midpoint_noise = midpoint_seeds.map(seed_to_float)
+     
+      let midpoint_heights = [break_edge(heights[1], heights[2], midpoint_noise[0]),
+                              break_edge(heights[0], heights[2], midpoint_noise[1]),
+                              break_edge(heights[0], heights[1], midpoint_noise[2])]
       
-      // Rule defines additional deltas to apply for child heights in addition to state changes.
-      let child_heights = []
-      for (let i = 0; i < 4; i++) {
-        let child_height = base_height + rule.child_deltas[i]
-        child_heights.push([child_height, child_height, child_height])
-      }
-                       
       // Return a bunch of triangles and heights.
-      return [[[parent[0], midpoints[2], midpoints[1]], child_heights[0], rule.children[0]],
-              [[parent[1], midpoints[0], midpoints[2]], child_heights[1], rule.children[1]],
-              [[parent[2], midpoints[1], midpoints[0]], child_heights[2], rule.children[2]],
-              [[midpoints[0], midpoints[1], midpoints[2]], child_heights[3], rule.children[3]]]
+      return [[[parent[0], midpoints[2], midpoints[1]], [heights[0], midpoint_heights[2], midpoint_heights[1]], states],
+              [[parent[1], midpoints[0], midpoints[2]], [heights[1], midpoint_heights[0], midpoint_heights[2]], states],
+              [[parent[2], midpoints[1], midpoints[0]], [heights[2], midpoint_heights[1], midpoint_heights[0]], states],
+              [[midpoints[0], midpoints[1], midpoints[2]], [midpoint_heights[0], midpoint_heights[1], midpoint_heights[2]], states]]
     }
     
     const BASE_SEED = 7
@@ -398,17 +362,25 @@
         let children = shatter(trixel_heights, depth)
       
         for (let i = 0; i < 4; i++) {
-          if (Math.random() < 1.0) {
-            // Recurse almost all the time, but sometimes leave some areas at this level.
-            render_children(children[i], depth + 1, max_depth)
-          }
+          render_children(children[i], depth + 1, max_depth)
         }
       }
     }
     
     let here = [root, [0.5, 0.5, 0.5], 'root']
     let depth = 0
-    render_children(here, depth, 9)
+    let maxdepth = 0
+    
+    function render_frame() {
+      render_children(here, depth, maxdepth)
+      maxdepth += 1
+      if (maxdepth == 10) {
+        maxdepth = 0
+      }
+      window.setTimeout(render_frame, 2000)
+    }
+    
+    render_frame()
   
   </script>
 </body>
